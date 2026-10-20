@@ -65,13 +65,15 @@ test.describe('the garden', () => {
 
 test.describe('the fonts are ours', () => {
   test('no request leaves the origin', async ({ page }) => {
-    const offsite: string[] = [];
-    page.on('request', (request) => {
-      const url = new URL(request.url());
-      if (url.origin !== 'http://127.0.0.1:4173') offsite.push(request.url());
-    });
+    const requests: string[] = [];
+    page.on('request', (request) => requests.push(request.url()));
 
     await page.goto('/', { waitUntil: 'networkidle' });
+
+    // The origin is read from the page rather than hard-coded, so the same test
+    // runs against localhost and against the deployed site.
+    const origin = new URL(page.url()).origin;
+    const offsite = requests.filter((url) => new URL(url).origin !== origin);
 
     // This is the whole point of self-hosting: a site for children should not
     // talk to anyone else, and it is cheaper to prove it than to promise it.

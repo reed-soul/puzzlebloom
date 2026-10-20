@@ -6,8 +6,11 @@
 /fonts/*
   Cache-Control: public, max-age=31536000, immutable
 
+# HSTS deliberately omits includeSubDomains: this host sits under a domain that
+# also carries mail and other apps, and they are not ours to pin to HTTPS.
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: no-referrer
   Permissions-Policy: geolocation=(), camera=(), microphone=(), interest-cohort=()
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; worker-src 'self' blob:; base-uri 'self'; form-action 'none'; frame-ancestors 'none'
+  Strict-Transport-Security: max-age=15552000

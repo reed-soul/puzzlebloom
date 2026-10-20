@@ -7,6 +7,8 @@ telemetry. Puzzles are generated on the device the child is holding and never
 leave it. The product goal is narrow and deliberate: **be a place where the
 answer to "can I play something?" is simply yes.**
 
+**Live: [puzzlebloom.taoliapp.com](https://puzzlebloom.taoliapp.com)**
+
 ![The garden](docs/screenshots/garden.png)
 
 ---
@@ -44,6 +46,7 @@ puzzlebloom/
 │  └─ ui/                     locked icon set, buttons, segmented control, creature glyphs
 ├─ e2e/                       Playwright: the seams the unit tests cannot reach
 ├─ docs/                      spec, ADRs, screenshots
+├─ wrangler.toml              the Cloudflare Pages project (the live host)
 └─ vercel.json                the fallback host's config; Cloudflare reads
                               public/_headers and _redirects natively
 ```
@@ -153,14 +156,22 @@ in `registry.ts`).
 
 ## Deploying
 
-The build is ~400 kB of static files: any host that serves files works. The
-default target is **Cloudflare Pages**, because the repo already speaks its
-dialects — `apps/web/public/_headers` (the CSP, immutable caching) and
-`_redirects` (the SPA fallback) are read as-is — and because a static bundle has
-no traffic to meter. The reasoning, with both vendors' 2026 quotas side by side,
-is in [ADR-005](docs/adr/ADR-005-deploy-target.md).
+The build is ~400 kB of static files: any host that serves files works. It runs
+on **Cloudflare Pages**, because the repo already speaks its dialects —
+`apps/web/public/_headers` (the CSP, immutable caching) and `_redirects` (the
+SPA fallback) are read as-is — and because a static bundle has no traffic to
+meter. The reasoning, with both vendors' 2026 quotas side by side, is in
+[ADR-005](docs/adr/ADR-005-deploy-target.md).
 
-**Cloudflare Pages** — Workers & Pages → Create → Pages → connect this repo:
+**Direct upload** — what the live site does. The build happens locally or in CI
+and Pages only stores the result, so there is no build environment to configure:
+
+```bash
+pnpm deploy          # build + wrangler pages deploy, using wrangler.toml
+```
+
+**Git integration** — connect the repo in the dashboard instead, and Pages
+builds on every push:
 
 | Setting | Value |
 | --- | --- |
@@ -169,9 +180,20 @@ is in [ADR-005](docs/adr/ADR-005-deploy-target.md).
 | Root directory | leave at `/` (the pnpm filter builds the workspace) |
 | Environment variable | `PNPM_VERSION=12.4.2` |
 
-Node comes from `.nvmrc`. The `PNPM_VERSION` line is not optional: the v3 build
-image ships pnpm 10.11.1 and does not read `packageManager` from `package.json`,
-so without it the install runs on a pnpm older than the lockfile expects.
+Node comes from `.nvmrc`. The `PNPM_VERSION` line is not optional *in this
+path*: the v3 build image ships pnpm 10.11.1 and does not read `packageManager`
+from `package.json`, so without it the install runs on a pnpm older than the
+lockfile expects.
+
+**The custom domain** is one CNAME, because the zone lives at Aliyun DNS rather
+than at Cloudflare:
+
+```
+puzzlebloom   CNAME   puzzlebloom.pages.dev    (DNS only, no proxy)
+```
+
+…plus the same hostname added to the Pages project, which is what issues the
+certificate. Any other host works the same way.
 
 **Vercel** — import the repo; `vercel.json` already sets the build command,
 output directory, SPA rewrites, cache headers and CSP. It stays supported, but
@@ -181,9 +203,6 @@ Hobby is also licensed for non-commercial use only.
 
 **GitHub Pages** does not fit: it serves no custom headers, so the CSP would
 have to move into a `<meta>` tag and lose `frame-ancestors`.
-
-Whichever host wins, a custom domain is the real requirement — `*.pages.dev` and
-`*.vercel.app` are both unreliable from mainland China.
 
 ## Status
 

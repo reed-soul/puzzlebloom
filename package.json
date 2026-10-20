@@ -18,6 +18,8 @@
     "format": "biome format --write .",
     "test": "pnpm --filter @puzzlebloom/sudoku-engine test && pnpm --filter @puzzlebloom/theme-core test",
     "test:e2e": "playwright test",
+    "test:live": "PB_BASE_URL=${PB_BASE_URL:-https://puzzlebloom.taoliapp.com} playwright test",
+    "deploy": "pnpm run build && npx --yes wrangler@4 pages deploy",
     "verify": "pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run build"
   },
   "keywords": [

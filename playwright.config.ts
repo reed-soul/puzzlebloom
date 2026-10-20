@@ -17,6 +17,14 @@ import { defineConfig, devices } from '@playwright/test';
 const PORT = 4173;
 const BASE = `http://127.0.0.1:${PORT}`;
 
+/**
+ * Set `PB_BASE_URL` to point the whole suite at a deployed site instead of the
+ * local preview — that is how the same 40 tests double as a post-deploy smoke
+ * test. The web server is not started when the target is somewhere else.
+ */
+const TARGET = process.env.PB_BASE_URL;
+const ORIGIN = TARGET ?? BASE;
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
@@ -27,7 +35,7 @@ export default defineConfig({
   timeout: 30_000,
   expect: { timeout: 7_000 },
   use: {
-    baseURL: BASE,
+    baseURL: ORIGIN,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
@@ -37,11 +45,13 @@ export default defineConfig({
     // and that reflow is where a layout regression would actually appear.
     { name: 'mobile', use: { ...devices['Pixel 7'] } },
   ],
-  webServer: {
-    command: `pnpm --filter @puzzlebloom/web preview --host 127.0.0.1 --port ${PORT}`,
-    url: BASE,
-    reuseExistingServer: !process.env.CI,
-    timeout: 60_000,
-    stdout: 'pipe',
-  },
+  webServer: TARGET
+    ? undefined
+    : {
+        command: `pnpm --filter @puzzlebloom/web preview --host 127.0.0.1 --port ${PORT}`,
+        url: BASE,
+        reuseExistingServer: !process.env.CI,
+        timeout: 60_000,
+        stdout: 'pipe',
+      },
 });

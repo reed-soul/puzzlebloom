@@ -40,9 +40,7 @@ a sponsor or runs an ad, it needs Pro at $20/month.
 **Cloudflare Pages is the primary target.** `vercel.json` stays in the repo as
 a supported alternative — it costs nothing to keep and keeps the Vercel path
 honest — but the README leads with Cloudflare and the recommended flow is the
-dashboard's git integration, not a CLI.
-
-Two build settings are load-bearing:
+dashboard's git integration, not a CLI.Two build settings are load-bearing:
 
 - `PNPM_VERSION=12.4.2` — the v3 build image ships pnpm 10.11.1 and, per its own
   limitations list, does **not** read `packageManager` from `package.json`. Left
@@ -76,3 +74,32 @@ ADR picks between two free hosts, not between "reachable" and "not".
 serves no custom headers, so the CSP would have to move into a `<meta>` tag and
 lose `frame-ancestors`. Netlify: its free tier moved to a 300-credit model in
 2025 and has no advantage here.
+
+## Deployment record — 2026-10-21
+
+Landed the same day, and one detail turned out differently from the paragraph
+above: the first deploy was **direct upload**, not git integration.
+
+```
+pnpm deploy                       # build + wrangler pages deploy
+→ puzzlebloom.pages.dev           (production, branch main)
+
+puzzlebloom.taoliapp.com  CNAME  puzzlebloom.pages.dev
+```
+
+The zone stays at Aliyun DNS — it carries mail, an apex host and four other
+apps, so moving nameservers to Cloudflare would be a much larger change than
+this decision needs. A CNAME plus the hostname registered on the Pages project
+is sufficient; Cloudflare issues the certificate for the custom hostname even
+though the zone is elsewhere.
+
+Direct upload also means `PNPM_VERSION` is moot for now: no build runs on
+Cloudflare's image. The setting stays documented because the moment someone
+connects the repo for push-to-deploy, it becomes load-bearing again.
+
+Verified live: `/` and a deep SPA route (`/play/sudoku`) both return 200 HTML,
+the CSP arrives as written in `_headers`, and fonts carry the immutable cache
+header. `Strict-Transport-Security` was added at the same time, without
+`includeSubDomains` — the parent domain also carries mail and other apps, and
+pinning those to HTTPS is not this host's call.
+
