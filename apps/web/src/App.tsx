@@ -1,4 +1,5 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useLayoutEffect } from 'react';
+import { applyHead } from './app/head';
 import { RouterProvider, useRouter } from './app/router';
 import { ThemeProvider } from './app/ThemeProvider';
 import { Home } from './pages/Home';
@@ -20,6 +21,13 @@ const SudokuGame = lazy(() =>
 function Routes() {
   const { path, navigate } = useRouter();
   const isPlaying = path.startsWith('/play/');
+  const known = path === '/' || path === '/themes' || path === '/parents' || path === '/play/sudoku';
+
+  // Layout effect, not effect: the title and canonical should be right before
+  // the new page paints, the same way the theme is.
+  useLayoutEffect(() => {
+    applyHead(path, { notFound: !known });
+  }, [known, path]);
 
   const page = (() => {
     if (path === '/') return <Home />;

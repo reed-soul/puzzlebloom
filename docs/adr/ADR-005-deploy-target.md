@@ -10,11 +10,11 @@ files, four fonts. Nothing runs on a server. "Which host" is therefore not a
 question about capability — every host on the list can serve this — but about
 **what happens on the day it gets shared further than expected**.
 
-The repo arrived with both configs. `apps/web/public/_headers` and
-`_redirects` are Cloudflare's native dialects; `vercel.json` restates the same
-three rules — SPA fallback, immutable `/assets` + `/fonts`, the CSP — in
-Vercel's. Only `vercel.json` was wired to a CLI, so Vercel had become the
-implicit default without anyone deciding it.
+The repo arrived with both configs. `apps/web/public/_headers` is Cloudflare's
+native dialect; `vercel.json` restates the same three rules — immutable
+`/assets` + `/fonts`, the CSP, the security headers — in Vercel's. Only
+`vercel.json` was wired to a CLI, so Vercel had become the implicit default
+without anyone deciding it.
 
 Measured in October 2026, from both vendors' own docs:
 
@@ -27,7 +27,7 @@ Measured in October 2026, from both vendors' own docs:
 | Structural caps | 200 projects, 50 domains/project | 20,000 files/site, 25 MiB/file |
 | Licence | **non-commercial personal use only** | no such clause |
 | Custom domain + TLS | free | free |
-| Native config | `vercel.json` (restatement) | `_headers` + `_redirects` (already in repo) |
+| Native config | `vercel.json` (restatement) | `_headers` (already in repo) |
 
 Two of those rows decide it. A traffic spike on Vercel does not cost money, it
 turns the site **off** for up to 30 days — for a link a parent might paste into

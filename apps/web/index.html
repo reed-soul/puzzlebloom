@@ -11,6 +11,10 @@
     <meta name="theme-color" content="#ECF7E4" />
     <meta name="color-scheme" content="light dark" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <!-- Bing Webmaster Tools ownership. Kept in the repository rather than in a
+         dashboard so it is versioned with the site and survives a rebuild; the
+         equivalent claim on Google's side verified itself through DNS. -->
+    <meta name="msvalidate.01" content="40D5E581B04E89010CB40DA87C789CC5" />
     <!-- Both typefaces are self-hosted (see src/styles/fonts.css). Preloading
          only the latin subset keeps the first paint to 71 kB of font and gives
          the browser a head start on the only files it needs before it can
@@ -23,12 +27,9 @@
       crossorigin
     />
     <link rel="preload" href="/fonts/nunito-var-latin.woff2" as="font" type="font/woff2" crossorigin />
-    <meta property="og:title" content="PuzzleBloom — calm puzzle games for curious kids" />
-    <meta
-      property="og:description"
-      content="Quiet puzzles that explain themselves. No ads, no chat, no strangers. Built by a parent."
-    />
-    <meta property="og:type" content="website" />
+    <!-- og:* and twitter:* are written by src/app/head.ts from site.json, per
+         route. Duplicating them here would only give the two sources a chance to
+         disagree. -->
   </head>
   <body>
     <div id="root"></div>

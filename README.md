@@ -48,7 +48,7 @@ puzzlebloom/
 ├─ docs/                      spec, ADRs, screenshots
 ├─ wrangler.toml              the Cloudflare Pages project (the live host)
 └─ vercel.json                the fallback host's config; Cloudflare reads
-                              public/_headers and _redirects natively
+                              public/_headers natively
 ```
 
 pnpm workspaces. No bundler plugins beyond React, no CSS framework, no state
@@ -157,17 +157,17 @@ in `registry.ts`).
 ## Deploying
 
 The build is ~400 kB of static files: any host that serves files works. It runs
-on **Cloudflare Pages**, because the repo already speaks its dialects —
-`apps/web/public/_headers` (the CSP, immutable caching) and `_redirects` (the
-SPA fallback) are read as-is — and because a static bundle has no traffic to
-meter. The reasoning, with both vendors' 2026 quotas side by side, is in
+on **Cloudflare Pages**, because the repo already speaks its dialect —
+`apps/web/public/_headers` (the CSP, immutable caching) is read as-is — and
+because a static bundle has no traffic to meter. The reasoning, with both
+vendors' 2026 quotas side by side, is in
 [ADR-005](docs/adr/ADR-005-deploy-target.md).
 
 **Direct upload** — what the live site does. The build happens locally or in CI
 and Pages only stores the result, so there is no build environment to configure:
 
 ```bash
-pnpm deploy          # build + wrangler pages deploy, using wrangler.toml
+pnpm deploy          # build:seo + wrangler pages deploy + IndexNow ping
 ```
 
 **Git integration** — connect the repo in the dashboard instead, and Pages
@@ -175,7 +175,7 @@ builds on every push:
 
 | Setting | Value |
 | --- | --- |
-| Build command | `pnpm run build` |
+| Build command | `pnpm run build:seo` |
 | Build output directory | `apps/web/dist` |
 | Root directory | leave at `/` (the pnpm filter builds the workspace) |
 | Environment variable | `PNPM_VERSION=12.4.2` |
@@ -196,13 +196,50 @@ puzzlebloom   CNAME   puzzlebloom.pages.dev    (DNS only, no proxy)
 certificate. Any other host works the same way.
 
 **Vercel** — import the repo; `vercel.json` already sets the build command,
-output directory, SPA rewrites, cache headers and CSP. It stays supported, but
+output directory, cache headers and CSP. It stays supported, but
 it is the fallback: free Hobby is capped at 100 GB of transfer and 1M requests a
 month, and when it hits the cap the project **pauses** until the window resets.
 Hobby is also licensed for non-commercial use only.
 
 **GitHub Pages** does not fit: it serves no custom headers, so the CSP would
 have to move into a `<meta>` tag and lose `frame-ancestors`.
+
+## Search engines
+
+The live site is registered with both engines that matter, and the parts that
+can live in the repository do:
+
+| | |
+| --- | --- |
+| Google Search Console | property `https://puzzlebloom.taoliapp.com/`, verified by DNS, `sitemap.xml` submitted |
+| Bing Webmaster Tools | verification meta tag in `apps/web/index.html`, sitemap submitted |
+| IndexNow | key at `apps/web/public/<key>.txt`; `pnpm indexnow` pings Bing and friends after every deploy |
+
+Everything else — title, description, canonical, Open Graph, JSON-LD, the
+sitemap, the 404 page — is generated, not typed twice:
+
+```
+apps/web/site.json          one table: url, name, and title/description/priority per route
+  ├── src/app/head.ts       applies it at run time, on every client-side navigation
+  └── scripts/seo.mjs       renders each route in a browser after the build and
+                            writes dist/<route>/index.html, plus sitemap.xml,
+                            robots.txt and 404.html
+```
+
+The prerender is why a crawler that does not run JavaScript still sees four
+different documents rather than four copies of a shell — and why `/no-such-page`
+can answer a real `404` instead of `200` with the app inside it. Edit
+`site.json`, not the HTML.
+
+Two related scripts run on demand:
+
+```bash
+node scripts/og.mjs       # redraws apps/web/public/og.png (1200×630) in the site's own type
+pnpm indexnow             # re-ping Bing after a content change
+```
+
+The reasoning — prerender instead of a meta-framework, one table instead of
+three, a real 404 — is in [ADR-006](docs/adr/ADR-006-seo.md).
 
 ## Status
 

@@ -56,10 +56,18 @@ test.describe('the garden', () => {
 
   test('an unknown route is answered, not crashed', async ({ page }) => {
     const problems = trackProblems(page);
-    await page.goto('/no-such-page');
+    const response = await page.goto('/no-such-page');
+
+    // The host has to answer 404, not 200-with-the-shell: a soft 404 is the
+    // single most common way a small site fills an index with duplicates.
+    expect(response?.status()).toBe(404);
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
     await expect(page.getByRole('link', { name: /garden/i }).first()).toBeVisible();
-    expect(problems).toEqual([]);
+
+    // Chromium logs the navigation's own 404 as a console error. That one line
+    // is the expected status arriving, not a broken asset — every other entry
+    // would still fail the test.
+    expect(problems.filter((problem) => !/status of 404/.test(problem))).toEqual([]);
   });
 });
 

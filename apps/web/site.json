@@ -1,0 +1,34 @@
+{
+  "url": "https://puzzlebloom.taoliapp.com",
+  "name": "PuzzleBloom",
+  "tagline": "calm puzzle games for curious kids",
+  "language": "en",
+  "locale": "en_GB",
+  "ogImage": "/og.png",
+  "pages": {
+    "/": {
+      "title": "PuzzleBloom — calm sudoku for kids, no ads, no accounts",
+      "description": "Quiet puzzle games for curious kids: sudoku that explains why a number goes where it does, an eight-colour theme studio, and no ads or accounts.",
+      "changeFrequency": "monthly",
+      "priority": 1
+    },
+    "/play/sudoku": {
+      "title": "Kids' sudoku with hints that explain the reason | PuzzleBloom",
+      "description": "Free sudoku for children in the browser. Four levels, hints that teach the technique instead of giving the answer, and a creature mode for every digit.",
+      "changeFrequency": "monthly",
+      "priority": 0.9
+    },
+    "/themes": {
+      "title": "Theme studio — make the puzzle yours | PuzzleBloom",
+      "description": "Eight colours, and every tint, border and cell is re-derived from them. Contrast is measured as you pick, repaired in one tap, and shareable as a link.",
+      "changeFrequency": "monthly",
+      "priority": 0.6
+    },
+    "/parents": {
+      "title": "For grown-ups: no ads, no accounts, no streaks | PuzzleBloom",
+      "description": "How PuzzleBloom is built, and what it refuses to be: no ads, no streaks, no chat, no accounts, no analytics. Puzzles are generated on the device.",
+      "changeFrequency": "monthly",
+      "priority": 0.8
+    }
+  }
+}

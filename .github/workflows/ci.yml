@@ -24,8 +24,6 @@ jobs:
         run: pnpm run typecheck
       - name: Tests
         run: pnpm run test
-      - name: Build
-        run: pnpm run build
       # The browser binary is the slow part of this job, so it is cached on the
       # lockfile hash — Playwright's version is pinned there.
       - name: Cache Playwright browsers
@@ -35,10 +33,13 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium
-      # Runs against the build from the previous step, through `vite preview`,
-      # so the CSP, the worker chunk and the font preloads are all real.
+      # `build:seo` before the suite, not after: the prerender needs a browser,
+      # and the tests then run against exactly the artifact that gets deployed —
+      # real files per route, real 404s — rather than an SPA preview server.
+      - name: Build and prerender
+        run: pnpm run build:seo
       - name: End-to-end tests
-        run: pnpm run test:e2e
+        run: pnpm exec playwright test
       - name: Keep the trace if something failed
         if: failure()
         uses: actions/upload-artifact@v4

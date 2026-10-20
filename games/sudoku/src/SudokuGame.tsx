@@ -22,6 +22,16 @@ interface Props {
   onExit?: () => void;
 }
 
+/**
+ * The page had no `<h1>` at all: the outline started at the level chip, and a
+ * crawler had nothing to call the page. The visible header is a back button and
+ * a difficulty label, which is the right *interface* and the wrong *document*,
+ * so the heading is real but not drawn.
+ */
+function GameHeading() {
+  return <h1 className="sr-only">Sudoku for kids</h1>;
+}
+
 export function SudokuGame({ onExit }: Props) {
   const sudoku = useSudoku();
   const {
@@ -127,6 +137,7 @@ export function SudokuGame({ onExit }: Props) {
   if (status === 'loading' || !game) {
     return (
       <div className="pb-play pb-play--loading">
+        <GameHeading />
         <div className="pb-board pb-board--skeleton" aria-hidden="true" />
         <p className="pb-loading__note">
           <Icon name="sparkle" size={16} /> Laying out a fresh grid…
@@ -139,6 +150,7 @@ export function SudokuGame({ onExit }: Props) {
 
   return (
     <div className="pb-play">
+      <GameHeading />
       <header className="pb-play__bar">
         <button type="button" className="pb-back" onClick={onExit} aria-label="Back to the garden">
           <Icon name="arrowLeft" size={20} />

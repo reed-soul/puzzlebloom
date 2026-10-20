@@ -8,8 +8,10 @@
  * seams between them.
  *
  * It runs against the **production build**, not the dev server, because half of
- * what it is checking — the CSP, the worker chunk, the font preloads — only
- * exists after a build.
+ * what it is checking — the CSP, the worker chunk, the font preloads, the
+ * prerendered HTML — only exists after a build. The static server in
+ * `scripts/serve-dist.mjs` is deliberately not `vite preview`: preview answers
+ * every unknown URL with the shell and a 200, so it could not verify a 404.
  */
 
 import { defineConfig, devices } from '@playwright/test';
@@ -48,10 +50,11 @@ export default defineConfig({
   webServer: TARGET
     ? undefined
     : {
-        command: `pnpm --filter @puzzlebloom/web preview --host 127.0.0.1 --port ${PORT}`,
+        command: `node scripts/serve-dist.mjs`,
         url: BASE,
         reuseExistingServer: !process.env.CI,
         timeout: 60_000,
         stdout: 'pipe',
+        env: { PORT: String(PORT) },
       },
 });
