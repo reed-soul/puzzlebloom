@@ -44,7 +44,8 @@ puzzlebloom/
 │  └─ ui/                     locked icon set, buttons, segmented control, creature glyphs
 ├─ e2e/                       Playwright: the seams the unit tests cannot reach
 ├─ docs/                      spec, ADRs, screenshots
-└─ vercel.json                deploy config (Cloudflare Pages works too)
+└─ vercel.json                the fallback host's config; Cloudflare reads
+                              public/_headers and _redirects natively
 ```
 
 pnpm workspaces. No bundler plugins beyond React, no CSS framework, no state
@@ -152,15 +153,37 @@ in `registry.ts`).
 
 ## Deploying
 
-**Vercel** — import the repo. `vercel.json` already sets the build command
-(`pnpm run build`), the output directory (`apps/web/dist`), SPA rewrites, cache
-headers and a CSP. Nothing else to configure.
+The build is ~400 kB of static files: any host that serves files works. The
+default target is **Cloudflare Pages**, because the repo already speaks its
+dialects — `apps/web/public/_headers` (the CSP, immutable caching) and
+`_redirects` (the SPA fallback) are read as-is — and because a static bundle has
+no traffic to meter. The reasoning, with both vendors' 2026 quotas side by side,
+is in [ADR-005](docs/adr/ADR-005-deploy-target.md).
 
-**Cloudflare Pages** — build command `pnpm run build`, output directory
-`apps/web/dist`. `public/_redirects` and `public/_headers` are picked up
-automatically.
+**Cloudflare Pages** — Workers & Pages → Create → Pages → connect this repo:
 
-The build is fully static: any host that serves files works.
+| Setting | Value |
+| --- | --- |
+| Build command | `pnpm run build` |
+| Build output directory | `apps/web/dist` |
+| Root directory | leave at `/` (the pnpm filter builds the workspace) |
+| Environment variable | `PNPM_VERSION=12.4.2` |
+
+Node comes from `.nvmrc`. The `PNPM_VERSION` line is not optional: the v3 build
+image ships pnpm 10.11.1 and does not read `packageManager` from `package.json`,
+so without it the install runs on a pnpm older than the lockfile expects.
+
+**Vercel** — import the repo; `vercel.json` already sets the build command,
+output directory, SPA rewrites, cache headers and CSP. It stays supported, but
+it is the fallback: free Hobby is capped at 100 GB of transfer and 1M requests a
+month, and when it hits the cap the project **pauses** until the window resets.
+Hobby is also licensed for non-commercial use only.
+
+**GitHub Pages** does not fit: it serves no custom headers, so the CSP would
+have to move into a `<meta>` tag and lose `frame-ancestors`.
+
+Whichever host wins, a custom domain is the real requirement — `*.pages.dev` and
+`*.vercel.app` are both unreliable from mainland China.
 
 ## Status
 

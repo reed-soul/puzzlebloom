@@ -1,0 +1,78 @@
+# ADR-005 — Cloudflare Pages is the deploy target; Vercel stays as the fallback
+
+**Status:** Accepted · 2026-10-21
+**Supersedes:** nothing · **Relates to:** [ADR-001](ADR-001-static-monorepo.md)
+
+## Background
+
+The build is 400 kB of static files: an HTML shell, three JS chunks, two CSS
+files, four fonts. Nothing runs on a server. "Which host" is therefore not a
+question about capability — every host on the list can serve this — but about
+**what happens on the day it gets shared further than expected**.
+
+The repo arrived with both configs. `apps/web/public/_headers` and
+`_redirects` are Cloudflare's native dialects; `vercel.json` restates the same
+three rules — SPA fallback, immutable `/assets` + `/fonts`, the CSP — in
+Vercel's. Only `vercel.json` was wired to a CLI, so Vercel had become the
+implicit default without anyone deciding it.
+
+Measured in October 2026, from both vendors' own docs:
+
+| | Vercel Hobby | Cloudflare Pages Free |
+| --- | --- | --- |
+| Transfer | 100 GB/month, hard cap | **unlimited** |
+| Requests | 1M CDN requests/month | **unlimited static requests** |
+| When over | the project **pauses** until the window resets | n/a |
+| Builds | 100 deployments/day, **1 concurrent** | 500 builds/month, 1 concurrent |
+| Structural caps | 200 projects, 50 domains/project | 20,000 files/site, 25 MiB/file |
+| Licence | **non-commercial personal use only** | no such clause |
+| Custom domain + TLS | free | free |
+| Native config | `vercel.json` (restatement) | `_headers` + `_redirects` (already in repo) |
+
+Two of those rows decide it. A traffic spike on Vercel does not cost money, it
+turns the site **off** for up to 30 days — for a link a parent might paste into
+a class group chat, "the site is down until the 1st" is the worst failure mode
+available. And Hobby's non-commercial clause means the day this project accepts
+a sponsor or runs an ad, it needs Pro at $20/month.
+
+## Decision
+
+**Cloudflare Pages is the primary target.** `vercel.json` stays in the repo as
+a supported alternative — it costs nothing to keep and keeps the Vercel path
+honest — but the README leads with Cloudflare and the recommended flow is the
+dashboard's git integration, not a CLI.
+
+Two build settings are load-bearing:
+
+- `PNPM_VERSION=12.4.2` — the v3 build image ships pnpm 10.11.1 and, per its own
+  limitations list, does **not** read `packageManager` from `package.json`. Left
+  unset, the install runs on an older pnpm than the lockfile was written by.
+- Node comes from `.nvmrc` (22.12.0); the image's default is 22.16.0, so this
+  only matters for pinning exactness.
+
+## Consequences
+
+**Good.** No traffic ceiling and no invoice, which is the correct shape for a
+static bundle — bandwidth costs Cloudflare approximately nothing and the free
+tier says so. The CSP already lives in `_headers`, so the security posture
+survives the move without translation. Workers are there at 100k requests/day
+free if a game ever needs a function.
+
+**Neutral.** 500 builds/month against a project that deploys a handful of times
+a week. One concurrent build on both platforms. No preview bot comments on PRs
+(the Vercel integration has that; Cloudflare's preview URLs do not).
+
+**Accepted cost.** Cloudflare's dashboard is plainer, and its build logs are
+less good than Vercel's. Diagnosing a failed build is slower here. That is a
+cost paid by whoever pushes, not by whoever visits.
+
+**Out of scope, but recorded.** `*.pages.dev` and `*.vercel.app` are both
+unreliable from mainland China, which is where this project's actual readers
+live. Neither free subdomain is a delivery plan; a custom domain is the
+minimum, and hosting the origin inside the mainland would need ICP filing. This
+ADR picks between two free hosts, not between "reachable" and "not".
+
+**Not chosen.** GitHub Pages: the repo is public now so it qualifies, but it
+serves no custom headers, so the CSP would have to move into a `<meta>` tag and
+lose `frame-ancestors`. Netlify: its free tier moved to a 300-credit model in
+2025 and has no advantage here.
