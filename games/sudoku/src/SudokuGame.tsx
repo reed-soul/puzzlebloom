@@ -37,6 +37,7 @@ export function SudokuGame({ onExit }: Props) {
     wrong,
     remaining,
     creatures,
+    celebration,
     difficulty,
     isDaily,
     canUndo,
@@ -154,6 +155,7 @@ export function SudokuGame({ onExit }: Props) {
             wrong={wrong}
             creatures={creatures}
             focus={hintFocus}
+            celebration={celebration}
             onSelect={select}
           />
           {paused ? (

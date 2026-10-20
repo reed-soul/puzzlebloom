@@ -1,6 +1,7 @@
 # ADR-002 — A theme is nine colours, and CSS derives the rest
 
-**Status:** Accepted · 2026-10-20
+**Status:** Accepted · 2026-10-20 · **Amended by** [ADR-004](ADR-004-sky-and-accent-ink.md)
+(the derivation model stands; the colour count is now ten)
 
 ## Background
 

@@ -9,7 +9,8 @@
  */
 
 import { normalizeHex } from './contrast';
-import type { Theme, ThemeColors } from './themes';
+import { completeColors } from './themes';
+import type { Theme } from './themes';
 
 interface Packed {
   n: string;
@@ -38,6 +39,8 @@ export function encodeTheme(theme: Theme): string {
   const packed: Packed = {
     n: theme.name.slice(0, 32),
     m: theme.mood,
+    // Order is a wire format. New roles are appended, never inserted, so a
+    // link made by an older build still decodes to the same colours.
     c: [
       colors.bg,
       colors.surface,
@@ -48,6 +51,8 @@ export function encodeTheme(theme: Theme): string {
       colors.success,
       colors.brandSolid ?? colors.brand,
       colors.brandInk ?? '#ffffff',
+      colors.sky,
+      colors.accentInk,
     ].map(normalizeHex),
   };
   return toBase64Url(JSON.stringify(packed));
@@ -60,23 +65,33 @@ export function decodeTheme(token: string): Theme | null {
     if (!parsed.c.every((color) => typeof color === 'string' && /^#[0-9a-f]{6}$/i.test(color))) {
       return null;
     }
-    const [bg, surface, ink, brand, accent, danger, success, brandSolid, brandInk] = parsed.c;
-    const colors: ThemeColors = {
-      bg,
-      surface,
-      ink,
-      brand,
-      accent,
-      danger,
-      success,
-      brandSolid: brandSolid ?? brand,
-      brandInk: brandInk ?? '#ffffff',
-    };
+    // Canonicalise before use: an arriving payload may be any case.
+    const c = parsed.c.map(normalizeHex);
+    const [bg, surface, ink, brand, accent, danger, success, brandSolid, brandInk, sky, accentInk] =
+      c;
+    const mood: Theme['mood'] = parsed.m === 'dark' ? 'dark' : 'light';
+    // Anything missing (an older link) is derived rather than guessed at.
+    const colors = completeColors(
+      {
+        bg,
+        surface,
+        ink,
+        brand,
+        accent,
+        danger,
+        success,
+        sky,
+        accentInk,
+        brandSolid,
+        brandInk,
+      },
+      mood,
+    );
     return {
       id: `shared-${toBase64Url(parsed.n ?? 'theme').slice(0, 12)}`,
       name: (parsed.n ?? 'Shared theme').toString().slice(0, 32) || 'Shared theme',
       blurb: 'A theme someone sent you.',
-      mood: parsed.m === 'dark' ? 'dark' : 'light',
+      mood,
       colors,
       builtIn: false,
     };

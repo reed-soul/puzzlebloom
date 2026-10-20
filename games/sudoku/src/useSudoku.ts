@@ -90,6 +90,44 @@ const humanise = (hint: HintResult): HintResult => ({
 
 export type GameStatus = 'loading' | 'ready';
 
+/** A row, column or box that was just filled in. Drives the board's one-off sweep. */
+export interface Celebration {
+  id: number;
+  lines: Array<{ kind: 'row' | 'col' | 'box'; index: number }>;
+}
+
+/**
+ * Which lines are currently full.
+ *
+ * Called once before and once after a placement, and diffed — because "this
+ * line is complete" is not news after the first time, and a board that flashes
+ * a row every time any cell in it changes would be noise rather than reward.
+ */
+function filledLines(values: Uint8Array | number[]) {
+  const rows: number[] = [];
+  const cols: number[] = [];
+  const boxes: number[] = [];
+
+  for (let r = 0; r < 9; r++) {
+    let ok = true;
+    for (let c = 0; c < 9; c++) if (!values[r * 9 + c]) ok = false;
+    if (ok) rows.push(r);
+  }
+  for (let c = 0; c < 9; c++) {
+    let ok = true;
+    for (let r = 0; r < 9; r++) if (!values[r * 9 + c]) ok = false;
+    if (ok) cols.push(c);
+  }
+  for (let b = 0; b < 9; b++) {
+    const r0 = Math.floor(b / 3) * 3;
+    const c0 = (b % 3) * 3;
+    let ok = true;
+    for (let i = 0; i < 9; i++) if (!values[(r0 + Math.floor(i / 3)) * 9 + c0 + (i % 3)]) ok = false;
+    if (ok) boxes.push(b);
+  }
+  return { rows, cols, boxes };
+}
+
 export function useSudoku() {
   const [status, setStatus] = useState<GameStatus>('loading');
   const [, setVersion] = useState(0);
@@ -108,8 +146,30 @@ export function useSudoku() {
   );
   const statsRef = useRef<PlayStats>(readJson<PlayStats>(STATS_KEY, EMPTY_STATS));
   const [stats, setStats] = useState<PlayStats>(statsRef.current);
+  const [celebration, setCelebration] = useState<Celebration | null>(null);
+  const celebrationId = useRef(0);
 
   const bump = useCallback(() => setVersion((v: number) => v + 1), []);
+
+  /**
+   * Compares the board before and after a placement and, if that placement
+   * finished something, hands the board a reason to say so. Keyed by an
+   * incrementing id so the same row completing twice — undo, redo — replays
+   * the sweep instead of being silently swallowed by React.
+   */
+  const celebrate = useCallback((before: Uint8Array, game: SudokuGame) => {
+    const prev = filledLines(before);
+    const now = filledLines(game.values);
+    const lines: Celebration['lines'] = [
+      ...now.rows.filter((r) => !prev.rows.includes(r)).map((index) => ({ kind: 'row' as const, index })),
+      ...now.cols.filter((c) => !prev.cols.includes(c)).map((index) => ({ kind: 'col' as const, index })),
+      ...now.boxes.filter((b) => !prev.boxes.includes(b)).map((index) => ({ kind: 'box' as const, index })),
+    ];
+    if (lines.length) {
+      celebrationId.current += 1;
+      setCelebration({ id: celebrationId.current, lines });
+    }
+  }, []);
 
   const persist = useCallback(() => {
     const game = gameRef.current;
@@ -157,6 +217,7 @@ export function useSudoku() {
       setHint(null);
       setSelection(null);
       setPaused(false);
+      setCelebration(null);
 
       let payload: LoadedPuzzle;
       try {
@@ -239,13 +300,15 @@ export function useSudoku() {
       if (notesMode) {
         toggleNote(game, selection, digit);
       } else {
+        const before = Uint8Array.from(game.values);
         setValue(game, selection, digit);
         if (findMistakes(game).has(selection)) recordMistake(game);
+        else celebrate(before, game);
       }
       setHint(null);
       settle(game);
     },
-    [notesMode, paused, selection, settle, solved],
+    [celebrate, notesMode, paused, selection, settle, solved],
   );
 
   const erase = useCallback(() => {
@@ -280,13 +343,15 @@ export function useSudoku() {
   const applyHint = useCallback(() => {
     const game = gameRef.current;
     if (!game || !hint || hint.kind !== 'step' || !hint.step) return;
+    const before = Uint8Array.from(game.values);
     for (const item of hint.step.placements) setValue(game, item.cell, item.digit);
     if (hint.step.eliminations.length) applyEliminations(game, hint.step.eliminations);
     game.hintsUsed += 1;
     if (hint.step.target !== null) setSelection(hint.step.target);
+    celebrate(before, game);
     setHint(null);
     settle(game);
-  }, [hint, settle]);
+  }, [celebrate, hint, settle]);
 
   const dismissHint = useCallback(() => setHint(null), []);
 
@@ -360,6 +425,7 @@ export function useSudoku() {
     remaining,
     creatures,
     stats,
+    celebration,
     hasUndo: game ? game.history.length > 0 : false,
     hasRedo: game ? game.future.length > 0 : false,
     canUndo: (game?.history.length ?? 0) > 0,

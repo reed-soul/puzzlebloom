@@ -1,8 +1,10 @@
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'react';
 import { Icon, type IconName } from './icons';
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'quiet';
-type Size = 'sm' | 'md' | 'lg';
+export type ButtonVariant = 'primary' | 'loud' | 'secondary' | 'ghost' | 'quiet';
+export type ButtonSize = 'sm' | 'md' | 'lg';
+type Variant = ButtonVariant;
+type Size = ButtonSize;
 
 interface Common {
   variant?: Variant;

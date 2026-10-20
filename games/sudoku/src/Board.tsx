@@ -2,6 +2,7 @@ import { memo } from 'react';
 import { PEERS, rowOf, colOf } from '@puzzlebloom/sudoku-engine';
 import { CreatureGlyph } from '@puzzlebloom/ui';
 import type { SudokuGame } from '@puzzlebloom/sudoku-engine';
+import type { Celebration } from './useSudoku';
 
 interface BoardProps {
   game: SudokuGame;
@@ -10,6 +11,7 @@ interface BoardProps {
   wrong: Set<number>;
   creatures: boolean;
   focus: number[] | null;
+  celebration: Celebration | null;
   onSelect: (cell: number) => void;
 }
 
@@ -67,11 +69,9 @@ const Cell = memo(function Cell({
       onClick={() => onSelect(index)}
     >
       {value ? (
-        creatures ? (
-          <CreatureGlyph digit={value} size={30} />
-        ) : (
-          <span className="pb-cell__digit">{value}</span>
-        )
+        <span className="pb-cell__mark">
+          {creatures ? <CreatureGlyph digit={value} size={30} /> : value}
+        </span>
       ) : notes ? (
         <span className="pb-cell__notes" aria-hidden="true">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((digit) => (
@@ -85,7 +85,53 @@ const Cell = memo(function Cell({
   );
 });
 
-export function Board({ game, selection, conflicts, wrong, creatures, focus, onSelect }: BoardProps) {
+/**
+ * The reward for finishing a line.
+ *
+ * Drawn in an SVG layered over the grid with a 9×9 viewBox, so one unit is one
+ * cell and no measurement is needed. `pathLength="100"` decouples the dash
+ * animation from the real perimeter, which means a row, a column and a box all
+ * sweep at the same speed even though they are wildly different lengths.
+ *
+ * The element is keyed on the celebration id, so re-completing the same row
+ * after an undo replays the sweep instead of doing nothing.
+ */
+function LineSweep({ celebration }: { celebration: Celebration }) {
+  return (
+    <svg className="pb-board__sweep" viewBox="0 0 9 9" aria-hidden="true">
+      {celebration.lines.map(({ kind, index }) => {
+        const box =
+          kind === 'row'
+            ? { x: 0, y: index, w: 9, h: 1 }
+            : kind === 'col'
+              ? { x: index, y: 0, w: 1, h: 9 }
+              : { x: (index % 3) * 3, y: Math.floor(index / 3) * 3, w: 3, h: 3 };
+        return (
+          <rect
+            key={kind}
+            x={box.x + 0.07}
+            y={box.y + 0.07}
+            width={box.w - 0.14}
+            height={box.h - 0.14}
+            rx={0.2}
+            pathLength={100}
+          />
+        );
+      })}
+    </svg>
+  );
+}
+
+export function Board({
+  game,
+  selection,
+  conflicts,
+  wrong,
+  creatures,
+  focus,
+  celebration,
+  onSelect,
+}: BoardProps) {
   const selectedValue = selection !== null ? game.values[selection] : 0;
   const peers = selection !== null ? new Set(PEERS[selection]) : new Set<number>();
   const focusSet = new Set(focus ?? []);
@@ -112,6 +158,7 @@ export function Board({ game, selection, conflicts, wrong, creatures, focus, onS
           />
         );
       })}
+      {celebration ? <LineSweep key={celebration.id} celebration={celebration} /> : null}
     </div>
   );
 }

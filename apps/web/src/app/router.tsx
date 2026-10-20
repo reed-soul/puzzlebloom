@@ -18,6 +18,7 @@ import {
   type AnchorHTMLAttributes,
   type ReactNode,
 } from 'react';
+import { withViewTransition } from './viewTransition';
 
 interface Location {
   path: string;
@@ -47,10 +48,12 @@ export function RouterProvider({ children }: { children: ReactNode }) {
   const navigate = useCallback((to: string, options?: { replace?: boolean }) => {
     const current = `${window.location.pathname}${window.location.search}`;
     if (to === current) return;
-    if (options?.replace) window.history.replaceState(null, '', to);
-    else window.history.pushState(null, '', to);
-    setLocation(read());
-    window.scrollTo({ top: 0, behavior: 'auto' });
+    withViewTransition(() => {
+      if (options?.replace) window.history.replaceState(null, '', to);
+      else window.history.pushState(null, '', to);
+      setLocation(read());
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    });
   }, []);
 
   const value = useMemo(() => ({ ...location, navigate }), [location, navigate]);

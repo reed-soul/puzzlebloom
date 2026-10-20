@@ -1,11 +1,17 @@
 import type { AnchorHTMLAttributes, ReactNode } from 'react';
-import { ButtonContent, buttonClass, type IconName } from '@puzzlebloom/ui';
+import {
+  ButtonContent,
+  buttonClass,
+  type ButtonSize,
+  type ButtonVariant,
+  type IconName,
+} from '@puzzlebloom/ui';
 import { Link } from '../app/router';
 
 interface Props extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> {
   to: string;
-  variant?: 'primary' | 'secondary' | 'ghost' | 'quiet';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: ButtonVariant;
+  size?: ButtonSize;
   iconLeft?: IconName;
   iconRight?: IconName;
   block?: boolean;

@@ -89,7 +89,7 @@ export function Home() {
             chase. Just the next cell, and the reason it works.
           </p>
           <div className="pb-hero__actions">
-            <LinkButton to={first.route} variant="primary" size="lg" iconLeft="play">
+            <LinkButton to={first.route} variant="loud" size="lg" iconLeft="play">
               Play {first.title}
             </LinkButton>
             <LinkButton to="/themes" variant="secondary" size="lg" iconLeft="palette">
@@ -182,6 +182,7 @@ export function Home() {
               aria-pressed={theme.id === mood.id}
             >
               <span className="pb-mood__swatch">
+                <span style={{ background: mood.colors.sky }} />
                 <span style={{ background: mood.colors.bg }} />
                 <span style={{ background: mood.colors.brand }} />
                 <span style={{ background: mood.colors.accent }} />

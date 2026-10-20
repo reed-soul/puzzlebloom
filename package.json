@@ -12,7 +12,7 @@
     "build": "pnpm --filter @puzzlebloom/web build",
     "preview": "pnpm --filter @puzzlebloom/web preview",
     "typecheck": "pnpm --filter @puzzlebloom/web typecheck",
-    "test": "pnpm --filter @puzzlebloom/sudoku-engine test",
+    "test": "pnpm --filter @puzzlebloom/sudoku-engine test && pnpm --filter @puzzlebloom/theme-core test",
     "verify": "pnpm run typecheck && pnpm run test && pnpm run build"
   },
   "keywords": [

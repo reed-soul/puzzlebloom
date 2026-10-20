@@ -1,14 +1,11 @@
 import { useMemo, useState } from 'react';
-import {
-  Button,
-  Chip,
-  CreatureGlyph,
-  Icon,
-} from '@puzzlebloom/ui';
+import { Button, Chip, CreatureGlyph, Icon } from '@puzzlebloom/ui';
 import {
   THEME_PRESETS,
   auditTheme,
   buildThemeLink,
+  completeColors,
+  findTheme,
   inferMood,
   repairInk,
   slugify,
@@ -18,17 +15,31 @@ import {
 import { useTheme } from '../app/ThemeProvider';
 import { LinkButton } from '../shell/LinkButton';
 
-type ColorKey = 'bg' | 'surface' | 'ink' | 'brand' | 'accent' | 'danger' | 'success';
+type ColorKey = 'bg' | 'surface' | 'sky' | 'ink' | 'brand' | 'accent' | 'danger' | 'success';
 
 const FIELDS: Array<{ key: ColorKey; label: string; hint: string }> = [
   { key: 'bg', label: 'Page', hint: 'The wall behind everything' },
   { key: 'surface', label: 'Paper', hint: 'Cards, board, keypad keys' },
+  { key: 'sky', label: 'Sky', hint: 'The wide band behind the hero. Nothing sits on it but ink' },
   { key: 'ink', label: 'Ink', hint: 'All the words' },
   { key: 'brand', label: 'Brand', hint: 'Links, focus, the selected cell' },
-  { key: 'accent', label: 'Accent', hint: 'Badges and hints' },
+  { key: 'accent', label: 'Bright', hint: 'The loud colour: buttons, badges, the sun' },
   { key: 'danger', label: 'Warning', hint: 'A digit that cannot be right' },
   { key: 'success', label: 'Success', hint: 'A finished row' },
 ];
+
+/**
+ * A built-in mood becomes an editable starting point, never a target: saving
+ * always writes a new custom theme rather than trying to overwrite something
+ * the site ships.
+ */
+const asDraft = (source: Theme): Theme => ({
+  ...source,
+  id: source.builtIn ? 'draft' : source.id,
+  name: source.builtIn ? `${source.name} remix` : source.name,
+  blurb: 'Made in the theme studio.',
+  builtIn: false,
+});
 
 function ColorField({
   label,
@@ -53,7 +64,7 @@ function ColorField({
 }
 
 function Swatches({ theme }: { theme: Theme }) {
-  const order: ColorKey[] = ['bg', 'surface', 'brand', 'accent', 'ink'];
+  const order: ColorKey[] = ['sky', 'bg', 'surface', 'brand', 'accent', 'ink'];
   return (
     <span className="pb-swatches" aria-hidden="true">
       {order.map((key) => (
@@ -78,13 +89,10 @@ export function Themes() {
     dismissIncoming,
   } = useTheme();
 
-  const [draft, setDraft] = useState<Theme>(() => ({
-    ...theme,
-    id: theme.builtIn ? 'draft' : theme.id,
-    name: theme.builtIn ? 'My theme' : theme.name,
-    blurb: 'Made in the theme studio.',
-    builtIn: false,
-  }));
+  const initial = asDraft(theme);
+  const [draft, setDraft] = useState<Theme>(initial);
+  /** Where "Undo changes" goes back to: the theme the draft was loaded from. */
+  const [baseline, setBaseline] = useState<Theme>(initial);
   const [message, setMessage] = useState<string | null>(null);
 
   const audit = useMemo(() => auditTheme(draft.colors), [draft.colors]);
@@ -92,7 +100,15 @@ export function Themes() {
 
   const patch = (colors: Partial<ThemeColors>) => {
     const merged: ThemeColors = { ...draft.colors, ...colors };
-    const next: Theme = { ...draft, colors: merged, mood: inferMood(merged) };
+    const mood = inferMood(merged);
+    // The label on the bright colour is a legibility decision, not an aesthetic
+    // one, so it is never something the studio asks a child to pick: it is
+    // recomputed whenever the fill it sits on changes.
+    const next: Theme = {
+      ...draft,
+      mood,
+      colors: completeColors({ ...merged, accentInk: colors.accent ? undefined : merged.accentInk }, mood),
+    };
     setDraft(next);
     preview(next);
     setMessage(null);
@@ -114,7 +130,28 @@ export function Themes() {
       : `custom-${slugify(draft.name)}-${Math.random().toString(36).slice(2, 6)}`;
     const stored = save({ ...draft, id, name: draft.name.trim() || 'My theme' });
     setDraft(stored);
+    setBaseline(stored);
     setMessage('Saved. This is now your default theme.');
+  };
+
+  /**
+   * Choosing an existing mood does two things, not one: it becomes the site's
+   * theme, and it loads into the wells so it can be edited. Without the second
+   * half the audit and every colour well kept describing the previous draft,
+   * which made "Save this theme" save something the visitor was not looking at.
+   */
+  const pick = (id: string) => {
+    useById(id);
+    const next = asDraft(findTheme(id, customThemes));
+    setDraft(next);
+    setBaseline(next);
+    setMessage(null);
+  };
+
+  const revert = () => {
+    setDraft(baseline);
+    preview(baseline);
+    setMessage(null);
   };
 
   return (
@@ -123,7 +160,7 @@ export function Themes() {
         <Chip tone="brand">Theme studio</Chip>
         <h1>Make it yours</h1>
         <p>
-          Seven colours, and the site recomputes every tint, border and cell state from them. Nothing
+          Eight colours, and the site recomputes every tint, border and cell state from them. Nothing
           here can break the layout — and if the text stops being readable, the studio will say so and
           fix it in one tap.
         </p>
@@ -217,7 +254,7 @@ export function Themes() {
             <Button variant="secondary" size="md" iconLeft="share" onClick={copyLink}>
               Copy a share link
             </Button>
-            <Button variant="ghost" size="md" onClick={() => preview(theme)}>
+            <Button variant="ghost" size="md" onClick={revert} iconLeft="undo">
               Undo changes
             </Button>
           </div>
@@ -274,7 +311,7 @@ export function Themes() {
               <Button
                 variant={theme.id === item.id ? 'primary' : 'secondary'}
                 size="sm"
-                onClick={() => useById(item.id)}
+                onClick={() => pick(item.id)}
               >
                 {theme.id === item.id ? 'In use' : 'Use'}
               </Button>
@@ -298,7 +335,7 @@ export function Themes() {
                   <p>{item.blurb || 'Your own colours.'}</p>
                 </div>
                 <div className="pb-theme-card__actions">
-                  <Button variant="secondary" size="sm" onClick={() => useById(item.id)}>
+                  <Button variant="secondary" size="sm" onClick={() => pick(item.id)}>
                     Use
                   </Button>
                   <Button variant="ghost" size="sm" onClick={() => remove(item.id)}>

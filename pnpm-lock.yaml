@@ -67,7 +67,11 @@ importers:
         specifier: ^5.0.5
         version: 5.0.5(vite@8.3.4)
 
-  packages/theme-core: {}
+  packages/theme-core:
+    devDependencies:
+      vitest:
+        specifier: ^5.0.5
+        version: 5.0.5(vite@8.3.4)
 
   packages/ui:
     devDependencies:

@@ -59,20 +59,34 @@
 
 /* ---------------- hero ---------------- */
 
+/*
+ * The sky is painted on `body`, not on the hero.
+ *
+ * A full-bleed band inside a centred, max-width section needs either an
+ * absolutely positioned overhang (which clips wrongly inside `overflow`) or a
+ * `100vw` element (which overflows by the scrollbar). Putting the gradient on
+ * the document instead costs nothing, never overflows, and has a pleasant side
+ * effect: every route opens under the same sky, so the site reads as one place
+ * rather than as a set of pages.
+ */
 .pb-hero {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
   gap: clamp(1.5rem, 4vw, 3.5rem);
   align-items: center;
   max-width: var(--pb-page);
   margin: 0 auto;
-  padding: clamp(2rem, 5vw, 4rem) clamp(1rem, 3vw, 2rem) clamp(2rem, 4vw, 3rem);
+  padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1rem, 3vw, 2rem) clamp(2.5rem, 5vw, 4rem);
 }
 
 .pb-hero__copy {
+  position: relative;
+  z-index: 1;
   display: grid;
   gap: 1.05rem;
   justify-items: start;
+  animation: pb-rise 520ms var(--pb-ease-out) both;
 }
 
 .pb-hero__title {
@@ -100,9 +114,40 @@
 }
 
 .pb-hero__art {
+  position: relative;
   display: grid;
   gap: 0.7rem;
   justify-items: center;
+  /* Room above the board for the sun to sit in, rather than behind it. */
+  padding-top: clamp(20px, 3.6vw, 52px);
+  animation: pb-rise 620ms var(--pb-ease-out) 80ms both;
+}
+
+/* The sun: a disc with a ring of light turning behind it, once every forty
+   seconds — enough that a child notices the page is alive, slow enough that
+   nobody waits for it. It sits above the board so it reads as being in the
+   sky, not as an orange thing the board is standing on. */
+.pb-hero__art::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 6%;
+  width: clamp(112px, 24%, 168px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: conic-gradient(
+    from var(--pb-sun-turn),
+    color-mix(in oklab, var(--pb-accent) 62%, transparent),
+    var(--pb-accent) 22%,
+    color-mix(in oklab, var(--pb-accent) 55%, transparent) 52%,
+    var(--pb-accent) 78%,
+    color-mix(in oklab, var(--pb-accent) 62%, transparent)
+  );
+  -webkit-mask: radial-gradient(circle, #000 0 47%, transparent 48%);
+  mask: radial-gradient(circle, #000 0 47%, transparent 48%);
+  animation: pb-sun-turn 40s linear infinite;
+  z-index: 0;
+  pointer-events: none;
 }
 
 .pb-hero__caption {
@@ -110,10 +155,14 @@
   color: var(--pb-ink-faint);
   text-align: center;
   max-width: 34ch;
+  position: relative;
+  z-index: 1;
 }
 
 /* The decorative board doubles as a product shot: real cells, real creature. */
 .pb-mini {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: repeat(9, 1fr);
   width: min(100%, 400px);
@@ -122,7 +171,7 @@
   border-radius: var(--pb-r-lg);
   background: var(--pb-surface);
   overflow: hidden;
-  box-shadow: 0 10px 0 var(--pb-shadow);
+  box-shadow: var(--pb-lift-2);
   transform: rotate(-1.5deg);
 }
 
@@ -193,6 +242,7 @@
   border: 2px solid var(--pb-line);
   border-radius: var(--pb-r-lg);
   background: var(--pb-surface);
+  box-shadow: var(--pb-lift-1);
   color: inherit;
   text-decoration: none;
   transition: transform var(--pb-dur) var(--pb-ease), border-color var(--pb-dur) var(--pb-ease),
@@ -200,9 +250,9 @@
 }
 
 .pb-card--ready:hover {
-  transform: translateY(-3px);
+  transform: translateY(-4px) rotate(-0.4deg);
   border-color: var(--pb-brand);
-  box-shadow: 0 6px 0 var(--pb-shadow);
+  box-shadow: var(--pb-lift-2);
 }
 
 .pb-card--soon {
@@ -217,20 +267,50 @@
   position: relative;
 }
 
+/*
+ * A horizon inside the card.
+ *
+ * The six games each get a small scene rather than a flat tint: a band of sky
+ * on top, a band of ground below. It ties the shelf to the hero (same sky) and
+ * gives every card a clear edge to sit on, which is what stops a grid of pale
+ * panels from reading as one grey rectangle.
+ */
 .pb-card__art--grass {
-  background: color-mix(in oklab, var(--pb-success) 16%, var(--pb-surface));
+  background: linear-gradient(
+    180deg,
+    var(--pb-sky-soft) 0 58%,
+    color-mix(in oklab, var(--pb-brand) 30%, var(--pb-surface)) 58% 100%
+  );
 }
 
 .pb-card__art--sun {
-  background: color-mix(in oklab, var(--pb-accent) 20%, var(--pb-surface));
+  background: linear-gradient(
+    180deg,
+    var(--pb-accent-soft) 0 58%,
+    color-mix(in oklab, var(--pb-accent) 42%, var(--pb-surface)) 58% 100%
+  );
 }
 
 .pb-card__art--water {
-  background: color-mix(in oklab, var(--pb-brand) 16%, var(--pb-surface));
+  background: linear-gradient(
+    180deg,
+    var(--pb-sky) 0 58%,
+    color-mix(in oklab, var(--pb-brand) 34%, var(--pb-surface)) 58% 100%
+  );
 }
 
 .pb-card__art--clay {
-  background: color-mix(in oklab, var(--pb-danger) 14%, var(--pb-surface));
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--pb-accent) 22%, var(--pb-surface)) 0 58%,
+    color-mix(in oklab, var(--pb-danger) 30%, var(--pb-surface)) 58% 100%
+  );
+}
+
+.pb-card__art-grid,
+.pb-card__art-dots {
+  position: relative;
+  z-index: 1;
 }
 
 .pb-card__art-grid {
@@ -309,6 +389,9 @@
   grid-column: 1 / -1;
 }
 
+/* Four small suns across the middle of the page. The promise section is the
+   one place where the copy is the point, so the colour is confined to the
+   icon and the card keeps its paper. */
 .pb-trust__icon {
   display: grid;
   place-items: center;
@@ -316,8 +399,9 @@
   height: 40px;
   margin-bottom: 0.2rem;
   border-radius: 50%;
-  background: color-mix(in oklab, var(--pb-brand) 12%, var(--pb-surface));
-  color: var(--pb-brand);
+  background: var(--pb-accent);
+  color: var(--pb-accent-ink);
+  box-shadow: 0 2px 0 color-mix(in oklab, var(--pb-accent) 55%, var(--pb-ink));
 }
 
 .pb-trust__item h3 {
@@ -383,6 +467,14 @@
 
 /* ---------------- band ---------------- */
 
+/*
+ * The band is the loudest block of colour on the page, and it is deliberately
+ * the one place where text sits on the accent. Everything on it — heading,
+ * body, the button — is keyed off `--pb-accent-ink`, which the theme audit
+ * checks at 4.5:1. This is what "the accent owns a quarter of the screen"
+ * looks like in practice: a wide, flat block of the theme's brightest colour,
+ * rather than a 4%-area badge nobody notices.
+ */
 .pb-band {
   display: flex;
   flex-wrap: wrap;
@@ -392,12 +484,18 @@
   max-width: var(--pb-page);
   margin: clamp(2.5rem, 5vw, 4rem) auto 0;
   padding: clamp(1.4rem, 3vw, 2.25rem);
-  border: 2px solid var(--pb-line-strong);
+  border: 2px solid color-mix(in oklab, var(--pb-accent) 55%, var(--pb-ink));
   border-radius: var(--pb-r-xl);
   background:
-    radial-gradient(circle at 100% 0%, color-mix(in oklab, var(--pb-accent) 22%, transparent), transparent 55%),
-    var(--pb-surface);
+    radial-gradient(
+      120% 140% at 100% 0%,
+      color-mix(in oklab, var(--pb-accent) 55%, var(--pb-surface)),
+      transparent 62%
+    ),
+    var(--pb-accent);
+  color: var(--pb-accent-ink);
   width: min(calc(100% - 2rem), var(--pb-page));
+  box-shadow: var(--pb-lift-2);
 }
 
 .pb-band__copy {
@@ -408,11 +506,20 @@
 
 .pb-band__copy h2 {
   font-size: clamp(1.25rem, 2.4vw, 1.6rem);
+  color: var(--pb-accent-ink);
 }
 
 .pb-band__copy p {
-  color: var(--pb-ink-soft);
+  color: color-mix(in oklab, var(--pb-accent-ink) 78%, var(--pb-accent));
   font-size: var(--pb-fs-sm);
+}
+
+/* On a bright field the brand-green button would disappear, so the band's own
+   action is drawn in the label colour instead. */
+.pb-band .pb-btn--primary {
+  --pb-btn-bg: var(--pb-accent-ink);
+  --pb-btn-ink: color-mix(in oklab, var(--pb-accent) 82%, var(--pb-surface));
+  --pb-btn-edge: var(--pb-accent-ink);
 }
 
 .pb-empty {

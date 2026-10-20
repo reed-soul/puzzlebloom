@@ -125,6 +125,7 @@
 /* ---------------- board ---------------- */
 
 .pb-board {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(9, 1fr);
   width: 100%;
@@ -134,6 +135,27 @@
   overflow: hidden;
   background: var(--pb-cell);
   touch-action: manipulation;
+  box-shadow: var(--pb-lift-1);
+}
+
+/* The sweep that runs when a row, column or box closes. Sits above the cells
+   but under the pause curtain, and never takes a pointer event. */
+.pb-board__sweep {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.pb-board__sweep rect {
+  fill: none;
+  stroke: var(--pb-success);
+  stroke-width: 0.16;
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: pb-sweep 560ms var(--pb-ease-out) forwards;
 }
 
 .pb-cell {
@@ -149,7 +171,7 @@
   background: var(--pb-cell);
   color: var(--pb-brand);
   cursor: pointer;
-  transition: background var(--pb-dur) var(--pb-ease);
+  transition: background var(--pb-dur) var(--pb-ease), transform 90ms var(--pb-ease);
   -webkit-tap-highlight-color: transparent;
   min-width: 0;
 }
@@ -198,22 +220,37 @@
   color: var(--pb-danger);
 }
 
-.pb-cell__digit {
+/* Pressing a cell moves it towards you by half a millimetre. It is the same
+   physical-key idea as the buttons, at a quarter of the size. */
+.pb-cell:active:not(.is-given) {
+  transform: scale(0.93);
+}
+
+.pb-cell__mark {
+  display: grid;
+  place-items: center;
+  line-height: 1;
+  animation: pb-land var(--pb-dur-land) var(--pb-ease-out);
+}
+
+.pb-cell__mark {
   font-family: var(--pb-font-display);
   font-size: clamp(1.05rem, 3.4vw, 1.6rem);
   font-weight: 600;
-  line-height: 1;
-  animation: pb-digit-in var(--pb-dur-slow) var(--pb-ease);
 }
 
-@keyframes pb-digit-in {
-  from {
-    opacity: 0;
-    transform: scale(0.7);
+/* A wrong digit does not bounce playfully. It sits there, slightly too heavy,
+   until the child decides what to do about it. */
+.pb-cell.is-wrong .pb-cell__mark {
+  animation: pb-nudge 260ms var(--pb-ease) 1;
+}
+
+@keyframes pb-nudge {
+  25% {
+    transform: translateX(-1.5px);
   }
-  to {
-    opacity: 1;
-    transform: scale(1);
+  75% {
+    transform: translateX(1.5px);
   }
 }
 

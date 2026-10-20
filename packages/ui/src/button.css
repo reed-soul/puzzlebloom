@@ -59,6 +59,31 @@
   --pb-btn-edge: color-mix(in oklab, var(--pb-brand-solid) 74%, var(--pb-ink));
 }
 
+/*
+ * The loud button.
+ *
+ * Exactly one of these is allowed per screen: it is the thing the page is
+ * asking the child to do. It takes the accent colour, which is the most
+ * saturated colour in the theme, and — because that colour is far too bright
+ * to carry white text — it takes `--pb-accent-ink` as its label. That pairing
+ * is measured, not guessed: see `auditTheme`'s "Label on the bright accent".
+ */
+.pb-btn--loud {
+  --pb-btn-bg: var(--pb-accent);
+  --pb-btn-ink: var(--pb-accent-ink);
+  --pb-btn-edge: color-mix(in oklab, var(--pb-accent) 58%, var(--pb-ink));
+  font-size: var(--pb-fs-md);
+  box-shadow: 0 4px 0 var(--pb-btn-edge), 0 12px 22px -14px color-mix(in oklab, var(--pb-accent) 70%, transparent);
+}
+
+.pb-btn--loud:hover:not(:disabled) {
+  box-shadow: 0 5px 0 var(--pb-btn-edge), 0 16px 26px -14px color-mix(in oklab, var(--pb-accent) 80%, transparent);
+}
+
+.pb-btn--loud:active:not(:disabled) {
+  box-shadow: 0 1px 0 var(--pb-btn-edge);
+}
+
 .pb-btn--secondary {
   --pb-btn-bg: var(--pb-surface);
   --pb-btn-edge: var(--pb-line-strong);

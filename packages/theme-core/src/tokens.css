@@ -1,7 +1,7 @@
 /**
  * Design tokens.
  *
- * Eight theme colours go in; everything else on the site is a `color-mix()`
+ * Ten theme colours go in; everything else on the site is a `color-mix()`
  * of them. That is the whole reason a child-made theme still looks designed:
  * the tints, the borders and the 27 cell states are all computed from the same
  * two or three base colours, so they cannot drift out of tune with each other.
@@ -9,22 +9,42 @@
  * Naming: `--pb-*`. Nothing in here is game-specific.
  */
 
+/* Registering the sun's angle makes it interpolatable, so the gesture can be
+   animated by the compositor instead of repainted by JS. Only one property
+   needs this; adding more would cost more than it returns. */
+@property --pb-sun-turn {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
 :root {
   /* ---- base palette (overwritten at runtime by applyTheme) ---- */
-  --pb-bg: #eef5e9;
-  --pb-surface: #ffffff;
-  --pb-ink: #24382b;
-  --pb-brand: #2f7d5b;
-  --pb-brand-solid: #2f7d5b;
+  --pb-bg: #ecf7e4;
+  --pb-surface: #fdfefc;
+  --pb-sky: #a9e1ef;
+  --pb-ink: #122b1c;
+  --pb-brand: #007d43;
+  --pb-brand-solid: #007d43;
   --pb-brand-ink: #ffffff;
-  --pb-accent: #e9a23b;
-  --pb-danger: #c0523f;
-  --pb-success: #3e8e5a;
+  --pb-accent: #fab72a;
+  --pb-accent-ink: #151e0f;
+  --pb-danger: #a6352d;
+  --pb-success: #157a46;
 
   /* ---- derived surfaces ---- */
   --pb-surface-2: color-mix(in oklab, var(--pb-brand) 5%, var(--pb-surface));
   --pb-surface-3: color-mix(in oklab, var(--pb-brand) 10%, var(--pb-surface));
   --pb-sunken: color-mix(in oklab, var(--pb-ink) 4%, var(--pb-bg));
+
+  /* ---- decorative washes ----
+     `sky` is the one high-chroma colour that carries a large area with no text
+     on it. These four tones are what turn a flat page into a place with a
+     horizon, a canopy and light coming from somewhere. */
+  --pb-sky-soft: color-mix(in oklab, var(--pb-sky) 42%, var(--pb-surface));
+  --pb-sky-deep: color-mix(in oklab, var(--pb-sky) 74%, var(--pb-brand));
+  --pb-accent-soft: color-mix(in oklab, var(--pb-accent) 24%, var(--pb-surface));
+  --pb-accent-wash: color-mix(in oklab, var(--pb-accent) 16%, transparent);
 
   /* ---- derived text ---- */
   --pb-ink-soft: color-mix(in oklab, var(--pb-ink) 64%, var(--pb-bg));
@@ -34,6 +54,10 @@
   --pb-line: color-mix(in oklab, var(--pb-ink) 13%, var(--pb-bg));
   --pb-line-strong: color-mix(in oklab, var(--pb-ink) 28%, var(--pb-bg));
   --pb-shadow: color-mix(in oklab, var(--pb-ink) 14%, var(--pb-bg));
+  /* Two-part elevation: a hard offset edge (this is a toy, not a spreadsheet)
+     plus a soft ambient pool, so a card lifts even on a pale background. */
+  --pb-lift-1: 0 2px 0 var(--pb-shadow), 0 6px 14px -10px color-mix(in oklab, var(--pb-ink) 40%, transparent);
+  --pb-lift-2: 0 5px 0 var(--pb-shadow), 0 16px 28px -16px color-mix(in oklab, var(--pb-ink) 46%, transparent);
 
   /* ---- sudoku board states ---- */
   --pb-cell: var(--pb-surface);
@@ -74,10 +98,15 @@
   --pb-page: 1120px;
   --pb-nav-h: 68px;
 
-  /* ---- motion (no bounce: this is a calm site) ---- */
+  /* ---- motion ----
+     Nothing here bounces or overshoots: this is a calm site. Motion is used to
+     explain what just happened (a digit landed, a row completed, a page
+     arrived), never to demand attention. */
   --pb-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --pb-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --pb-dur: 180ms;
   --pb-dur-slow: 340ms;
+  --pb-dur-land: 420ms;
 
   color-scheme: light;
 }
@@ -93,6 +122,11 @@
   --pb-grid-box: color-mix(in oklab, var(--pb-ink) 44%, var(--pb-surface));
   --pb-line: color-mix(in oklab, var(--pb-ink) 18%, var(--pb-bg));
   --pb-line-strong: color-mix(in oklab, var(--pb-ink) 34%, var(--pb-bg));
+  --pb-sky-soft: color-mix(in oklab, var(--pb-sky) 30%, var(--pb-surface));
+  --pb-sky-deep: color-mix(in oklab, var(--pb-sky) 55%, var(--pb-brand));
+  --pb-accent-soft: color-mix(in oklab, var(--pb-accent) 30%, var(--pb-surface));
+  --pb-accent-wash: color-mix(in oklab, var(--pb-accent) 22%, transparent);
+  --pb-shadow: color-mix(in oklab, #000000 42%, var(--pb-bg));
 }
 
 *,
@@ -107,13 +141,26 @@ html {
 
 body {
   margin: 0;
-  background: var(--pb-bg);
+  /* The sky, painted once on the document: every route opens under the same
+     band of colour. It runs well past the first screen on purpose — a hero
+     strip that stops at 800px leaves the middle of the page as flat as it was
+     before, which is the exact problem this band exists to fix. */
+  background-color: var(--pb-bg);
+  background-image: linear-gradient(
+    180deg,
+    var(--pb-sky-deep) 0,
+    var(--pb-sky) 360px,
+    var(--pb-sky-soft) 960px,
+    var(--pb-bg) 1520px
+  );
+  background-repeat: no-repeat;
   color: var(--pb-ink);
   font-family: var(--pb-font-body);
   font-size: var(--pb-fs-md);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  transition: background var(--pb-dur-slow) var(--pb-ease), color var(--pb-dur-slow) var(--pb-ease);
+  transition: background-color var(--pb-dur-slow) var(--pb-ease),
+    color var(--pb-dur-slow) var(--pb-ease);
 }
 
 h1,
@@ -154,16 +201,116 @@ button {
   background: color-mix(in oklab, var(--pb-brand) 24%, var(--pb-surface));
 }
 
+/* ------------------------------------------------------------------ *
+ * Shared motion
+ *
+ * Four gestures, all of them short and all of them meaningful. They live here
+ * rather than in a page stylesheet because the puzzle board and the front page
+ * both use them, and because a third of a second is a design decision, not a
+ * component detail.
+ * ------------------------------------------------------------------ */
+
+/* A digit arriving in a cell. Small, forward, over quickly. */
+@keyframes pb-land {
+  0% {
+    transform: scale(0.55) rotate(-8deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.06) rotate(1deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+/* A completed row or box: light travels along the finished line. */
+@keyframes pb-sweep {
+  0% {
+    stroke-dashoffset: 100;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Sections arriving as the page settles, staggered by the caller. */
+@keyframes pb-rise {
+  0% {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* The hero's halo. Forty seconds is slow enough to read as "the sun moved",
+   not as "something is animating at me". */
+@keyframes pb-sun-turn {
+  to {
+    --pb-sun-turn: 360deg;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * View Transitions
+ *
+ * Used only for a route change and a theme change — the two moments where the
+ * page is genuinely being replaced. Everything else animates in place, which
+ * is cheaper and less likely to feel like a slideshow.
+ * ------------------------------------------------------------------ */
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 260ms;
+  animation-timing-function: var(--pb-ease-out);
+}
+
+::view-transition-old(root) {
+  animation-name: pb-fade-out;
+}
+
+::view-transition-new(root) {
+  animation-name: pb-fade-in;
+}
+
+@keyframes pb-fade-out {
+  to {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes pb-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   :root {
     --pb-dur: 0ms;
     --pb-dur-slow: 0ms;
+    --pb-dur-land: 0ms;
   }
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* A view transition is a transition; with reduced motion the swap should
+     simply happen. */
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }
 

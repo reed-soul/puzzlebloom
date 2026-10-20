@@ -7,6 +7,7 @@
  * can be disabled, full, or full of something an older version wrote.
  */
 
+import { completeColors } from './themes';
 import type { Theme } from './themes';
 
 const THEME_KEY = 'pb:themes:v1';
@@ -39,10 +40,26 @@ const looksLikeTheme = (value: unknown): value is Theme => {
   return required.every((key) => typeof candidate.colors?.[key] === 'string');
 };
 
+/**
+ * Old saved themes predate the sky and accent-label roles. They are completed
+ * on read rather than migrated in place: a theme saved by a previous version
+ * should keep opening, and re-deriving the two new colours from the ones it
+ * already has is exactly what the studio would do today anyway.
+ */
+const revive = (theme: Theme): Theme => {
+  const mood = theme.mood === 'dark' ? 'dark' : 'light';
+  return {
+    ...theme,
+    builtIn: false,
+    mood,
+    colors: completeColors(theme.colors, mood),
+  };
+};
+
 export function listCustomThemes(): Theme[] {
   const stored = readJson<unknown[]>(THEME_KEY, []);
   if (!Array.isArray(stored)) return [];
-  return stored.filter(looksLikeTheme).map((theme) => ({ ...theme, builtIn: false }));
+  return stored.filter(looksLikeTheme).map(revive);
 }
 
 export function saveCustomTheme(theme: Theme): Theme[] {

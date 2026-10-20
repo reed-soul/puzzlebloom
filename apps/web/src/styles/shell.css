@@ -117,8 +117,9 @@
 
 .pb-footer {
   margin-top: 4rem;
-  border-top: 1.5px solid var(--pb-line);
-  background: var(--pb-surface-2);
+  border-top: 1.5px solid color-mix(in oklab, var(--pb-ink) 16%, var(--pb-sky));
+  /* The page closes on the colour it opened with. */
+  background: var(--pb-sky-soft);
 }
 
 .pb-footer__inner {

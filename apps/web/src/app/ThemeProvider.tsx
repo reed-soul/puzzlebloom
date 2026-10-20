@@ -1,7 +1,7 @@
 /**
  * Theme ownership for the whole site.
  *
- * The theme lives on <html> as nine custom properties, so a switch repaints
+ * The theme lives on <html> as ten custom properties, so a switch repaints
  * everything without React re-rendering a single component. This provider only
  * decides *which* theme that is: a link someone sent, a saved favourite, or
  * the meadow it ships with.
@@ -12,6 +12,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -29,6 +30,7 @@ import {
   setActiveThemeId,
   type Theme,
 } from '@puzzlebloom/theme-core';
+import { withViewTransition } from './viewTransition';
 
 interface ThemeValue {
   theme: Theme;
@@ -66,16 +68,23 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     if (shared) setIncoming(shared);
   }, []);
 
-  useEffect(() => {
+  // Layout effect, not effect: `withViewTransition` needs the new colours to be
+  // on the document before the browser snapshots it.
+  useLayoutEffect(() => {
     applyTheme(theme);
   }, [theme]);
 
+  /**
+   * Colour-picker drags preview continuously, so `preview` must stay instant.
+   * Choosing a *named* mood is a different gesture — one decision, one moment —
+   * so that one gets a cross-fade and the studio's live dragging does not.
+   */
   const preview = useCallback((next: Theme) => setTheme(next), []);
 
   const use = useCallback(
     (themeId: string) => {
       const next = findTheme(themeId, customThemes);
-      setTheme(next);
+      withViewTransition(() => setTheme(next));
       setActiveThemeId(next.id);
     },
     [customThemes],
@@ -93,7 +102,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     (themeId: string) => {
       setCustomThemes(deleteCustomTheme(themeId));
       if (theme.id === themeId) {
-        setTheme(findTheme(DEFAULT_THEME_ID));
+        withViewTransition(() => setTheme(findTheme(DEFAULT_THEME_ID)));
         setActiveThemeId(DEFAULT_THEME_ID);
       }
     },
@@ -101,7 +110,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   );
 
   const reset = useCallback(() => {
-    setTheme(findTheme(DEFAULT_THEME_ID));
+    withViewTransition(() => setTheme(findTheme(DEFAULT_THEME_ID)));
     setActiveThemeId(DEFAULT_THEME_ID);
   }, []);
 
