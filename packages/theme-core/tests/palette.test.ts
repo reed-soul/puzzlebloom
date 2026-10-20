@@ -9,16 +9,10 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import {
-  BUILT_IN_THEMES,
-  THEME_PRESETS,
-  completeColors,
-  deriveAccentInk,
-  deriveSky,
-} from '../src/themes';
 import { auditTheme, contrastRatio } from '../src/contrast';
 import { decodeTheme, encodeTheme } from '../src/share';
 import type { ThemeColors } from '../src/themes';
+import { BUILT_IN_THEMES, completeColors, deriveAccentInk, deriveSky, THEME_PRESETS } from '../src/themes';
 
 const SRGB = (hex: string): number[] => {
   const body = hex.replace('#', '');
@@ -49,9 +43,7 @@ describe('every shipped palette is readable', () => {
   for (const { label, colors } of ALL) {
     it(`${label} clears every contrast pair`, () => {
       const failed = auditTheme(colors).filter((check) => !check.ok);
-      const detail = failed
-        .map((c) => `${c.label} ${c.ratio}:1 (needs ${c.min}:1)`)
-        .join('; ');
+      const detail = failed.map((c) => `${c.label} ${c.ratio}:1 (needs ${c.min}:1)`).join('; ');
       expect(failed, detail).toHaveLength(0);
     });
   }

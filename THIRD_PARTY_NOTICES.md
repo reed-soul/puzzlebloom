@@ -1,6 +1,6 @@
 # Third-party notices
 
-PuzzleBloom is MIT licensed. It stands on the shoulders of one project in
+PuzzleBloom is MIT licensed. It stands on the shoulders of two projects in
 particular, and this file is where that debt is written down.
 
 ## Sudoku engine — HeyPuter/everything
@@ -37,3 +37,21 @@ The upstream README is kept verbatim at
 `packages/sudoku-engine/UPSTREAM-README.md` for attribution and context.
 
 If you fork PuzzleBloom, keep this notice and the MIT copyright line intact.
+
+## Typefaces — Baloo 2 and Nunito
+
+Both are licensed under the SIL Open Font License 1.1 and are **redistributed**
+in this repository, so the licence has to travel with the files:
+
+| Font | Copyright | Licence text |
+| --- | --- | --- |
+| Baloo 2 | 2019 The Baloo 2 Project Authors (https://github.com/EkType/Baloo2) | `apps/web/public/fonts/OFL-Baloo2.txt` |
+| Nunito | 2014 The Nunito Project Authors (https://github.com/googlefonts/nunito) | `apps/web/public/fonts/OFL-Nunito.txt` |
+
+**What we took.** The `woff2` variable subsets in `apps/web/public/fonts/`,
+unmodified, as served by Google Fonts. They are self-hosted rather than fetched
+from a third party, which is why the site's CSP has no external host to allow.
+
+**What the licence asks.** The files may not be sold on their own, and any
+derivative must not use the reserved font names. We do not modify or rename
+them, and the full OFL text sits next to the binaries.

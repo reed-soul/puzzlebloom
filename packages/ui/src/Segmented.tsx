@@ -9,7 +9,13 @@ interface SegmentedProps<T extends string> {
 }
 
 /** A radio group wearing a pill. Keyboard behaviour comes free from real radios. */
-export function Segmented<T extends string>({ label, value, options, onChange, size = 'md' }: SegmentedProps<T>) {
+export function Segmented<T extends string>({
+  label,
+  value,
+  options,
+  onChange,
+  size = 'md',
+}: SegmentedProps<T>) {
   return (
     <div className={`pb-seg pb-seg--${size}`} role="radiogroup" aria-label={label}>
       {options.map((option) => {

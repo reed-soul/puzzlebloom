@@ -8,76 +8,69 @@
  */
 
 export {
-  SIZE,
-  CELLS,
+  DIFFICULTIES,
+  DIFFICULTY_IDS,
+  generate,
+  generateDaily,
+  isDifficulty,
+  localDateKey,
+} from './engine/generator.js';
+export {
   ALL_DIGITS,
-  PEERS,
-  UNITS,
-  ROW_UNITS,
-  COL_UNITS,
   BOX_UNITS,
-  rowOf,
-  colOf,
   boxOf,
-  indexOf,
-  maskOf,
-  hasDigit,
+  CELLS,
+  COL_UNITS,
+  cellName,
+  cloneBoard,
+  colOf,
   countBits,
   digitOf,
   digitsOf,
-  cellName,
-  cloneBoard,
   findConflicts,
+  hasDigit,
+  indexOf,
   isComplete,
+  maskOf,
+  PEERS,
+  ROW_UNITS,
+  rowOf,
+  SIZE,
+  UNITS,
 } from './engine/grid.js';
 
+export { countSolutions, hasUniqueSolution, solve } from './engine/solver.js';
 export {
-  TECHNIQUES,
-  LADDER_IDS,
-  createAnalysis,
   applyStep,
-  nextStep,
+  createAnalysis,
   gradePuzzle,
+  LADDER_IDS,
+  nextStep,
+  TECHNIQUES,
 } from './engine/techniques.js';
-
-export { solve, countSolutions, hasUniqueSolution } from './engine/solver.js';
-
+export { analysisFor, nextHint } from './game/hints.js';
+export { disposeWorker, requestPuzzle } from './game/puzzles.js';
+export { decode, encode, fromText, SAVE_VERSION, toText } from './game/serialize.js';
 export {
-  DIFFICULTIES,
-  DIFFICULTY_IDS,
-  isDifficulty,
-  generate,
-  generateDaily,
-  localDateKey,
-} from './engine/generator.js';
-
-export { requestPuzzle, disposeWorker } from './game/puzzles.js';
-
-export {
-  MAX_HISTORY,
+  applyEliminations,
+  canRedo,
+  canUndo,
+  clearCell,
+  conflicts,
   createGame,
+  isFlawless,
   isGiven,
   isSolved,
-  conflicts,
+  MAX_HISTORY,
   mistakes,
+  recordMistake,
+  redo,
   remaining,
   setValue,
   toggleNote,
-  clearCell,
-  applyEliminations,
   undo,
-  redo,
-  canUndo,
-  canRedo,
-  recordMistake,
-  isFlawless,
 } from './game/state.js';
-
-export { analysisFor, nextHint } from './game/hints.js';
-
 export { createTimer, formatDuration } from './game/timer.js';
-
-export { SAVE_VERSION, encode, decode, toText, fromText } from './game/serialize.js';
 
 /* ------------------------------------------------------------------ */
 /* Contracts                                                            */

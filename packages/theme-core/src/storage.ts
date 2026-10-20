@@ -7,8 +7,8 @@
  * can be disabled, full, or full of something an older version wrote.
  */
 
-import { completeColors } from './themes';
 import type { Theme } from './themes';
+import { completeColors } from './themes';
 
 const THEME_KEY = 'pb:themes:v1';
 const ACTIVE_KEY = 'pb:theme-active:v1';

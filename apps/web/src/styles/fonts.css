@@ -1,0 +1,66 @@
+/**
+ * Typefaces.
+ *
+ * Both families ship as variable fonts, so "five weights" is one file with a
+ * weight axis instead of five static cuts. Four files, 135 kB total, and only
+ * two of them (71 kB) are ever fetched on a first paint: `unicode-range` means
+ * the browser downloads `latin-ext` only when a character actually needs it.
+ *
+ * Self-hosted on purpose. Fonts were the last third-party request on the site
+ * and the only reason the Content-Security-Policy had to open `style-src` and
+ * `font-src` to two Google hosts. A page for children that promises "nothing
+ * leaves this device" should not open a connection to an ad company's CDN
+ * before the first frame.
+ *
+ * `font-display: swap` rather than `optional`: the fallback stack is rounded
+ * and close enough that a swap is not jarring, and a child waiting on a font
+ * before the letters appear is worse than a brief reflow.
+ */
+
+/* Baloo 2 — display: headings, numbers, the brand. Weight axis 400–800. */
+@font-face {
+  font-family: 'Baloo 2';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('/fonts/baloo2-var-latin.woff2') format('woff2-variations');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308,
+    U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Baloo 2';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('/fonts/baloo2-var-latin-ext.woff2') format('woff2-variations');
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308,
+    U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113,
+    U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* Nunito — body. Weight axis 200–1000; the site uses 400, 600, 700 and 800. */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 200 1000;
+  font-display: swap;
+  src: url('/fonts/nunito-var-latin.woff2') format('woff2-variations');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308,
+    U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 200 1000;
+  font-display: swap;
+  src: url('/fonts/nunito-var-latin-ext.woff2') format('woff2-variations');
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308,
+    U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113,
+    U+2C60-2C7F, U+A720-A7FF;
+}

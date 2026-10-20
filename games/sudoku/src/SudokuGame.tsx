@@ -1,9 +1,9 @@
-import { useCallback, useEffect } from 'react';
-import { Button, Chip, Icon, Segmented } from '@puzzlebloom/ui';
 import type { DifficultyId } from '@puzzlebloom/sudoku-engine';
+import { Button, Chip, Icon, Segmented } from '@puzzlebloom/ui';
+import { useCallback, useEffect } from 'react';
 import { Board } from './Board';
-import { Keypad } from './Keypad';
 import { HintPanel } from './HintPanel';
+import { Keypad } from './Keypad';
 import { useSudoku } from './useSudoku';
 import './sudoku.css';
 import './controls.css';
@@ -102,7 +102,21 @@ export function SudokuGame({ onExit }: Props) {
         if (next >= 0 && next < 81) select(next);
       }
     },
-    [askHint, dismissHint, erase, game, hint, paused, place, redo, select, selection, solved, toggleNotes, undo],
+    [
+      askHint,
+      dismissHint,
+      erase,
+      game,
+      hint,
+      paused,
+      place,
+      redo,
+      select,
+      selection,
+      solved,
+      toggleNotes,
+      undo,
+    ],
   );
 
   useEffect(() => {
@@ -121,7 +135,7 @@ export function SudokuGame({ onExit }: Props) {
     );
   }
 
-  const hintFocus = hint?.focus ?? (hint?.cells ?? null);
+  const hintFocus = hint?.focus ?? hint?.cells ?? null;
 
   return (
     <div className="pb-play">
@@ -134,7 +148,13 @@ export function SudokuGame({ onExit }: Props) {
           {isDaily ? <Chip tone="accent">Today’s</Chip> : null}
           <span className="pb-play__clock">
             <Icon name="clock" size={16} />
-            <span aria-label={`Time ${clock}`}>{clock}</span>
+            {/* `role="timer"` is what makes the aria-label legal here — a bare
+                span would silently drop it — and it stays aria-live="off", so a
+                clock ticking every half second is not announced every half
+                second. */}
+            <span role="timer" aria-label={`Time ${clock}`}>
+              {clock}
+            </span>
           </span>
         </div>
         <Button
@@ -242,7 +262,8 @@ export function SudokuGame({ onExit }: Props) {
             </h2>
             <p className="pb-win__sub">
               {levelLabel(difficulty)} grid, finished in {clock}
-              {game.hintsUsed ? ` with ${game.hintsUsed} hint${game.hintsUsed > 1 ? 's' : ''}` : ', no hints'}.
+              {game.hintsUsed ? ` with ${game.hintsUsed} hint${game.hintsUsed > 1 ? 's' : ''}` : ', no hints'}
+              .
             </p>
             <div className="pb-win__actions">
               <Button variant="primary" size="md" iconLeft="play" onClick={() => newPuzzle(difficulty)}>

@@ -245,7 +245,9 @@
   box-shadow: var(--pb-lift-1);
   color: inherit;
   text-decoration: none;
-  transition: transform var(--pb-dur) var(--pb-ease), border-color var(--pb-dur) var(--pb-ease),
+  transition:
+    transform var(--pb-dur) var(--pb-ease),
+    border-color var(--pb-dur) var(--pb-ease),
     box-shadow var(--pb-dur) var(--pb-ease);
 }
 
@@ -434,7 +436,9 @@
   text-align: left;
   text-decoration: none;
   cursor: pointer;
-  transition: border-color var(--pb-dur) var(--pb-ease), transform var(--pb-dur) var(--pb-ease);
+  transition:
+    border-color var(--pb-dur) var(--pb-ease),
+    transform var(--pb-dur) var(--pb-ease);
 }
 
 .pb-mood:hover {

@@ -17,6 +17,7 @@ interface KeypadProps {
  */
 export function Keypad({ remaining, creatures, disabled, onDigit }: KeypadProps) {
   return (
+    // biome-ignore lint/a11y/useSemanticElements: a fieldset would bring default border/padding this grid does not want; role="group" is the point of the element
     <div className="pb-keypad" role="group" aria-label="Digits">
       {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((digit) => {
         const left = remaining[digit] ?? 0;

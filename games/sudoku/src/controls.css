@@ -24,7 +24,9 @@
   color: var(--pb-brand);
   cursor: pointer;
   box-shadow: 0 2px 0 var(--pb-line);
-  transition: transform var(--pb-dur) var(--pb-ease), background var(--pb-dur) var(--pb-ease),
+  transition:
+    transform var(--pb-dur) var(--pb-ease),
+    background var(--pb-dur) var(--pb-ease),
     box-shadow var(--pb-dur) var(--pb-ease);
 }
 
@@ -88,7 +90,9 @@
   font-size: 0.68rem;
   font-weight: 700;
   cursor: pointer;
-  transition: background var(--pb-dur) var(--pb-ease), color var(--pb-dur) var(--pb-ease),
+  transition:
+    background var(--pb-dur) var(--pb-ease),
+    color var(--pb-dur) var(--pb-ease),
     border-color var(--pb-dur) var(--pb-ease);
 }
 

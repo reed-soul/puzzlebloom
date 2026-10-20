@@ -28,7 +28,9 @@
   text-decoration: none;
   cursor: pointer;
   box-shadow: 0 3px 0 var(--pb-btn-edge);
-  transition: transform var(--pb-dur) var(--pb-ease), box-shadow var(--pb-dur) var(--pb-ease),
+  transition:
+    transform var(--pb-dur) var(--pb-ease),
+    box-shadow var(--pb-dur) var(--pb-ease),
     background var(--pb-dur) var(--pb-ease);
   -webkit-tap-highlight-color: transparent;
 }
@@ -73,11 +75,15 @@
   --pb-btn-ink: var(--pb-accent-ink);
   --pb-btn-edge: color-mix(in oklab, var(--pb-accent) 58%, var(--pb-ink));
   font-size: var(--pb-fs-md);
-  box-shadow: 0 4px 0 var(--pb-btn-edge), 0 12px 22px -14px color-mix(in oklab, var(--pb-accent) 70%, transparent);
+  box-shadow:
+    0 4px 0 var(--pb-btn-edge),
+    0 12px 22px -14px color-mix(in oklab, var(--pb-accent) 70%, transparent);
 }
 
 .pb-btn--loud:hover:not(:disabled) {
-  box-shadow: 0 5px 0 var(--pb-btn-edge), 0 16px 26px -14px color-mix(in oklab, var(--pb-accent) 80%, transparent);
+  box-shadow:
+    0 5px 0 var(--pb-btn-edge),
+    0 16px 26px -14px color-mix(in oklab, var(--pb-accent) 80%, transparent);
 }
 
 .pb-btn--loud:active:not(:disabled) {

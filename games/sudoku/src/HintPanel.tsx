@@ -1,5 +1,5 @@
-import { Button, Chip, Icon } from '@puzzlebloom/ui';
 import type { HintResult } from '@puzzlebloom/sudoku-engine';
+import { Button, Chip, Icon } from '@puzzlebloom/ui';
 
 interface HintPanelProps {
   hint: HintResult;

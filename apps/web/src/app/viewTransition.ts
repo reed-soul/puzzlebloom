@@ -19,8 +19,7 @@
 import { flushSync } from 'react-dom';
 
 export const prefersReducedMotion = (): boolean =>
-  typeof window !== 'undefined' &&
-  window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
+  typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
 
 export function withViewTransition(update: () => void): void {
   // `startViewTransition` is in the DOM lib as of TypeScript 5.6, but it is

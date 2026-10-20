@@ -1,12 +1,11 @@
 import { Chip, CreatureGlyph, Icon, type IconName } from '@puzzlebloom/ui';
-import { LinkButton } from '../shell/LinkButton';
 import { Link } from '../app/router';
 import { useTheme } from '../app/ThemeProvider';
-import { GAMES, SPROUTING, type GameManifest } from '../games/registry';
+import { GAMES, type GameManifest, SPROUTING } from '../games/registry';
+import { LinkButton } from '../shell/LinkButton';
 
 /** A real, valid grid, thinned out. Decoration that happens to be truthful. */
-const PREVIEW =
-  '5.4.7...2.7..9...81.8...5.78.9.6.4...2...3.9...3.2.8.69.1.3.2.42...1.9.53.5.8.7..';
+const PREVIEW = '5.4.7...2.7..9...81.8...5.78.9.6.4...2...3.9...3.2.8.69.1.3.2.42...1.9.53.5.8.7..';
 
 const TRUST: Array<{ icon: IconName; title: string; body: string }> = [
   {
@@ -36,9 +35,14 @@ function PreviewBoard() {
     <div className="pb-mini" aria-hidden="true">
       {Array.from(PREVIEW).map((char, index) => (
         <span
+          // biome-ignore lint/suspicious/noArrayIndexKey: the string is fixed-length and never reorders, so an index is the cell's identity
           key={index}
           className={`pb-mini__cell${char === '.' ? ' is-empty' : ''}${
-            index === 40 ? ' is-live' : index === 39 || index === 41 || index === 31 || index === 49 ? ' is-near' : ''
+            index === 40
+              ? ' is-live'
+              : index === 39 || index === 41 || index === 31 || index === 49
+                ? ' is-near'
+                : ''
           }`}
         >
           {char === '.' ? null : <CreatureGlyph digit={Number(char)} size={24} />}
@@ -74,7 +78,7 @@ function Art({ game }: { game: GameManifest }) {
 }
 
 export function Home() {
-  const { builtIns, use: useThemeById, theme } = useTheme();
+  const { builtIns, apply, theme } = useTheme();
   const [first, ...rest] = GAMES;
 
   return (
@@ -84,9 +88,9 @@ export function Home() {
           <Chip tone="brand">A quiet corner of the internet</Chip>
           <h1 className="pb-hero__title">Puzzles that explain themselves.</h1>
           <p className="pb-hero__lede">
-            A small garden of logic games for children, starting with Sudoku — where nine hand-drawn
-            creatures each need exactly one home. No timer shouting, no streak to break, no score to
-            chase. Just the next cell, and the reason it works.
+            A small garden of logic games for children, starting with Sudoku — where nine hand-drawn creatures
+            each need exactly one home. No timer shouting, no streak to break, no score to chase. Just the
+            next cell, and the reason it works.
           </p>
           <div className="pb-hero__actions">
             <LinkButton to={first.route} variant="loud" size="lg" iconLeft="play">
@@ -96,14 +100,14 @@ export function Home() {
               Make it yours
             </LinkButton>
           </div>
-          <p className="pb-hero__note">
-            Free · no account · works offline once the page has loaded
-          </p>
+          <p className="pb-hero__note">Free · no account · works offline once the page has loaded</p>
         </div>
 
         <div className="pb-hero__art">
           <PreviewBoard />
-          <p className="pb-hero__caption">Nine creatures. One rule: no repeats in a row, a column, or a box.</p>
+          <p className="pb-hero__caption">
+            Nine creatures. One rule: no repeats in a row, a column, or a box.
+          </p>
         </div>
       </section>
 
@@ -178,7 +182,7 @@ export function Home() {
               key={mood.id}
               type="button"
               className={`pb-mood${theme.id === mood.id ? ' is-active' : ''}`}
-              onClick={() => useThemeById(mood.id)}
+              onClick={() => apply(mood.id)}
               aria-pressed={theme.id === mood.id}
             >
               <span className="pb-mood__swatch">
@@ -203,9 +207,9 @@ export function Home() {
         <div className="pb-band__copy">
           <h2>For the grown-up doing the handing over</h2>
           <p>
-            This site exists because a parent wanted one place on the internet where the answer to
-            “can I play something?” was simply yes. Here is exactly what it stores, what it never asks
-            for, and why the hints teach instead of solving.
+            This site exists because a parent wanted one place on the internet where the answer to “can I play
+            something?” was simply yes. Here is exactly what it stores, what it never asks for, and why the
+            hints teach instead of solving.
           </p>
         </div>
         <LinkButton to="/parents" variant="primary" size="md" iconRight="arrowRight">

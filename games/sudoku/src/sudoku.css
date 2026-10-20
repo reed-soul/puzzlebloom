@@ -171,7 +171,9 @@
   background: var(--pb-cell);
   color: var(--pb-brand);
   cursor: pointer;
-  transition: background var(--pb-dur) var(--pb-ease), transform 90ms var(--pb-ease);
+  transition:
+    background var(--pb-dur) var(--pb-ease),
+    transform 90ms var(--pb-ease);
   -webkit-tap-highlight-color: transparent;
   min-width: 0;
 }

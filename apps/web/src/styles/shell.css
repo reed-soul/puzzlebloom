@@ -83,7 +83,9 @@
   color: var(--pb-ink-soft);
   font-size: 0.9rem;
   font-weight: 700;
-  transition: background var(--pb-dur) var(--pb-ease), color var(--pb-dur) var(--pb-ease);
+  transition:
+    background var(--pb-dur) var(--pb-ease),
+    color var(--pb-dur) var(--pb-ease);
 }
 
 .pb-nav__link:hover {
@@ -105,7 +107,9 @@
   border: 1.5px solid var(--pb-line);
   background: var(--pb-surface);
   color: var(--pb-ink-soft);
-  transition: transform var(--pb-dur) var(--pb-ease), color var(--pb-dur) var(--pb-ease);
+  transition:
+    transform var(--pb-dur) var(--pb-ease),
+    color var(--pb-dur) var(--pb-ease);
 }
 
 .pb-nav__palette:hover {

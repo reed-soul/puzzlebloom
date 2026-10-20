@@ -1,7 +1,7 @@
-import { memo } from 'react';
-import { PEERS, rowOf, colOf } from '@puzzlebloom/sudoku-engine';
-import { CreatureGlyph } from '@puzzlebloom/ui';
 import type { SudokuGame } from '@puzzlebloom/sudoku-engine';
+import { colOf, PEERS, rowOf } from '@puzzlebloom/sudoku-engine';
+import { CreatureGlyph } from '@puzzlebloom/ui';
+import { memo } from 'react';
 import type { Celebration } from './useSudoku';
 
 interface BoardProps {
@@ -60,23 +60,35 @@ const Cell = memo(function Cell({
     : `Row ${row + 1}, column ${col + 1}: empty${notes ? ', has notes' : ''}`;
 
   return (
+    // biome-ignore lint/a11y/useSemanticElements: a sudoku cell is an interactive button inside an ARIA grid, not a <td>; table semantics would be wrong for a keyboard-playable widget
     <button
       type="button"
       role="gridcell"
       aria-label={label}
       aria-selected={isSelected}
       className={classes.join(' ')}
+      // Tabbing onto the board must start from the cell you tabbed to. Without
+      // this, `selection` is still null when the first arrow arrives and the
+      // arrow handler falls back to the centre of the board — so a keyboard
+      // user pressing Down in the top-left corner landed on row 6.
+      onFocus={() => onSelect(index)}
       onClick={() => onSelect(index)}
     >
       {value ? (
-        <span className="pb-cell__mark">
-          {creatures ? <CreatureGlyph digit={value} size={30} /> : value}
-        </span>
+        <span className="pb-cell__mark">{creatures ? <CreatureGlyph digit={value} size={30} /> : value}</span>
       ) : notes ? (
         <span className="pb-cell__notes" aria-hidden="true">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((digit) => (
             <span key={digit} className="pb-cell__note">
-              {(notes >> (digit - 1)) & 1 ? (creatures ? <CreatureGlyph digit={digit} size={11} ghost /> : digit) : ''}
+              {(notes >> (digit - 1)) & 1 ? (
+                creatures ? (
+                  <CreatureGlyph digit={digit} size={11} ghost />
+                ) : (
+                  digit
+                )
+              ) : (
+                ''
+              )}
             </span>
           ))}
         </span>
@@ -137,11 +149,13 @@ export function Board({
   const focusSet = new Set(focus ?? []);
 
   return (
+    // biome-ignore lint/a11y/useSemanticElements: ARIA grid is the sanctioned pattern for an interactive board; a <table> cannot be played with a keyboard
     <div className="pb-board" role="grid" aria-label="Sudoku board" aria-rowcount={9} aria-colcount={9}>
       {Array.from({ length: 81 }, (_, index) => {
         const value = game.values[index];
         return (
           <Cell
+            // biome-ignore lint/suspicious/noArrayIndexKey: the cell index *is* the identity here — it is the coordinate
             key={index}
             index={index}
             value={value}

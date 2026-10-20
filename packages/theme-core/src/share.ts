@@ -9,8 +9,8 @@
  */
 
 import { normalizeHex } from './contrast';
-import { completeColors } from './themes';
 import type { Theme } from './themes';
+import { completeColors } from './themes';
 
 interface Packed {
   n: string;
@@ -67,8 +67,7 @@ export function decodeTheme(token: string): Theme | null {
     }
     // Canonicalise before use: an arriving payload may be any case.
     const c = parsed.c.map(normalizeHex);
-    const [bg, surface, ink, brand, accent, danger, success, brandSolid, brandInk, sky, accentInk] =
-      c;
+    const [bg, surface, ink, brand, accent, danger, success, brandSolid, brandInk, sky, accentInk] = c;
     const mood: Theme['mood'] = parsed.m === 'dark' ? 'dark' : 'light';
     // Anything missing (an older link) is derived rather than guessed at.
     const colors = completeColors(

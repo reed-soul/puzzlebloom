@@ -7,8 +7,8 @@
  * one-tap repair. The maths is WCAG 2.1: relative luminance, then the ratio.
  */
 
-import { deriveAccentInk } from './themes';
 import type { Theme, ThemeColors } from './themes';
+import { deriveAccentInk } from './themes';
 
 export interface ContrastCheck {
   label: string;
@@ -39,11 +39,7 @@ export function normalizeHex(value: string): string {
 
 function channels(hex: string): [number, number, number] {
   const value = normalizeHex(hex).slice(1);
-  return [
-    parseInt(value.slice(0, 2), 16),
-    parseInt(value.slice(2, 4), 16),
-    parseInt(value.slice(4, 6), 16),
-  ];
+  return [parseInt(value.slice(0, 2), 16), parseInt(value.slice(2, 4), 16), parseInt(value.slice(4, 6), 16)];
 }
 
 /** WCAG relative luminance, 0 (black) to 1 (white). */

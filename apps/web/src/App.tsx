@@ -1,12 +1,13 @@
 import { lazy, Suspense } from 'react';
 import { RouterProvider, useRouter } from './app/router';
 import { ThemeProvider } from './app/ThemeProvider';
-import { Nav } from './shell/Nav';
-import { Footer } from './shell/Footer';
 import { Home } from './pages/Home';
-import { Themes } from './pages/Themes';
-import { Parents } from './pages/Parents';
 import { NotFound } from './pages/NotFound';
+import { Parents } from './pages/Parents';
+import { Themes } from './pages/Themes';
+import { Footer } from './shell/Footer';
+import { Nav } from './shell/Nav';
+import './styles/fonts.css';
 import './styles/shell.css';
 import './styles/pages.css';
 import './styles/studio.css';

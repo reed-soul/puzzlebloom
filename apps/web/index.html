@@ -11,12 +11,18 @@
     <meta name="theme-color" content="#ECF7E4" />
     <meta name="color-scheme" content="light dark" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Both typefaces are self-hosted (see src/styles/fonts.css). Preloading
+         only the latin subset keeps the first paint to 71 kB of font and gives
+         the browser a head start on the only files it needs before it can
+         render text. -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      href="/fonts/baloo2-var-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
     />
+    <link rel="preload" href="/fonts/nunito-var-latin.woff2" as="font" type="font/woff2" crossorigin />
     <meta property="og:title" content="PuzzleBloom — calm puzzle games for curious kids" />
     <meta
       property="og:description"

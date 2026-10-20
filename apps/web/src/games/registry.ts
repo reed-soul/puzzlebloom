@@ -8,7 +8,7 @@
 
 // The manifest is imported from its own entry point on purpose: pulling it
 // through the package index would drag the whole game into the garden bundle.
-import { sudokuManifest, type GameManifest } from '@puzzlebloom/game-sudoku/manifest';
+import { type GameManifest, sudokuManifest } from '@puzzlebloom/game-sudoku/manifest';
 
 export type { GameManifest };
 
@@ -19,7 +19,8 @@ export const SPROUTING: GameManifest[] = [
     id: 'nonogram',
     title: 'Nonogram',
     tagline: 'Count the squares, uncover the picture.',
-    blurb: 'Rows and columns of numbers that add up to a hidden drawing. The reward for correct logic is a picture appearing.',
+    blurb:
+      'Rows and columns of numbers that add up to a hidden drawing. The reward for correct logic is a picture appearing.',
     route: '/play/nonogram',
     skills: ['Counting', 'Spatial reasoning'],
     ageRange: '7 and up',
@@ -31,7 +32,8 @@ export const SPROUTING: GameManifest[] = [
     id: 'memory-garden',
     title: 'Memory Garden',
     tagline: 'Turn over two, keep the pair that matches.',
-    blurb: 'A memory game where the cards are the garden’s own creatures, in four sizes so the difficulty grows with the player.',
+    blurb:
+      'A memory game where the cards are the garden’s own creatures, in four sizes so the difficulty grows with the player.',
     route: '/play/memory-garden',
     skills: ['Memory', 'Attention'],
     ageRange: '4 and up',
@@ -43,7 +45,8 @@ export const SPROUTING: GameManifest[] = [
     id: 'tangram',
     title: 'Tangram',
     tagline: 'Seven shapes, a hundred animals.',
-    blurb: 'Drag the classic seven pieces into the silhouette of a cat, a boat, a bird. No timer, no score, just the shape.',
+    blurb:
+      'Drag the classic seven pieces into the silhouette of a cat, a boat, a bird. No timer, no score, just the shape.',
     route: '/play/tangram',
     skills: ['Geometry', 'Visualisation'],
     ageRange: '6 and up',

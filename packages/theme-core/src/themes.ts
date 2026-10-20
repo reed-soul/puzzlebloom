@@ -82,11 +82,7 @@ const parse = (hex: string): [number, number, number] => {
           .map((c) => c + c)
           .join('')
       : body;
-  return [
-    parseInt(full.slice(0, 2), 16),
-    parseInt(full.slice(2, 4), 16),
-    parseInt(full.slice(4, 6), 16),
-  ];
+  return [parseInt(full.slice(0, 2), 16), parseInt(full.slice(2, 4), 16), parseInt(full.slice(4, 6), 16)];
 };
 
 const toHex = (rgb: number[]): string =>
@@ -141,7 +137,10 @@ export function deriveAccentInk(accent: string, ink: string): string {
 }
 
 /** Completes a hand-authored or hand-picked palette. Idempotent. */
-export function completeColors(core: ColorCore & Partial<ThemeColors>, mood: ThemeMood = 'light'): ThemeColors {
+export function completeColors(
+  core: ColorCore & Partial<ThemeColors>,
+  mood: ThemeMood = 'light',
+): ThemeColors {
   const danger = core.danger ?? '#A6352D';
   const success = core.success ?? '#2F7A46';
   const sky = core.sky ?? deriveSky(core.bg, core.surface, core.accent, mood);

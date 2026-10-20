@@ -12,9 +12,13 @@
     "dev": "pnpm --filter @puzzlebloom/web dev",
     "build": "pnpm --filter @puzzlebloom/web build",
     "preview": "pnpm --filter @puzzlebloom/web preview",
-    "typecheck": "pnpm --filter @puzzlebloom/web typecheck",
+    "typecheck": "pnpm --filter @puzzlebloom/web typecheck && pnpm --filter @puzzlebloom/web exec tsc -p ../../e2e",
+    "lint": "biome check",
+    "lint:fix": "biome check --write",
+    "format": "biome format --write .",
     "test": "pnpm --filter @puzzlebloom/sudoku-engine test && pnpm --filter @puzzlebloom/theme-core test",
-    "verify": "pnpm run typecheck && pnpm run test && pnpm run build"
+    "test:e2e": "playwright test",
+    "verify": "pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run build"
   },
   "keywords": [
     "puzzle",
@@ -23,5 +27,9 @@
     "monorepo",
     "static-site"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.15",
+    "@playwright/test": "^1.64.1"
+  }
 }

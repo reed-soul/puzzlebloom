@@ -1,17 +1,16 @@
-import { useMemo, useState } from 'react';
-import { Button, Chip, CreatureGlyph, Icon } from '@puzzlebloom/ui';
 import {
-  THEME_PRESETS,
   auditTheme,
   buildThemeLink,
   completeColors,
   findTheme,
   inferMood,
   repairInk,
-  slugify,
+  THEME_PRESETS,
   type Theme,
   type ThemeColors,
 } from '@puzzlebloom/theme-core';
+import { Button, Chip, CreatureGlyph, Icon } from '@puzzlebloom/ui';
+import { useMemo, useState } from 'react';
 import { useTheme } from '../app/ThemeProvider';
 import { LinkButton } from '../shell/LinkButton';
 
@@ -80,7 +79,7 @@ export function Themes() {
     builtIns,
     customThemes,
     preview,
-    use: useById,
+    apply,
     save,
     remove,
     reset,
@@ -125,10 +124,9 @@ export function Themes() {
   };
 
   const keep = () => {
-    const id = draft.id.startsWith('custom-')
-      ? draft.id
-      : `custom-${slugify(draft.name)}-${Math.random().toString(36).slice(2, 6)}`;
-    const stored = save({ ...draft, id, name: draft.name.trim() || 'My theme' });
+    // The id is the provider's decision — it is the only thing that knows how
+    // to keep a shared theme and a self-made one from being two records.
+    const stored = save({ ...draft, name: draft.name.trim() || 'My theme' });
     setDraft(stored);
     setBaseline(stored);
     setMessage('Saved. This is now your default theme.');
@@ -141,7 +139,7 @@ export function Themes() {
    * which made "Save this theme" save something the visitor was not looking at.
    */
   const pick = (id: string) => {
-    useById(id);
+    apply(id);
     const next = asDraft(findTheme(id, customThemes));
     setDraft(next);
     setBaseline(next);
@@ -160,9 +158,9 @@ export function Themes() {
         <Chip tone="brand">Theme studio</Chip>
         <h1>Make it yours</h1>
         <p>
-          Eight colours, and the site recomputes every tint, border and cell state from them. Nothing
-          here can break the layout — and if the text stops being readable, the studio will say so and
-          fix it in one tap.
+          Eight colours, and the site recomputes every tint, border and cell state from them. Nothing here can
+          break the layout — and if the text stops being readable, the studio will say so and fix it in one
+          tap.
         </p>
       </header>
 
@@ -230,7 +228,9 @@ export function Themes() {
           <div className={`pb-audit${failing.length ? ' is-warning' : ''}`}>
             <p className="pb-audit__title">
               <Icon name={failing.length ? 'erase' : 'check'} size={16} />
-              {failing.length ? `${failing.length} pair${failing.length > 1 ? 's' : ''} hard to read` : 'Every pair is readable'}
+              {failing.length
+                ? `${failing.length} pair${failing.length > 1 ? 's' : ''} hard to read`
+                : 'Every pair is readable'}
             </p>
             <ul className="pb-audit__list">
               {audit.map((check) => (
@@ -273,6 +273,7 @@ export function Themes() {
             </div>
             <div className="pb-preview-card__board" aria-hidden="true">
               {[6, 0, 2, 0, 5, 0, 3, 0, 8].map((digit, index) => (
+                // biome-ignore lint/suspicious/noArrayIndexKey: a fixed decorative strip; position is the identity
                 <span key={index} className={digit ? 'is-filled' : ''}>
                   {digit ? <CreatureGlyph digit={digit} size={20} /> : null}
                 </span>
@@ -289,8 +290,8 @@ export function Themes() {
             </div>
           </div>
           <p className="pb-studio__hint">
-            Nothing is saved until you press save. Switching pages while previewing keeps the colours
-            for this visit only.
+            Nothing is saved until you press save. Switching pages while previewing keeps the colours for this
+            visit only.
           </p>
         </aside>
       </section>
@@ -346,9 +347,7 @@ export function Themes() {
             ))}
           </div>
         ) : (
-          <p className="pb-empty">
-            Nothing yet. Change a colour above, name it, and it will appear here.
-          </p>
+          <p className="pb-empty">Nothing yet. Change a colour above, name it, and it will appear here.</p>
         )}
       </section>
 

@@ -42,6 +42,7 @@ puzzlebloom/
 │  ├─ sudoku-engine/          generator, solver, logical grading, teaching hints
 │  ├─ theme-core/             theme model, built-in moods, contrast guard, share links
 │  └─ ui/                     locked icon set, buttons, segmented control, creature glyphs
+├─ e2e/                       Playwright: the seams the unit tests cannot reach
 ├─ docs/                      spec, ADRs, screenshots
 └─ vercel.json                deploy config (Cloudflare Pages works too)
 ```
@@ -55,12 +56,19 @@ library, no router dependency — the router is 90 lines in
 ```bash
 pnpm install
 pnpm dev          # http://localhost:5173
-pnpm typecheck    # tsc --noEmit across the app and the packages
+pnpm lint         # biome: lint and format, one tool, no plugin zoo
+pnpm typecheck    # tsc --noEmit across the app, the packages and the e2e specs
 pnpm test         # 189 engine tests + 42 palette guards
-pnpm build        # static bundle in apps/web/dist
+pnpm test:e2e     # Playwright, against the production build
+pnpm verify       # all of the above, in the order CI runs them
 ```
 
-Node 20+.
+Node 22.12+ (`.nvmrc`; Node 20 reached end of life in April 2026). The pnpm
+version is pinned in `package.json`, so a laptop and CI use the same binary.
+
+Playwright does not test the dev server. It builds, serves `dist` through
+`vite preview`, and drives that — because the CSP, the worker chunk and the font
+preloads only exist after a build, and those are half of what it is checking.
 
 ## How it is put together
 
@@ -103,18 +111,26 @@ The reasoning, the measurements and what is still unbuilt are in
 Themes are stored in `localStorage` and can be shared as a link: the whole
 palette is packed into `?theme=` as base64url, validated on arrival. No backend.
 
+**Nothing is fetched from anyone else.** Baloo 2 and Nunito are self-hosted as
+four `woff2` variable subsets — 135 kB in total, 71 kB on first paint — with
+`font-display: swap` and a preload for the two Latin faces. With no CDN, no font
+host and no analytics, the CSP is `'self'` for scripts, styles and fonts: there
+is no third party left to allow. `e2e/garden.spec.ts` fails if a single request
+leaves the origin.
+
 **Dark moods get their own cell tints.** Mixing 7% white into a dark surface is
 invisible, so `:root[data-mood='dark']` raises the fill. See
 [tokens.css](packages/theme-core/src/tokens.css).
 
 ## Accessibility
 
-- Full keyboard play: arrows move, `1–9` place, `Backspace` clears, `N` notes,
-  `H` hint, `⌘/Ctrl+Z` undo.
+- Full keyboard play: tab onto the board, arrows move, `1–9` place, `Backspace`
+  clears, `N` notes, `H` hint, `⌘/Ctrl+Z` undo.
 - Every cell announces its row, column and contents; the board is a real
   `role="grid"` of buttons.
 - The theme studio measures WCAG contrast for eight pairs and offers a one-tap
-  repair instead of letting pale text through.
+  repair instead of letting pale text through. A palette that regresses fails
+  the build — 42 assertions guard chroma, contrast and the share-link format.
 - Motion is never the only signal: a finished row also changes the cells, a
   wrong digit is announced by `aria-live`, and everything above collapses under
   `prefers-reduced-motion`.

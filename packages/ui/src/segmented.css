@@ -20,7 +20,9 @@
   color: var(--pb-ink-soft);
   cursor: pointer;
   white-space: nowrap;
-  transition: background var(--pb-dur) var(--pb-ease), color var(--pb-dur) var(--pb-ease);
+  transition:
+    background var(--pb-dur) var(--pb-ease),
+    color var(--pb-dur) var(--pb-ease);
   user-select: none;
 }
 

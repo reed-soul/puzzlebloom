@@ -33,7 +33,11 @@ const LEVELS = [
   { name: 'Gentle', who: '6 and up', what: 'Plenty of clues, one-step logic only. A good first grid.' },
   { name: 'Curious', who: '8 and up', what: 'Fewer clues, same logic. Rewards scanning the whole board.' },
   { name: 'Tricky', who: '10 and up', what: 'Needs pairs and intersections — the first real deductions.' },
-  { name: 'Brainy', who: '12 and up', what: 'Needs subsets and wings. Genuinely hard, still always logical.' },
+  {
+    name: 'Brainy',
+    who: '12 and up',
+    what: 'Needs subsets and wings. Genuinely hard, still always logical.',
+  },
 ];
 
 export function Parents() {
@@ -41,7 +45,9 @@ export function Parents() {
     try {
       Object.keys(localStorage)
         .filter((key) => key.startsWith('pb:'))
-        .forEach((key) => localStorage.removeItem(key));
+        .forEach((key) => {
+          localStorage.removeItem(key);
+        });
     } catch {
       /* storage blocked; nothing to clear */
     }
@@ -54,30 +60,32 @@ export function Parents() {
         <Chip tone="brand">For parents</Chip>
         <h1>What this is, and what it refuses to be</h1>
         <p>
-          PuzzleBloom is a garden of puzzle games for children. It was built by one parent who wanted a
-          place where the answer to “can I play something?” was simply yes — no negotiating, no
-          watching over a shoulder, no ads quietly learning what a six-year-old likes.
+          PuzzleBloom is a garden of puzzle games for children. It was built by one parent who wanted a place
+          where the answer to “can I play something?” was simply yes — no negotiating, no watching over a
+          shoulder, no ads quietly learning what a six-year-old likes.
         </p>
       </header>
 
       <section className="pb-prose" aria-labelledby="why">
         <h2 id="why">Why it exists</h2>
         <p>
-          Most games made for children are made to be returned to: a streak to protect, a chest to
-          open, a friend’s score to beat. Those mechanics work, which is exactly the problem. They
-          teach a child to keep playing rather than to finish.
+          Most games made for children are made to be returned to: a streak to protect, a chest to open, a
+          friend’s score to beat. Those mechanics work, which is exactly the problem. They teach a child to
+          keep playing rather than to finish.
         </p>
         <p>
-          A puzzle has the opposite shape. It ends. It is satisfying at the moment it is solved, and
-          then there is nothing left to collect. That is the whole design brief here: build things
-          worth finishing, and make finishing feel like enough.
+          A puzzle has the opposite shape. It ends. It is satisfying at the moment it is solved, and then
+          there is nothing left to collect. That is the whole design brief here: build things worth finishing,
+          and make finishing feel like enough.
         </p>
       </section>
 
       <section className="pb-section" aria-labelledby="never">
         <div className="pb-section__head">
           <h2 id="never">Five promises</h2>
-          <p>Kept cheap by architecture: this whole site is static files. There is no backend to leak from.</p>
+          <p>
+            Kept cheap by architecture: this whole site is static files. There is no backend to leak from.
+          </p>
         </div>
         <div className="pb-trust">
           {PROMISES.map((promise) => (
@@ -95,10 +103,10 @@ export function Parents() {
             </span>
             <h3>How a hint works</h3>
             <p>
-              Hints never reveal the answer. Each one names the technique, points at the cells it read,
-              and explains why the conclusion follows — “4 is the only digit left for this cell: its
-              row, column and box account for the other eight.” The player can read the reason, or press
-              a second button to watch it happen. Reading is the exercise; solving is the reward.
+              Hints never reveal the answer. Each one names the technique, points at the cells it read, and
+              explains why the conclusion follows — “4 is the only digit left for this cell: its row, column
+              and box account for the other eight.” The player can read the reason, or press a second button
+              to watch it happen. Reading is the exercise; solving is the reward.
             </p>
           </div>
         </div>
@@ -130,8 +138,8 @@ export function Parents() {
           </table>
         </div>
         <p className="pb-prose__aside">
-          Under six, turn on the creatures instead of numerals. Nine faces are far easier to hold in
-          mind than nine symbols that all look like sticks.
+          Under six, turn on the creatures instead of numerals. Nine faces are far easier to hold in mind than
+          nine symbols that all look like sticks.
         </p>
       </section>
 
@@ -146,8 +154,8 @@ export function Parents() {
             unfinished puzzle.
           </li>
           <li>
-            <strong>How many you have finished, and your best time per level.</strong> Local only, and
-            easy to wipe.
+            <strong>How many you have finished, and your best time per level.</strong> Local only, and easy to
+            wipe.
           </li>
           <li>
             <strong>The theme you chose.</strong> Colours, nothing else.
@@ -166,18 +174,28 @@ export function Parents() {
           <h2 id="a11y">Accessibility notes</h2>
         </div>
         <ul className="pb-list">
-          <li>The whole board is keyboard playable: arrows to move, digits to place, N for notes, H for a hint.</li>
+          <li>
+            The whole board is keyboard playable: arrows to move, digits to place, N for notes, H for a hint.
+          </li>
           <li>Every cell is announced with its row, column and contents to a screen reader.</li>
-          <li>The theme studio measures contrast and offers a one-tap repair rather than letting pale text through.</li>
+          <li>
+            The theme studio measures contrast and offers a one-tap repair rather than letting pale text
+            through.
+          </li>
           <li>Animations are short and stop entirely when the device asks for reduced motion.</li>
-          <li>The creatures mode exists for pre-readers and for colour-blind players: each face has its own outline shape, not just its own colour.</li>
+          <li>
+            The creatures mode exists for pre-readers and for colour-blind players: each face has its own
+            outline shape, not just its own colour.
+          </li>
         </ul>
       </section>
 
       <section className="pb-band">
         <div className="pb-band__copy">
           <h2>Ready when you are</h2>
-          <p>The first puzzle is one tap away, and the tab can be closed at any point without losing anything.</p>
+          <p>
+            The first puzzle is one tap away, and the tab can be closed at any point without losing anything.
+          </p>
         </div>
         <LinkButton to="/play/sudoku" variant="primary" size="md" iconLeft="play">
           Open Sudoku

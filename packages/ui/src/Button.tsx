@@ -20,7 +20,15 @@ export const buttonClass = ({ variant = 'secondary', size = 'md', block }: Commo
     .filter(Boolean)
     .join(' ');
 
-export const ButtonContent = ({ children, iconLeft, iconRight }: { children?: ReactNode; iconLeft?: IconName; iconRight?: IconName }) => (
+export const ButtonContent = ({
+  children,
+  iconLeft,
+  iconRight,
+}: {
+  children?: ReactNode;
+  iconLeft?: IconName;
+  iconRight?: IconName;
+}) => (
   <>
     {iconLeft ? <Icon name={iconLeft} size={20} /> : null}
     {children ? <span className="pb-btn__label">{children}</span> : null}
@@ -30,26 +38,44 @@ export const ButtonContent = ({ children, iconLeft, iconRight }: { children?: Re
 
 export type ButtonProps = Common & ButtonHTMLAttributes<HTMLButtonElement> & { 'aria-label'?: string };
 
-export function Button({ variant, size, iconLeft, iconRight, block, children, className, ...rest }: ButtonProps) {
+export function Button({
+  variant,
+  size,
+  iconLeft,
+  iconRight,
+  block,
+  children,
+  className,
+  ...rest
+}: ButtonProps) {
   const shape: Common = { variant, size, block };
   return (
-    <button
-      type={rest.type ?? 'button'}
-      className={buttonClass(shape, className)}
-      {...rest}
-    >
-      <ButtonContent iconLeft={iconLeft} iconRight={iconRight}>{children}</ButtonContent>
+    <button type={rest.type ?? 'button'} className={buttonClass(shape, className)} {...rest}>
+      <ButtonContent iconLeft={iconLeft} iconRight={iconRight}>
+        {children}
+      </ButtonContent>
     </button>
   );
 }
 
 export type ButtonLinkProps = Common & AnchorHTMLAttributes<HTMLAnchorElement>;
 
-export function ButtonLink({ variant, size, iconLeft, iconRight, block, children, className, ...rest }: ButtonLinkProps) {
+export function ButtonLink({
+  variant,
+  size,
+  iconLeft,
+  iconRight,
+  block,
+  children,
+  className,
+  ...rest
+}: ButtonLinkProps) {
   const shape: Common = { variant, size, block };
   return (
     <a className={buttonClass(shape, className)} {...rest}>
-      <ButtonContent iconLeft={iconLeft} iconRight={iconRight}>{children}</ButtonContent>
+      <ButtonContent iconLeft={iconLeft} iconRight={iconRight}>
+        {children}
+      </ButtonContent>
     </a>
   );
 }

@@ -57,7 +57,8 @@
   /* Two-part elevation: a hard offset edge (this is a toy, not a spreadsheet)
      plus a soft ambient pool, so a card lifts even on a pale background. */
   --pb-lift-1: 0 2px 0 var(--pb-shadow), 0 6px 14px -10px color-mix(in oklab, var(--pb-ink) 40%, transparent);
-  --pb-lift-2: 0 5px 0 var(--pb-shadow), 0 16px 28px -16px color-mix(in oklab, var(--pb-ink) 46%, transparent);
+  --pb-lift-2:
+    0 5px 0 var(--pb-shadow), 0 16px 28px -16px color-mix(in oklab, var(--pb-ink) 46%, transparent);
 
   /* ---- sudoku board states ---- */
   --pb-cell: var(--pb-surface);
@@ -159,7 +160,8 @@ body {
   font-size: var(--pb-fs-md);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  transition: background-color var(--pb-dur-slow) var(--pb-ease),
+  transition:
+    background-color var(--pb-dur-slow) var(--pb-ease),
     color var(--pb-dur-slow) var(--pb-ease);
 }
 
@@ -300,9 +302,18 @@ button {
   *,
   *::before,
   *::after {
+    /* `!important` is the correct tool here, and the only place in this
+       codebase where it appears: these declarations exist to beat
+       component-level animations, which is precisely the situation the rule
+       warns about. Suppressed per declaration rather than file-wide, so a stray
+       `!important` elsewhere still gets caught. */
+    /* biome-ignore lint/complexity/noImportantStyles: must override component animations */
     animation-duration: 0.01ms !important;
+    /* biome-ignore lint/complexity/noImportantStyles: must override component animations */
     animation-iteration-count: 1 !important;
+    /* biome-ignore lint/complexity/noImportantStyles: must override component animations */
     transition-duration: 0.01ms !important;
+    /* biome-ignore lint/complexity/noImportantStyles: must override component animations */
     scroll-behavior: auto !important;
   }
   /* A view transition is a transition; with reduced motion the swap should
@@ -310,6 +321,7 @@ button {
   ::view-transition-group(*),
   ::view-transition-old(*),
   ::view-transition-new(*) {
+    /* biome-ignore lint/complexity/noImportantStyles: must override the view-transition pseudo-elements */
     animation: none !important;
   }
 }

@@ -103,7 +103,9 @@ const PATHS: Record<IconName, ReactElement> = {
       <path d="M9 12.2l2.1 2.1 4-4.2" />
     </>
   ),
-  heart: <path d="M12 20.2s-7.6-4.4-7.6-9.3A4.3 4.3 0 0 1 12 8.1a4.3 4.3 0 0 1 7.6 2.8c0 4.9-7.6 9.3-7.6 9.3Z" />,
+  heart: (
+    <path d="M12 20.2s-7.6-4.4-7.6-9.3A4.3 4.3 0 0 1 12 8.1a4.3 4.3 0 0 1 7.6 2.8c0 4.9-7.6 9.3-7.6 9.3Z" />
+  ),
   share: (
     <>
       <circle cx="7" cy="12" r="2.4" />
@@ -158,6 +160,7 @@ export interface IconProps extends Omit<SVGProps<SVGSVGElement>, 'name'> {
 
 export function Icon({ name, size = 20, title, ...rest }: IconProps) {
   return (
+    // biome-ignore lint/a11y/noSvgWithoutTitle: untitled icons get aria-hidden below, which is the accessible treatment for decoration
     <svg
       viewBox="0 0 24 24"
       width={size}

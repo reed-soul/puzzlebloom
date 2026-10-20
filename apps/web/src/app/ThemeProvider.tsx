@@ -8,19 +8,9 @@
  */
 
 import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react';
-import {
+  applyTheme,
   BUILT_IN_THEMES,
   DEFAULT_THEME_ID,
-  applyTheme,
   deleteCustomTheme,
   findTheme,
   getActiveThemeId,
@@ -28,8 +18,19 @@ import {
   readThemeParam,
   saveCustomTheme,
   setActiveThemeId,
+  slugify,
   type Theme,
 } from '@puzzlebloom/theme-core';
+import {
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { withViewTransition } from './viewTransition';
 
 interface ThemeValue {
@@ -39,7 +40,7 @@ interface ThemeValue {
   /** Applies a theme for this session without saving it as the default. */
   preview: (theme: Theme) => void;
   /** Applies and remembers a theme. */
-  use: (themeId: string) => void;
+  apply: (themeId: string) => void;
   save: (theme: Theme) => Theme;
   remove: (themeId: string) => void;
   reset: () => void;
@@ -81,7 +82,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
    */
   const preview = useCallback((next: Theme) => setTheme(next), []);
 
-  const use = useCallback(
+  const apply = useCallback(
     (themeId: string) => {
       const next = findTheme(themeId, customThemes);
       withViewTransition(() => setTheme(next));
@@ -90,8 +91,22 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     [customThemes],
   );
 
+  /**
+   * The one place that decides what a saved theme's id looks like.
+   *
+   * Two paths save: the studio, and "Keep it" on a shared link. Both used to
+   * invent their own id, and the second one did not — so a theme that arrived
+   * in a link was stored under `shared-…` forever, and the studio then treated
+   * it as a draft it had never seen and saved a second copy.
+   */
   const save = useCallback((next: Theme) => {
-    const stored = { ...next, builtIn: false };
+    const stored: Theme = {
+      ...next,
+      builtIn: false,
+      id: next.id.startsWith('custom-')
+        ? next.id
+        : `custom-${slugify(next.name)}-${Math.random().toString(36).slice(2, 6)}`,
+    };
     setCustomThemes(saveCustomTheme(stored));
     setActiveThemeId(stored.id);
     setTheme(stored);
@@ -134,7 +149,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       builtIns: BUILT_IN_THEMES,
       customThemes,
       preview,
-      use,
+      apply,
       save,
       remove,
       reset,
@@ -142,7 +157,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       acceptIncoming,
       dismissIncoming,
     }),
-    [acceptIncoming, customThemes, dismissIncoming, incoming, preview, remove, reset, save, theme, use],
+    [acceptIncoming, apply, customThemes, dismissIncoming, incoming, preview, remove, reset, save, theme],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

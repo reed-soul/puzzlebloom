@@ -1,11 +1,11 @@
-import type { AnchorHTMLAttributes, ReactNode } from 'react';
 import {
   ButtonContent,
-  buttonClass,
   type ButtonSize,
   type ButtonVariant,
+  buttonClass,
   type IconName,
 } from '@puzzlebloom/ui';
+import type { AnchorHTMLAttributes, ReactNode } from 'react';
 import { Link } from '../app/router';
 
 interface Props extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> {
@@ -22,7 +22,17 @@ interface Props extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> {
  * A router link wearing button clothes. Built here rather than in the design
  * kit because the kit must not know that a router exists.
  */
-export function LinkButton({ to, variant = 'secondary', size = 'md', iconLeft, iconRight, block, children, className, ...rest }: Props) {
+export function LinkButton({
+  to,
+  variant = 'secondary',
+  size = 'md',
+  iconLeft,
+  iconRight,
+  block,
+  children,
+  className,
+  ...rest
+}: Props) {
   return (
     <Link to={to} className={buttonClass({ variant, size, block }, className)} {...rest}>
       <ButtonContent iconLeft={iconLeft} iconRight={iconRight}>

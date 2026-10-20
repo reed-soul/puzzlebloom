@@ -13,35 +13,35 @@
  *    six-year-old's first puzzle.
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  applyEliminations,
+  isSolved as boardIsSolved,
+  clearCell,
   createGame,
   createTimer,
+  type DifficultyId,
   decode,
   encode,
+  findConflicts,
+  mistakes as findMistakes,
   formatDuration,
   generate,
   generateDaily,
+  type HintResult,
   isGiven,
-  isSolved as boardIsSolved,
-  mistakes as findMistakes,
-  findConflicts,
+  type LoadedPuzzle,
+  localDateKey,
   nextHint,
+  recordMistake,
+  redo as redoMove,
+  remaining as remainingOf,
   requestPuzzle,
+  type SudokuGame,
   setValue,
   toggleNote,
-  clearCell,
   undo as undoMove,
-  redo as redoMove,
-  applyEliminations,
-  recordMistake,
-  remaining as remainingOf,
-  localDateKey,
-  type DifficultyId,
-  type HintResult,
-  type LoadedPuzzle,
-  type SudokuGame,
 } from '@puzzlebloom/sudoku-engine';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 const SAVE_KEY = 'pb:sudoku:save:v1';
 const STATS_KEY = 'pb:sudoku:stats:v1';
@@ -55,7 +55,7 @@ export interface PlayStats {
 
 const EMPTY_STATS: PlayStats = { cleared: 0, byDifficulty: {}, bestMs: {} };
 
-const readJson = <T,>(key: string, fallback: T): T => {
+const readJson = <T>(key: string, fallback: T): T => {
   try {
     const raw = localStorage.getItem(key);
     return raw ? (JSON.parse(raw) as T) : fallback;
@@ -141,9 +141,7 @@ export function useSudoku() {
   const [paused, setPaused] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [solved, setSolved] = useState(false);
-  const [creatures, setCreatures] = useState<boolean>(
-    () => readJson<boolean>(CREATURE_KEY, false),
-  );
+  const [creatures, setCreatures] = useState<boolean>(() => readJson<boolean>(CREATURE_KEY, false));
   const statsRef = useRef<PlayStats>(readJson<PlayStats>(STATS_KEY, EMPTY_STATS));
   const [stats, setStats] = useState<PlayStats>(statsRef.current);
   const [celebration, setCelebration] = useState<Celebration | null>(null);

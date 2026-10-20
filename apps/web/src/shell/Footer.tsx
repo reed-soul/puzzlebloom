@@ -11,7 +11,9 @@ export function Footer() {
             <CreatureGlyph digit={4} size={22} />
             <CreatureGlyph digit={7} size={22} />
           </span>
-          <p className="pb-footer__line">A quiet corner of the internet, for small people with big patience.</p>
+          <p className="pb-footer__line">
+            A quiet corner of the internet, for small people with big patience.
+          </p>
         </div>
 
         <nav className="pb-footer__links" aria-label="Footer">
