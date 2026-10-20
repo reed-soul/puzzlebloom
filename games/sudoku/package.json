@@ -1,0 +1,28 @@
+{
+  "name": "@puzzlebloom/game-sudoku",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sudoku for PuzzleBloom: nine little creatures, four moods of difficulty, hints that teach rather than solve.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./manifest": "./src/manifest.ts",
+    "./sudoku.css": "./src/sudoku.css"
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@puzzlebloom/sudoku-engine": "workspace:*",
+    "@puzzlebloom/ui": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "react": "^19.0.0"
+  }
+}

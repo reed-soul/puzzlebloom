@@ -1,0 +1,112 @@
+/**
+ * Buttons.
+ *
+ * The thick bottom edge is the whole design idea: it reads as a physical key a
+ * child can press, and the press moves it down onto the page. It is a hard
+ * shadow rather than a soft one because a blurred shadow is what every generic
+ * template uses, and this site is meant to look drawn, not rendered.
+ */
+
+.pb-btn {
+  --pb-btn-bg: var(--pb-surface);
+  --pb-btn-ink: var(--pb-ink);
+  --pb-btn-edge: var(--pb-line-strong);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  position: relative;
+  padding: 0.7rem 1.15rem;
+  border: 1.5px solid var(--pb-btn-edge);
+  border-radius: var(--pb-r-pill);
+  background: var(--pb-btn-bg);
+  color: var(--pb-btn-ink);
+  font-family: var(--pb-font-body);
+  font-size: var(--pb-fs-sm);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 3px 0 var(--pb-btn-edge);
+  transition: transform var(--pb-dur) var(--pb-ease), box-shadow var(--pb-dur) var(--pb-ease),
+    background var(--pb-dur) var(--pb-ease);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pb-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 0 var(--pb-btn-edge);
+}
+
+.pb-btn:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--pb-btn-edge);
+}
+
+.pb-btn:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+  box-shadow: 0 2px 0 var(--pb-btn-edge);
+}
+
+.pb-btn__label {
+  white-space: nowrap;
+}
+
+.pb-btn--primary {
+  --pb-btn-bg: var(--pb-brand-solid);
+  --pb-btn-ink: var(--pb-brand-ink);
+  --pb-btn-edge: color-mix(in oklab, var(--pb-brand-solid) 74%, var(--pb-ink));
+}
+
+.pb-btn--secondary {
+  --pb-btn-bg: var(--pb-surface);
+  --pb-btn-edge: var(--pb-line-strong);
+}
+
+.pb-btn--quiet {
+  --pb-btn-bg: var(--pb-surface-2);
+  --pb-btn-edge: var(--pb-line);
+}
+
+.pb-btn--ghost {
+  --pb-btn-bg: transparent;
+  --pb-btn-ink: var(--pb-ink-soft);
+  --pb-btn-edge: transparent;
+  box-shadow: none;
+  border-color: transparent;
+}
+
+.pb-btn--ghost:hover:not(:disabled) {
+  --pb-btn-bg: var(--pb-surface-2);
+  box-shadow: none;
+}
+
+.pb-btn--ghost:active:not(:disabled) {
+  box-shadow: none;
+}
+
+.pb-btn--sm {
+  padding: 0.42rem 0.8rem;
+  font-size: var(--pb-fs-xs);
+  gap: 0.35rem;
+}
+
+.pb-btn--lg {
+  padding: 0.95rem 1.6rem;
+  font-size: var(--pb-fs-md);
+  border-width: 2px;
+  box-shadow: 0 4px 0 var(--pb-btn-edge);
+}
+
+.pb-btn--lg:hover:not(:disabled) {
+  box-shadow: 0 5px 0 var(--pb-btn-edge);
+}
+
+.pb-btn--lg:active:not(:disabled) {
+  box-shadow: 0 1px 0 var(--pb-btn-edge);
+}
+
+.pb-btn--block {
+  width: 100%;
+}

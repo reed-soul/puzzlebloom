@@ -1,0 +1,246 @@
+/**
+ * Sudoku screen.
+ *
+ * The board is the only thing with a fixed size, and everything else arranges
+ * itself around it. Cell borders do the box rules rather than extra elements,
+ * so a highlight can never knock the grid out of alignment: with
+ * `box-sizing: border-box` and equal `1fr` columns, thickening a border eats
+ * into the cell instead of moving its neighbours.
+ */
+
+.pb-play {
+  width: min(100%, var(--pb-page));
+  margin: 0 auto;
+  padding: clamp(0.75rem, 2vw, 1.5rem) clamp(0.75rem, 3vw, 2rem) 7rem;
+}
+
+.pb-play--loading {
+  display: grid;
+  place-items: center;
+  gap: 1rem;
+  min-height: 60vh;
+}
+
+.pb-loading__note {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--pb-ink-soft);
+  font-size: var(--pb-fs-sm);
+}
+
+.pb-board--skeleton {
+  width: min(100%, 520px);
+  aspect-ratio: 1;
+  border: 3px solid var(--pb-line);
+  border-radius: var(--pb-r-lg);
+  background:
+    repeating-linear-gradient(to right, transparent 0 10.9%, var(--pb-line) 10.9% 11.1%),
+    repeating-linear-gradient(to bottom, transparent 0 10.9%, var(--pb-line) 10.9% 11.1%);
+  animation: pb-breathe 1.8s var(--pb-ease) infinite;
+}
+
+@keyframes pb-breathe {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+/* ---------------- header ---------------- */
+
+.pb-play__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.pb-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--pb-r-pill);
+  border: 1.5px solid var(--pb-line);
+  background: var(--pb-surface);
+  color: var(--pb-ink);
+  cursor: pointer;
+  transition: background var(--pb-dur) var(--pb-ease);
+}
+
+.pb-back:hover {
+  background: var(--pb-surface-2);
+}
+
+.pb-play__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.pb-play__level {
+  font-family: var(--pb-font-display);
+  font-size: var(--pb-fs-lg);
+  font-weight: 600;
+}
+
+.pb-play__clock {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-left: auto;
+  color: var(--pb-ink-soft);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--pb-fs-sm);
+  font-weight: 700;
+}
+
+/* ---------------- layout ---------------- */
+
+.pb-play__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: clamp(1rem, 2.5vw, 2rem);
+  align-items: start;
+}
+
+.pb-board-wrap {
+  position: relative;
+  width: min(100%, 540px);
+  margin-inline: auto;
+}
+
+.pb-play__side {
+  display: grid;
+  gap: 0.9rem;
+}
+
+/* ---------------- board ---------------- */
+
+.pb-board {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  width: 100%;
+  aspect-ratio: 1;
+  border: 3px solid var(--pb-grid-box);
+  border-radius: var(--pb-r-lg);
+  overflow: hidden;
+  background: var(--pb-cell);
+  touch-action: manipulation;
+}
+
+.pb-cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-right: 1px solid var(--pb-grid-line);
+  border-bottom: 1px solid var(--pb-grid-line);
+  background: var(--pb-cell);
+  color: var(--pb-brand);
+  cursor: pointer;
+  transition: background var(--pb-dur) var(--pb-ease);
+  -webkit-tap-highlight-color: transparent;
+  min-width: 0;
+}
+
+.pb-cell:nth-child(9n) {
+  border-right: 0;
+}
+
+.pb-cell:nth-child(n + 73) {
+  border-bottom: 0;
+}
+
+.pb-cell.is-box-right {
+  border-right: 2px solid var(--pb-grid-box);
+}
+
+.pb-cell.is-box-bottom {
+  border-bottom: 2px solid var(--pb-grid-box);
+}
+
+.pb-cell.is-given {
+  background: var(--pb-cell-given);
+  color: var(--pb-ink);
+}
+
+.pb-cell.is-peer {
+  background: var(--pb-cell-peer);
+}
+
+.pb-cell.is-same {
+  background: var(--pb-cell-same);
+}
+
+.pb-cell.is-selected {
+  background: var(--pb-cell-active);
+  z-index: 1;
+  box-shadow: inset 0 0 0 2px var(--pb-brand);
+}
+
+.pb-cell.is-focus {
+  background: var(--pb-cell-hint);
+}
+
+.pb-cell.is-wrong {
+  background: var(--pb-cell-error);
+  color: var(--pb-danger);
+}
+
+.pb-cell__digit {
+  font-family: var(--pb-font-display);
+  font-size: clamp(1.05rem, 3.4vw, 1.6rem);
+  font-weight: 600;
+  line-height: 1;
+  animation: pb-digit-in var(--pb-dur-slow) var(--pb-ease);
+}
+
+@keyframes pb-digit-in {
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.pb-cell__notes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: 100%;
+  height: 100%;
+  padding: 2px;
+  gap: 0;
+  place-items: center;
+  font-size: 0.52rem;
+  line-height: 1;
+  color: var(--pb-ink-faint);
+  font-weight: 700;
+}
+
+.pb-cell__note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.pb-cell:focus-visible {
+  outline: 3px solid var(--pb-brand);
+  outline-offset: -3px;
+  border-radius: 0;
+}

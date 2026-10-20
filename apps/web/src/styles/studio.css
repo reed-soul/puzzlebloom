@@ -1,0 +1,436 @@
+/**
+ * Theme studio, and the long-form text used by the parents page.
+ *
+ * The studio is a two-column arrangement on desktop — controls left, live
+ * preview right — because the only honest way to pick a colour is to see it
+ * next to the thing it colours.
+ */
+
+.pb-incoming {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.1rem;
+  margin-bottom: 1.5rem;
+  border: 2px solid var(--pb-brand);
+  border-radius: var(--pb-r-md);
+  background: color-mix(in oklab, var(--pb-brand) 10%, var(--pb-surface));
+  color: var(--pb-ink);
+  font-size: var(--pb-fs-sm);
+}
+
+.pb-incoming p {
+  flex: 1 1 240px;
+}
+
+.pb-incoming__actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.pb-studio {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.pb-studio__panel {
+  display: grid;
+  gap: 0.9rem;
+  padding: 1.25rem;
+  border: 2px solid var(--pb-line);
+  border-radius: var(--pb-r-lg);
+  background: var(--pb-surface);
+}
+
+.pb-studio__label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--pb-ink-faint);
+}
+
+.pb-studio__row {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.pb-studio__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--pb-line);
+}
+
+.pb-studio__message {
+  font-size: var(--pb-fs-sm);
+  color: var(--pb-brand);
+  word-break: break-word;
+}
+
+.pb-studio__hint {
+  font-size: var(--pb-fs-xs);
+  color: var(--pb-ink-faint);
+  line-height: 1.6;
+}
+
+/* ---------------- fields ---------------- */
+
+.pb-field {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.pb-field__label {
+  font-size: var(--pb-fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--pb-ink-soft);
+}
+
+.pb-field__control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.55rem 0.3rem 0.3rem;
+  border: 1.5px solid var(--pb-line-strong);
+  border-radius: var(--pb-r-sm);
+  background: var(--pb-surface-2);
+}
+
+.pb-field__control input[type='color'] {
+  width: 34px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+}
+
+.pb-field__control code {
+  font-family: var(--pb-font-body);
+  font-size: var(--pb-fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--pb-ink-soft);
+  text-transform: uppercase;
+}
+
+.pb-field input[type='text'] {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 1.5px solid var(--pb-line-strong);
+  border-radius: var(--pb-r-sm);
+  background: var(--pb-surface-2);
+  color: var(--pb-ink);
+  font-family: var(--pb-font-body);
+  font-size: var(--pb-fs-md);
+  font-weight: 700;
+}
+
+.pb-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.6rem;
+}
+
+.pb-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.pb-preset {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.4rem 0.55rem;
+  border: 1.5px solid var(--pb-line);
+  border-radius: var(--pb-r-sm);
+  background: var(--pb-surface-2);
+  color: var(--pb-ink-soft);
+  font-size: var(--pb-fs-xs);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pb-preset:hover {
+  border-color: var(--pb-brand, var(--pb-line-strong));
+  color: var(--pb-ink);
+}
+
+.pb-swatches {
+  display: flex;
+  height: 34px;
+  border-radius: var(--pb-r-sm);
+  overflow: hidden;
+  border: 1.5px solid var(--pb-line);
+}
+
+.pb-swatches span {
+  flex: 1;
+}
+
+/* ---------------- audit ---------------- */
+
+.pb-audit {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.8rem 0.9rem;
+  border: 1.5px solid var(--pb-line);
+  border-radius: var(--pb-r-md);
+  background: var(--pb-surface-2);
+}
+
+.pb-audit.is-warning {
+  border-color: var(--pb-danger);
+  background: color-mix(in oklab, var(--pb-danger) 8%, var(--pb-surface));
+}
+
+.pb-audit__title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: var(--pb-fs-sm);
+  font-weight: 800;
+}
+
+.pb-audit__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.15rem 0.8rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--pb-fs-xs);
+}
+
+.pb-audit__list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.pb-audit__list .is-ok {
+  color: var(--pb-ink-soft);
+}
+
+.pb-audit__list .is-bad {
+  color: var(--pb-danger);
+  font-weight: 800;
+}
+
+/* ---------------- preview ---------------- */
+
+.pb-studio__preview {
+  display: grid;
+  gap: 0.6rem;
+  padding: 1.1rem;
+  border: 2px solid var(--pb-line);
+  border-radius: var(--pb-r-lg);
+  background: var(--pb-bg);
+  position: sticky;
+  top: calc(var(--pb-nav-h) + 1rem);
+}
+
+.pb-preview-card {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.9rem;
+  border: 2px solid var(--pb-line-strong);
+  border-radius: var(--pb-r-md);
+  background: var(--pb-surface);
+}
+
+.pb-preview-card__top {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--pb-font-display);
+}
+
+.pb-preview-card__mark {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--pb-brand) 14%, var(--pb-surface));
+}
+
+.pb-preview-card__board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: min(150px, 100%);
+  aspect-ratio: 1;
+  border: 2px solid var(--pb-grid-box);
+  border-radius: var(--pb-r-sm);
+  overflow: hidden;
+}
+
+.pb-preview-card__board span {
+  display: grid;
+  place-items: center;
+  border-right: 1px solid var(--pb-grid-line);
+  background: var(--pb-cell);
+}
+
+.pb-preview-card__board span.is-filled {
+  background: var(--pb-cell-given);
+}
+
+.pb-preview-card__row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* ---------------- theme cards ---------------- */
+
+.pb-theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 0.9rem;
+}
+
+.pb-theme-card {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.9rem;
+  border: 2px solid var(--pb-line);
+  border-radius: var(--pb-r-md);
+  background: var(--pb-surface);
+}
+
+.pb-theme-card.is-active {
+  border-color: var(--pb-brand);
+  box-shadow: 0 3px 0 var(--pb-shadow);
+}
+
+.pb-theme-card__body h3 {
+  font-size: var(--pb-fs-md);
+  margin-bottom: 0.15rem;
+}
+
+.pb-theme-card__body p {
+  color: var(--pb-ink-soft);
+  font-size: var(--pb-fs-xs);
+  line-height: 1.55;
+}
+
+.pb-theme-card__actions {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.pb-theme-card > .pb-btn {
+  justify-self: start;
+}
+
+/* ---------------- long-form ---------------- */
+
+.pb-prose {
+  display: grid;
+  gap: 0.7rem;
+  max-width: 66ch;
+}
+
+.pb-prose h2 {
+  font-size: clamp(1.3rem, 2.4vw, 1.6rem);
+  margin-bottom: 0.2rem;
+}
+
+.pb-prose p {
+  color: var(--pb-ink-soft);
+}
+
+.pb-prose__aside {
+  margin-top: 0.85rem;
+  padding-left: 0.9rem;
+  border-left: 3px solid var(--pb-accent);
+  color: var(--pb-ink-soft);
+  font-size: var(--pb-fs-sm);
+}
+
+.pb-list {
+  display: grid;
+  gap: 0.6rem;
+  max-width: 68ch;
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--pb-ink-soft);
+}
+
+.pb-list strong {
+  color: var(--pb-ink);
+}
+
+.pb-table-wrap {
+  overflow-x: auto;
+  border: 2px solid var(--pb-line);
+  border-radius: var(--pb-r-md);
+  background: var(--pb-surface);
+}
+
+.pb-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--pb-fs-sm);
+  min-width: 460px;
+}
+
+.pb-table th,
+.pb-table td {
+  padding: 0.7rem 0.9rem;
+  text-align: left;
+  border-bottom: 1px solid var(--pb-line);
+  color: var(--pb-ink-soft);
+}
+
+.pb-table thead th {
+  background: var(--pb-surface-2);
+  color: var(--pb-ink);
+  font-size: var(--pb-fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.pb-table tbody th {
+  color: var(--pb-ink);
+  font-weight: 800;
+}
+
+.pb-table tr:last-child th,
+.pb-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.pb-danger-zone {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  padding: 0.9rem 1.1rem;
+  border: 1.5px dashed var(--pb-line-strong);
+  border-radius: var(--pb-r-md);
+  color: var(--pb-ink-soft);
+  font-size: var(--pb-fs-sm);
+}
+
+@media (max-width: 860px) {
+  .pb-studio {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pb-studio__preview {
+    position: static;
+    order: -1;
+  }
+}

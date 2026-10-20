@@ -1,0 +1,311 @@
+/**
+ * Keypad, tools, and the two overlays.
+ *
+ * Targets are deliberately bigger than desktop convention asks for: a
+ * seven-year-old on a tablet misses a 32px button, and missing does not read
+ * as "wrong tap" to them, it reads as "the game is broken".
+ */
+
+.pb-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.pb-key {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1.35;
+  border: 1.5px solid var(--pb-line-strong);
+  border-radius: var(--pb-r-md);
+  background: var(--pb-surface);
+  color: var(--pb-brand);
+  cursor: pointer;
+  box-shadow: 0 2px 0 var(--pb-line);
+  transition: transform var(--pb-dur) var(--pb-ease), background var(--pb-dur) var(--pb-ease),
+    box-shadow var(--pb-dur) var(--pb-ease);
+}
+
+.pb-key:hover:not(:disabled) {
+  background: var(--pb-surface-2);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 0 var(--pb-line);
+}
+
+.pb-key:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 var(--pb-line);
+}
+
+.pb-key:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pb-key.is-spent {
+  background: var(--pb-surface-2);
+  color: var(--pb-ink-faint);
+  box-shadow: none;
+}
+
+.pb-key__digit {
+  font-family: var(--pb-font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.pb-key__count {
+  position: absolute;
+  top: 4px;
+  right: 7px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--pb-ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------- tools ---------------- */
+
+.pb-tools {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.pb-tool {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 0.5rem 0.25rem;
+  border: 1.5px solid var(--pb-line);
+  border-radius: var(--pb-r-sm);
+  background: var(--pb-surface);
+  color: var(--pb-ink-soft);
+  font-size: 0.68rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--pb-dur) var(--pb-ease), color var(--pb-dur) var(--pb-ease),
+    border-color var(--pb-dur) var(--pb-ease);
+}
+
+.pb-tool:hover:not(:disabled) {
+  background: var(--pb-surface-2);
+  color: var(--pb-ink);
+}
+
+.pb-tool:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pb-tool.is-on {
+  background: color-mix(in oklab, var(--pb-brand) 12%, var(--pb-surface));
+  border-color: var(--pb-brand);
+  color: var(--pb-brand);
+}
+
+.pb-levels {
+  display: grid;
+  gap: 0.55rem;
+  padding-top: 0.9rem;
+  border-top: 1.5px dashed var(--pb-line-strong);
+}
+
+.pb-levels__label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pb-ink-faint);
+}
+
+/* ---------------- pause curtain ---------------- */
+
+.pb-curtain {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  border-radius: var(--pb-r-lg);
+  background: color-mix(in oklab, var(--pb-bg) 82%, transparent);
+  backdrop-filter: blur(7px);
+  color: var(--pb-ink-soft);
+  animation: pb-fade var(--pb-dur) var(--pb-ease);
+}
+
+@keyframes pb-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ---------------- hint sheet ---------------- */
+
+.pb-hint {
+  position: fixed;
+  left: 50%;
+  bottom: 1.25rem;
+  z-index: 20;
+  width: min(560px, calc(100% - 2rem));
+  transform: translateX(-50%);
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.9rem 1.1rem;
+  border: 2px solid var(--pb-line-strong);
+  border-radius: var(--pb-r-lg);
+  background: var(--pb-surface);
+  box-shadow: 0 6px 0 var(--pb-shadow);
+  animation: pb-rise var(--pb-dur-slow) var(--pb-ease);
+}
+
+@keyframes pb-rise {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 14px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.pb-hint--mistake {
+  border-color: var(--pb-danger);
+}
+
+.pb-hint__head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--pb-ink-soft);
+}
+
+.pb-hint__text {
+  font-size: var(--pb-fs-md);
+  line-height: 1.5;
+}
+
+.pb-hint__actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+/* ---------------- win ---------------- */
+
+.pb-win {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: color-mix(in oklab, var(--pb-ink) 52%, transparent);
+  animation: pb-fade var(--pb-dur-slow) var(--pb-ease);
+}
+
+.pb-win__card {
+  width: min(420px, 100%);
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+  padding: 1.8rem 1.5rem 1.5rem;
+  text-align: center;
+  background: var(--pb-surface);
+  border: 2px solid var(--pb-line-strong);
+  border-radius: var(--pb-r-xl);
+  box-shadow: 0 8px 0 color-mix(in oklab, var(--pb-ink) 22%, transparent);
+  animation: pb-pop var(--pb-dur-slow) var(--pb-ease);
+}
+
+@keyframes pb-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.pb-win__icon {
+  display: grid;
+  place-items: center;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--pb-accent) 26%, var(--pb-surface));
+  color: color-mix(in oklab, var(--pb-accent) 55%, var(--pb-ink));
+}
+
+.pb-win__title {
+  font-size: var(--pb-fs-xl);
+}
+
+.pb-win__sub {
+  color: var(--pb-ink-soft);
+  font-size: var(--pb-fs-sm);
+}
+
+.pb-win__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 0.4rem;
+}
+
+/* ---------------- narrow screens ---------------- */
+
+@media (max-width: 900px) {
+  .pb-play__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pb-keypad {
+    grid-template-columns: repeat(9, 1fr);
+    gap: 5px;
+    order: 1;
+  }
+
+  .pb-key {
+    aspect-ratio: 1;
+    border-radius: var(--pb-r-sm);
+    box-shadow: 0 1px 0 var(--pb-line);
+  }
+
+  .pb-key__digit {
+    font-size: 1.1rem;
+  }
+
+  .pb-key__count {
+    top: 2px;
+    right: 3px;
+    font-size: 0.55rem;
+  }
+
+  .pb-tools {
+    order: 2;
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .pb-tool span {
+    font-size: 0.62rem;
+  }
+
+  .pb-levels {
+    order: 3;
+  }
+}

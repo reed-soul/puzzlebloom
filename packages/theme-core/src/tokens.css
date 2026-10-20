@@ -1,0 +1,180 @@
+/**
+ * Design tokens.
+ *
+ * Eight theme colours go in; everything else on the site is a `color-mix()`
+ * of them. That is the whole reason a child-made theme still looks designed:
+ * the tints, the borders and the 27 cell states are all computed from the same
+ * two or three base colours, so they cannot drift out of tune with each other.
+ *
+ * Naming: `--pb-*`. Nothing in here is game-specific.
+ */
+
+:root {
+  /* ---- base palette (overwritten at runtime by applyTheme) ---- */
+  --pb-bg: #eef5e9;
+  --pb-surface: #ffffff;
+  --pb-ink: #24382b;
+  --pb-brand: #2f7d5b;
+  --pb-brand-solid: #2f7d5b;
+  --pb-brand-ink: #ffffff;
+  --pb-accent: #e9a23b;
+  --pb-danger: #c0523f;
+  --pb-success: #3e8e5a;
+
+  /* ---- derived surfaces ---- */
+  --pb-surface-2: color-mix(in oklab, var(--pb-brand) 5%, var(--pb-surface));
+  --pb-surface-3: color-mix(in oklab, var(--pb-brand) 10%, var(--pb-surface));
+  --pb-sunken: color-mix(in oklab, var(--pb-ink) 4%, var(--pb-bg));
+
+  /* ---- derived text ---- */
+  --pb-ink-soft: color-mix(in oklab, var(--pb-ink) 64%, var(--pb-bg));
+  --pb-ink-faint: color-mix(in oklab, var(--pb-ink) 42%, var(--pb-bg));
+
+  /* ---- derived lines ---- */
+  --pb-line: color-mix(in oklab, var(--pb-ink) 13%, var(--pb-bg));
+  --pb-line-strong: color-mix(in oklab, var(--pb-ink) 28%, var(--pb-bg));
+  --pb-shadow: color-mix(in oklab, var(--pb-ink) 14%, var(--pb-bg));
+
+  /* ---- sudoku board states ---- */
+  --pb-cell: var(--pb-surface);
+  --pb-cell-given: color-mix(in oklab, var(--pb-ink) 7%, var(--pb-surface));
+  --pb-cell-peer: color-mix(in oklab, var(--pb-brand) 7%, var(--pb-surface));
+  --pb-cell-same: color-mix(in oklab, var(--pb-brand) 15%, var(--pb-surface));
+  --pb-cell-active: color-mix(in oklab, var(--pb-brand) 28%, var(--pb-surface));
+  --pb-cell-error: color-mix(in oklab, var(--pb-danger) 18%, var(--pb-surface));
+  --pb-cell-hint: color-mix(in oklab, var(--pb-accent) 26%, var(--pb-surface));
+  --pb-grid-line: color-mix(in oklab, var(--pb-ink) 10%, var(--pb-surface));
+  --pb-grid-box: color-mix(in oklab, var(--pb-ink) 36%, var(--pb-surface));
+
+  /* ---- type ---- */
+  --pb-font-display: 'Baloo 2', ui-rounded, 'Trebuchet MS', system-ui, sans-serif;
+  --pb-font-body: 'Nunito', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --pb-fs-xs: 0.75rem;
+  --pb-fs-sm: 0.875rem;
+  --pb-fs-md: 1rem;
+  --pb-fs-lg: 1.125rem;
+  --pb-fs-xl: 1.375rem;
+  --pb-fs-2xl: 1.75rem;
+  --pb-fs-3xl: clamp(2rem, 4.2vw, 3.25rem);
+
+  /* ---- space & shape ---- */
+  --pb-s-1: 0.25rem;
+  --pb-s-2: 0.5rem;
+  --pb-s-3: 0.75rem;
+  --pb-s-4: 1rem;
+  --pb-s-5: 1.5rem;
+  --pb-s-6: 2rem;
+  --pb-s-7: 3rem;
+  --pb-s-8: 4.5rem;
+  --pb-r-sm: 10px;
+  --pb-r-md: 16px;
+  --pb-r-lg: 22px;
+  --pb-r-xl: 30px;
+  --pb-r-pill: 999px;
+  --pb-page: 1120px;
+  --pb-nav-h: 68px;
+
+  /* ---- motion (no bounce: this is a calm site) ---- */
+  --pb-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --pb-dur: 180ms;
+  --pb-dur-slow: 340ms;
+
+  color-scheme: light;
+}
+
+/* Dark surfaces swallow small white mixes, so the board states get more fill. */
+:root[data-mood='dark'] {
+  --pb-cell-given: color-mix(in oklab, var(--pb-ink) 13%, var(--pb-surface));
+  --pb-cell-peer: color-mix(in oklab, var(--pb-brand) 12%, var(--pb-surface));
+  --pb-cell-same: color-mix(in oklab, var(--pb-brand) 22%, var(--pb-surface));
+  --pb-cell-active: color-mix(in oklab, var(--pb-brand) 34%, var(--pb-surface));
+  --pb-cell-error: color-mix(in oklab, var(--pb-danger) 26%, var(--pb-surface));
+  --pb-grid-line: color-mix(in oklab, var(--pb-ink) 15%, var(--pb-surface));
+  --pb-grid-box: color-mix(in oklab, var(--pb-ink) 44%, var(--pb-surface));
+  --pb-line: color-mix(in oklab, var(--pb-ink) 18%, var(--pb-bg));
+  --pb-line-strong: color-mix(in oklab, var(--pb-ink) 34%, var(--pb-bg));
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--pb-bg);
+  color: var(--pb-ink);
+  font-family: var(--pb-font-body);
+  font-size: var(--pb-fs-md);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  transition: background var(--pb-dur-slow) var(--pb-ease), color var(--pb-dur-slow) var(--pb-ease);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--pb-font-display);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  margin: 0;
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--pb-brand);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--pb-brand);
+  outline-offset: 2px;
+  border-radius: var(--pb-r-sm);
+}
+
+::selection {
+  background: color-mix(in oklab, var(--pb-brand) 24%, var(--pb-surface));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --pb-dur: 0ms;
+    --pb-dur-slow: 0ms;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
