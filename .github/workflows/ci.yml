@@ -32,7 +32,10 @@ jobs:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
       - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps chromium
+        # WebKit is not optional here: every iOS browser is WebKit underneath,
+        # and iOS is the declared target. Chromium is still installed for the
+        # desktop layout project.
+        run: pnpm exec playwright install --with-deps chromium webkit
       # `build:seo` before the suite, not after: the prerender needs a browser,
       # and the tests then run against exactly the artifact that gets deployed —
       # real files per route, real 404s — rather than an SPA preview server.

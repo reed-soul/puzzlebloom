@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>出题台 · 4×4 样机</title>
+<style>
+:root{
+  --pb-bg:#ecf7e4; --pb-surface:#fdfefc; --pb-sky:#a9e1ef; --pb-ink:#122b1c;
+  --pb-brand:#007d43; --pb-accent:#fab72a; --pb-accent-ink:#151e0f;
+  --pb-danger:#a6352d; --pb-success:#157a46;
+  --pb-surface-2:color-mix(in oklab,var(--pb-brand) 5%,var(--pb-surface));
+  --pb-surface-3:color-mix(in oklab,var(--pb-brand) 10%,var(--pb-surface));
+  --pb-sky-soft:color-mix(in oklab,var(--pb-sky) 42%,var(--pb-surface));
+  --pb-sky-deep:color-mix(in oklab,var(--pb-sky) 74%,var(--pb-brand));
+  --pb-accent-soft:color-mix(in oklab,var(--pb-accent) 24%,var(--pb-surface));
+  --pb-ink-soft:color-mix(in oklab,var(--pb-ink) 64%,var(--pb-bg));
+  --pb-ink-faint:color-mix(in oklab,var(--pb-ink) 42%,var(--pb-bg));
+  --pb-line:color-mix(in oklab,var(--pb-ink) 13%,var(--pb-bg));
+  --pb-line-strong:color-mix(in oklab,var(--pb-ink) 28%,var(--pb-bg));
+  --pb-shadow:color-mix(in oklab,var(--pb-ink) 14%,var(--pb-bg));
+  --pb-cell:var(--pb-surface);
+  --pb-cell-given:color-mix(in oklab,var(--pb-ink) 7%,var(--pb-surface));
+  --pb-cell-same:color-mix(in oklab,var(--pb-brand) 15%,var(--pb-surface));
+  --pb-cell-active:color-mix(in oklab,var(--pb-brand) 28%,var(--pb-surface));
+  --pb-cell-error:color-mix(in oklab,var(--pb-danger) 18%,var(--pb-surface));
+  --pb-grid-box:color-mix(in oklab,var(--pb-ink) 36%,var(--pb-surface));
+  --pb-font-display:ui-rounded,'Trebuchet MS',system-ui,sans-serif;
+  --pb-font-body:system-ui,-apple-system,'Segoe UI',sans-serif;
+  --pb-r-sm:10px; --pb-r-md:16px; --pb-r-lg:22px; --pb-r-pill:999px;
+  --pb-lift-1:0 2px 0 var(--pb-shadow),0 6px 14px -10px color-mix(in oklab,var(--pb-ink) 40%,transparent);
+  --pb-lift-2:0 5px 0 var(--pb-shadow),0 16px 28px -16px color-mix(in oklab,var(--pb-ink) 46%,transparent);
+  --pb-ease:cubic-bezier(.22,1,.36,1);
+  --pb-ease-play:cubic-bezier(.34,1.56,.64,1);
+  --pb-dur:180ms; --pb-dur-tap:90ms; --pb-dur-snap:180ms; --pb-dur-celebrate:620ms;
+  --pb-lift-press:0 1px 0 var(--pb-shadow);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  min-height:100vh; color:var(--pb-ink); font-family:var(--pb-font-body); line-height:1.6;
+  background-color:var(--pb-bg);
+  background-image:linear-gradient(180deg,var(--pb-sky-deep) 0,var(--pb-sky) 320px,var(--pb-sky-soft) 760px,var(--pb-bg) 1200px);
+  background-repeat:no-repeat;
+  -webkit-font-smoothing:antialiased;
+}
+h1{font-family:var(--pb-font-display);font-size:clamp(1.5rem,3.4vw,2.15rem);font-weight:600;line-height:1.15;letter-spacing:-.01em;margin:0}
+p{margin:0}
+.wrap{max-width:1000px;margin:0 auto;padding:clamp(1.2rem,4vw,2.5rem) clamp(.9rem,3vw,1.6rem) 4rem}
+
+.bar{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.bar__copy{display:grid;gap:.4rem;max-width:34ch}
+.bar .bar__sound{flex:0 0 auto;margin-left:auto;align-self:flex-end;padding:.35rem .8rem;font-size:.8rem;box-shadow:none}
+.bar__copy p{color:var(--pb-ink-soft);font-size:.95rem}
+.chip{display:inline-flex;align-items:center;gap:.35rem;justify-self:start;padding:.2rem .7rem;border-radius:var(--pb-r-pill);background:var(--pb-surface-3);color:var(--pb-brand);font-size:.78rem;font-weight:600;letter-spacing:.02em}
+
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:clamp(1rem,2.4vw,2rem);align-items:start}
+@media (max-width:820px){.stage{grid-template-columns:minmax(0,1fr)}}
+
+.table{background:var(--pb-surface);border:2px solid var(--pb-line);border-radius:var(--pb-r-lg);box-shadow:var(--pb-lift-1);padding:clamp(.8rem,2.4vw,1.5rem);display:grid;grid-template-columns:minmax(0,1fr);gap:1rem;justify-items:center}
+.board{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;padding:5px;background:var(--pb-grid-box);border-radius:var(--pb-r-md);width:100%;max-width:404px;transition:transform var(--pb-dur-snap) var(--pb-ease-play)}
+.board.is-solved{transform:translateY(-4px)}
+.box{display:grid;grid-template-columns:repeat(2,1fr);gap:3px;padding:3px;background:color-mix(in oklab,var(--pb-ink) 14%,var(--pb-surface));border-radius:9px}
+
+.cell{
+  position:relative;aspect-ratio:1;display:grid;place-items:center;
+  background:var(--pb-cell);border:0;border-radius:6px;cursor:pointer;padding:0;
+  transition:background var(--pb-dur-tap) var(--pb-ease),box-shadow var(--pb-dur-tap) var(--pb-ease),transform var(--pb-dur-tap) var(--pb-ease-play);
+  color:var(--pb-ink);
+}
+.cell svg{width:64%;height:64%;display:block;opacity:0;transform:scale(.55) rotate(-8deg)}
+.cell.is-filled svg{opacity:1;transform:none;animation:pb-land var(--pb-dur-land,420ms) var(--pb-ease-play) both}
+.cell.is-given{background:var(--pb-cell-given);box-shadow:inset 0 0 0 1.5px color-mix(in oklab,var(--pb-ink) 9%,transparent)}
+.cell.is-given svg{opacity:1;transform:none;animation:none}
+.cell.is-mine{background:var(--pb-cell-same)}
+.cell.is-active{background:var(--pb-cell-active);box-shadow:inset 0 0 0 2px var(--pb-brand)}
+.cell.is-wrong{background:var(--pb-cell-error);animation:pb-shake 340ms var(--pb-ease)}
+.cell.is-solved{animation:pb-pop 520ms var(--pb-ease-play) both}
+.cell:focus-visible{outline:3px solid var(--pb-brand);outline-offset:1px;z-index:2}
+.cell:hover:not(.is-given){background:var(--pb-cell-same)}
+
+@keyframes pb-land{0%{transform:scale(.55) rotate(-8deg);opacity:0}60%{transform:scale(1.06) rotate(1deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+@keyframes pb-pop{0%{transform:scale(1)}40%{transform:scale(1.09)}100%{transform:scale(1)}}
+@keyframes pb-shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}55%{transform:translateX(4px)}80%{transform:translateX(-2px)}}
+
+.side{display:grid;gap:.85rem}
+.verdict{
+  display:grid;grid-template-columns:34px 1fr;gap:.7rem;align-items:start;
+  padding:.85rem .9rem;border-radius:var(--pb-r-md);border:2px solid var(--pb-line);
+  background:var(--pb-surface);box-shadow:var(--pb-lift-1);
+  transition:border-color var(--pb-dur-snap) var(--pb-ease),background var(--pb-dur-snap) var(--pb-ease);
+}
+.verdict__icon{width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:var(--pb-surface-3);transition:background var(--pb-dur-snap) var(--pb-ease)}
+.verdict__icon svg{width:20px;height:20px;stroke-width:1.9;fill:none;stroke:var(--pb-ink-faint);stroke-linecap:round;stroke-linejoin:round;transition:stroke var(--pb-dur-snap) var(--pb-ease)}
+.verdict strong{display:block;font-family:var(--pb-font-display);font-weight:600;font-size:1rem;line-height:1.3}
+.verdict p{color:var(--pb-ink-soft);font-size:.86rem;line-height:1.45;margin-top:.15rem}
+.verdict[data-state=ok]{border-color:color-mix(in oklab,var(--pb-brand) 45%,var(--pb-line));background:var(--pb-surface-2)}
+.verdict[data-state=ok] .verdict__icon{background:color-mix(in oklab,var(--pb-brand) 18%,var(--pb-surface))}
+.verdict[data-state=ok] .verdict__icon svg{stroke:var(--pb-brand)}
+.verdict[data-state=ok] strong{color:var(--pb-brand)}
+.verdict[data-state=warn]{border-color:color-mix(in oklab,var(--pb-accent) 60%,var(--pb-line));background:var(--pb-accent-soft)}
+.verdict[data-state=warn] .verdict__icon{background:color-mix(in oklab,var(--pb-accent) 40%,var(--pb-surface))}
+.verdict[data-state=warn] .verdict__icon svg{stroke:var(--pb-accent-ink)}
+.verdict[data-state=warn] strong{color:var(--pb-accent-ink)}
+.verdict[data-state=bad]{border-color:color-mix(in oklab,var(--pb-danger) 40%,var(--pb-line));background:var(--pb-cell-error)}
+.verdict[data-state=bad] .verdict__icon{background:color-mix(in oklab,var(--pb-danger) 20%,var(--pb-surface))}
+.verdict[data-state=bad] .verdict__icon svg{stroke:var(--pb-danger)}
+.verdict[data-state=bad] strong{color:var(--pb-danger)}
+
+.meter[hidden]{display:none}
+.meter{display:flex;justify-content:space-between;gap:.5rem;font-size:.82rem;color:var(--pb-ink-soft);padding:0 .2rem}
+.meter b{font-family:var(--pb-font-display);color:var(--pb-ink);font-size:1rem}
+
+.keypad{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem}
+.key{
+  aspect-ratio:1;display:grid;place-items:center;padding:0;border:2px solid var(--pb-line);
+  border-radius:var(--pb-r-md);background:var(--pb-surface);cursor:pointer;
+  box-shadow:var(--pb-lift-1);
+  transition:transform var(--pb-dur-tap) var(--pb-ease-play),box-shadow var(--pb-dur-tap) var(--pb-ease-play),border-color var(--pb-dur-tap) var(--pb-ease);
+}
+.key svg{width:62%;height:62%}
+.key:hover{border-color:var(--pb-line-strong);transform:translateY(-1px)}
+.key:active,.key.is-pressed{transform:translateY(1px);box-shadow:var(--pb-lift-press)}
+.key:focus-visible{outline:3px solid var(--pb-brand);outline-offset:2px}
+
+.actions{display:flex;gap:.5rem;flex-wrap:wrap}
+.btn{flex:1 1 auto;padding:.62rem .9rem;border-radius:var(--pb-r-pill);border:2px solid var(--pb-line);background:var(--pb-surface);
+  font:inherit;font-size:.9rem;font-weight:600;cursor:pointer;box-shadow:var(--pb-lift-1);
+  transition:transform var(--pb-dur-tap) var(--pb-ease-play),box-shadow var(--pb-dur-tap) var(--pb-ease-play),background var(--pb-dur) var(--pb-ease)}
+.btn:hover{border-color:var(--pb-line-strong)}
+.btn:active{transform:translateY(2px);box-shadow:none}
+.btn--loud{background:var(--pb-brand);border-color:var(--pb-brand);color:#fff}
+.btn--loud:hover{background:color-mix(in oklab,var(--pb-brand) 88%,#000)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+
+.sharebox[hidden]{display:none}
+.sharebox{display:grid;gap:.5rem;padding:.8rem;border-radius:var(--pb-r-md);border:2px dashed var(--pb-line-strong);background:var(--pb-surface-2)}
+.sharebox p{font-size:.82rem;color:var(--pb-ink-soft)}
+.sharebox input{width:100%;padding:.5rem .6rem;border-radius:var(--pb-r-sm);border:2px solid var(--pb-line);font:inherit;font-size:.78rem;background:var(--pb-surface);color:var(--pb-ink)}
+
+.note{max-width:66ch;font-size:.82rem;color:var(--pb-ink-soft);line-height:1.55}
+.foot{display:flex;justify-content:space-between;gap:1rem;align-items:center;flex-wrap:wrap;margin-top:2rem;padding-top:1rem;border-top:2px solid var(--pb-line);font-size:.82rem;color:var(--pb-ink-soft)}
+.garden{display:inline-flex;align-items:center;gap:.4rem}
+.garden svg{width:16px;height:16px;stroke:var(--pb-brand);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="bar">
+    <div class="bar__copy">
+      <span class="chip">出题台 · 4×4</span>
+      <h1 id="title">让朋友解不出来</h1>
+      <p id="sub">摆几个提示，看着徽章从「无解」翻到「只有一个答案」。那一下就是整台戏。</p>
+    </div>
+    <button class="btn bar__sound" id="sound" aria-pressed="true">声音：开</button>
+  </div>
+
+  <div class="stage">
+    <div class="table">
+      <div class="board" id="board" role="grid" aria-label="四乘四棋盘"></div>
+      <p class="note" id="hintline">空格也算数：一道题必须只有一个答案，而且要留下空格给人填。</p>
+    </div>
+
+    <aside class="side">
+      <div class="verdict" id="verdict" data-state="plain" aria-live="polite">
+        <span class="verdict__icon" id="vIcon"></span>
+        <div>
+          <strong id="vTitle">空棋盘</strong>
+          <p id="vBody">先摆几个提示。</p>
+        </div>
+      </div>
+
+      <div class="meter" id="meterMake"><span>提示 <b id="clues">0</b> 个</span><span>4×4 的下限是 4 个</span></div>
+      <div class="meter" id="meterSolve" hidden><span>填了 <b id="filled">0</b> 格</span><span id="meterHint">一次都没错</span></div>
+
+      <div class="keypad" id="keypad"></div>
+
+      <div class="actions">
+        <button class="btn" id="clear">清空</button>
+        <button class="btn" id="sample">给我一道</button>
+      </div>
+      <div class="actions">
+        <button class="btn btn--loud" id="share" disabled>生成题目串</button>
+        <button class="btn btn--loud" id="again" hidden>再出一道</button>
+      </div>
+
+      <div class="sharebox" id="sharebox" hidden>
+        <p>这一串就是那道题。它只装题目，不装任何身份信息。</p>
+        <input id="code" readonly aria-label="题目串" />
+        <div class="actions">
+          <button class="btn" id="copy">复制</button>
+          <button class="btn" id="playit">我来解这道</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="foot">
+    <span class="garden">
+      <svg viewBox="0 0 24 24"><path d="M12 20v-6"/><path d="M12 14c0-3 2-5 5-5 0 3-2 5-5 5Z"/><path d="M12 16c0-2.4-1.6-4-4-4 0 2.4 1.6 4 4 4Z"/></svg>
+      花园 <b id="plants">0</b> 株 · 只长不枯
+    </span>
+    <span>样机：只验证手感，不验证美术。</span>
+  </div>
+</div>
+
+<script>
+const COLORS = ['#E4736B','#E9A23B','#E3C244','#7FB069'];
+const EYES = '#122b1c';
+
+function glyph(digit, size){
+  const c = COLORS[digit - 1];
+  const feature = [
+    `<circle cx="6.3" cy="6.3" r="2.35" fill="${c}"/><circle cx="17.7" cy="6.3" r="2.35" fill="${c}"/>`,
+    `<ellipse cx="9.1" cy="4.4" rx="1.5" ry="3.5" transform="rotate(-8 9.1 4.4)" fill="${c}"/><ellipse cx="14.9" cy="4.4" rx="1.5" ry="3.5" transform="rotate(8 14.9 4.4)" fill="${c}"/>`,
+    `<path d="M12 2.2 14.6 7.4 9.4 7.4z" fill="${c}"/>`,
+    `<path d="M12 7.8c0-3.1 1.9-4.9 4.8-5.2.3 3.2-2.1 5.1-4.8 5.2z" fill="${c}"/>`
+  ][digit - 1];
+  return `<svg viewBox="0 0 24 24" width="${size}" height="${size}" aria-hidden="true">
+    <circle cx="12" cy="13.9" r="7.9" fill="${c}"/>${feature}
+    <circle cx="8.9" cy="12.9" r="1.45" fill="${EYES}"/><circle cx="15.1" cy="12.9" r="1.45" fill="${EYES}"/>
+    <path d="M10.4 16.5c1 1 2.2 1 3.2 0" fill="none" stroke="${EYES}" stroke-width="1.35" stroke-linecap="round" opacity=".7"/>
+  </svg>`;
+}
+
+const ICONS = {
+  plain: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 8.2v.2M12 11.4v4.4"/></svg>',
+  ok: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M8.4 12.3l2.5 2.5 4.7-5"/></svg>',
+  warn: '<svg viewBox="0 0 24 24"><path d="M12 4.6 20.2 19H3.8z"/><path d="M12 10.2v3.4M12 16.2v.2"/></svg>',
+  bad: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9 9l6 6M15 9l-6 6"/></svg>'
+};
+
+const BASE = [1,2,3,4,3,4,1,2,2,1,4,3,4,3,2,1];
+const SAMPLE = [1,0,0,0, 0,0,0,2, 0,0,4,0, 0,3,0,0];
+
+const boardEl = document.getElementById('board');
+const keypadEl = document.getElementById('keypad');
+const vEl = document.getElementById('verdict');
+const vIcon = document.getElementById('vIcon');
+const vTitle = document.getElementById('vTitle');
+const vBody = document.getElementById('vBody');
+const cluesEl = document.getElementById('clues');
+const shareEl = document.getElementById('share');
+const sharebox = document.getElementById('sharebox');
+const codeEl = document.getElementById('code');
+const titleEl = document.getElementById('title');
+const subEl = document.getElementById('sub');
+const hintEl = document.getElementById('hintline');
+const plantsEl = document.getElementById('plants');
+
+const state = { mode:'make', grid:new Int16Array(16), given:new Set(), sel:-1, solution:null, solved:false, wrong:0 };
+let planted = Number(localStorage.getItem('pb.plants') || 0);
+plantsEl.textContent = planted;
+
+/* ---------- rules ---------- */
+const fits = (g,i,v) => {
+  const r = i>>2, c = i&3;
+  for (let k=0;k<4;k++){ if (g[r*4+k]===v) return false; if (g[k*4+c]===v) return false; }
+  const br=(r>>1)*2, bc=(c>>1)*2;
+  for (let a=0;a<2;a++) for (let b=0;b<2;b++) if (g[(br+a)*4+bc+b]===v) return false;
+  return true;
+};
+const countSolutions = (g) => {
+  const i = g.indexOf(0);
+  if (i === -1) return 1;
+  let n = 0;
+  for (let v=1;v<=4;v++) if (fits(g,i,v)) { g[i]=v; n += countSolutions(g); g[i]=0; if (n>1) return 2; }
+  return n;
+};
+const solve = (g) => {
+  const i = g.indexOf(0);
+  if (i === -1) return Array.from(g);
+  for (let v=1;v<=4;v++) if (fits(g,i,v)) { g[i]=v; const s = solve(g); if (s) return s; g[i]=0; }
+  return null;
+};
+const hasDupe = (g) => {
+  for (let i=0;i<16;i++){ if (!g[i]) continue; const v=g[i]; g[i]=0; const bad = !fits(g,i,v); g[i]=v; if (bad) return true; }
+  return false;
+};
+
+/* ---------- sound ---------- */
+let ctx = null, soundOn = true;
+const ensureCtx = () => { if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)(); return ctx; };
+function tone(freq, dur, gain, slide){
+  if (!soundOn) return;
+  try {
+    const ac = ensureCtx(), t = ac.currentTime;
+    const osc = ac.createOscillator(), amp = ac.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, t);
+    if (slide) osc.frequency.exponentialRampToValueAtTime(freq * slide, t + dur);
+    amp.gain.setValueAtTime(0.0001, t);
+    amp.gain.exponentialRampToValueAtTime(gain, t + 0.008);
+    amp.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.connect(amp).connect(ac.destination);
+    osc.start(t); osc.stop(t + dur + 0.02);
+  } catch { /* a blocked audio context must never break the game */ }
+}
+const sfx = {
+  place: () => tone(540, 0.09, 0.05, 0.92),
+  no: () => tone(320, 0.16, 0.045, 0.86),
+  done: () => { tone(523,0.12,0.05); setTimeout(()=>tone(659,0.12,0.05),110); setTimeout(()=>tone(784,0.3,0.055),220); },
+  flip: () => tone(700, 0.07, 0.035, 1.1)
+};
+
+/* ---------- render ---------- */
+function cellIndex(box, pos){
+  return ((box>>1)*2 + (pos>>1)) * 4 + ((box&1)*2 + (pos&1));
+}
+
+function buildBoard(){
+  boardEl.innerHTML = '';
+  for (let b=0;b<4;b++){
+    const box = document.createElement('div');
+    box.className = 'box';
+    for (let p=0;p<4;p++){
+      const i = cellIndex(b,p);
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'cell';
+      btn.dataset.i = String(i);
+      btn.setAttribute('role','gridcell');
+      btn.addEventListener('click', () => onCell(i));
+      box.appendChild(btn);
+    }
+    boardEl.appendChild(box);
+  }
+}
+
+function buildKeypad(){
+  keypadEl.innerHTML = '';
+  for (let d=1;d<=4;d++){
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'key';
+    b.dataset.d = String(d);
+    b.setAttribute('aria-label', '生物 ' + d);
+    b.innerHTML = glyph(d, 34);
+    b.addEventListener('click', () => place(d));
+    keypadEl.appendChild(b);
+  }
+}
+
+function paint(){
+  const cells = boardEl.querySelectorAll('.cell');
+  cells.forEach((el) => {
+    const i = Number(el.dataset.i);
+    const v = state.grid[i];
+    const isGiven = state.given.has(i);
+    el.className = 'cell';
+    if (v) {
+      el.classList.add('is-filled');
+      el.innerHTML = glyph(v, 40);
+    } else {
+      el.innerHTML = '';
+    }
+    if (isGiven) el.classList.add('is-given');
+    else if (v) el.classList.add('is-mine');
+    if (i === state.sel) el.classList.add('is-active');
+    if (!v) el.innerHTML = '';
+    el.setAttribute('aria-label', `第 ${(i>>2)+1} 行 第 ${(i&3)+1} 列，${v ? '生物 ' + v : '空'}`);
+  });
+  const filledNow = Array.from(state.grid).filter(Boolean).length;
+  cluesEl.textContent = String(filledNow);
+  document.getElementById('filled').textContent = String(filledNow - state.given.size);
+  shareEl.disabled = state.mode !== 'make' || judge().state !== 'ok';
+}
+
+function fromArray(g){ return Array.from(g); }
+function gridFromString(s){ const g = new Int16Array(16); for (let i=0;i<16;i++) g[i] = Number(s[i]) || 0; return g; }
+
+function judge(){
+  const g = state.grid.slice();
+  const clues = Array.from(g).filter(Boolean).length;
+  if (clues === 0) return { state:'plain', title:'空棋盘', body:'先摆几个提示。', icon:'plain' };
+  if (hasDupe(g)) return { state:'bad', title:'有两条规则打架了', body:'同一个生物在同一行、同一列或同一个 2×2 里出现了两次。', icon:'bad' };
+  const n = countSolutions(g);
+  if (n === 0) return { state:'bad', title:'无解', body:'这个摆法填不满。换一个数字试试。', icon:'bad' };
+  if (n > 1) return { state:'warn', title:'不止一个答案', body:'多摆一个提示，把别的路堵住。', icon:'warn' };
+  if (clues === 16) return { state:'warn', title:'填满了', body:'没有一个空格，别人没得解。让出一个格子。', icon:'warn' };
+  return { state:'ok', title:'只有一个答案', body:'这就是一道题了。把它发给谁？', icon:'ok' };
+}
+
+let lastState = '';
+function paintVerdict(){
+  if (state.mode === 'solve'){
+    vEl.dataset.state = 'plain';
+    vIcon.innerHTML = ICONS.plain;
+    vTitle.textContent = '把它解开';
+    vBody.textContent = '点一个空格，再点下面的生物。填错不会扣东西，只会告诉你这一格不对。';
+    lastState = 'plain';
+    return;
+  }
+  const j = judge();
+  vEl.dataset.state = j.state;
+  vIcon.innerHTML = ICONS[j.icon];
+  vTitle.textContent = j.title;
+  vBody.textContent = j.body;
+  if (j.state === 'ok' && lastState !== 'ok') sfx.flip();
+  lastState = j.state;
+  shareEl.disabled = state.mode !== 'make' || j.state !== 'ok';
+}
+
+/* ---------- interaction ---------- */
+function onCell(i){
+  if (state.mode === 'solve' && (state.given.has(i) || state.solved)) return;
+  state.sel = i;
+  paint();
+}
+
+function place(d){
+  const i = state.sel;
+  if (i < 0) return;
+  if (state.mode === 'make'){
+    if (state.grid[i] === d) { state.grid[i] = 0; }
+    else state.grid[i] = d;
+    sfx.place();
+    paint(); paintVerdict();
+    return;
+  }
+  if (state.grid[i] === d) return;
+  if (state.solution && state.solution[i] === d){
+    state.grid[i] = d;
+    sfx.place();
+    paint();
+    checkSolved();
+  } else {
+    state.wrong += 1;
+    sfx.no();
+    const el = boardEl.querySelector(`.cell[data-i="${i}"]`);
+    if (el){ el.classList.add('is-wrong'); setTimeout(()=>el.classList.remove('is-wrong'), 380); }
+  }
+}
+
+function checkSolved(){
+  if (state.grid.includes(0)) return;
+  const g = state.grid.slice();
+  if (countSolutions(g) !== 1) return;
+  state.solved = true;
+  sfx.done();
+  boardEl.classList.add('is-solved');
+  const cells = Array.from(boardEl.querySelectorAll('.cell')).sort((a,b)=>Number(a.dataset.i)-Number(b.dataset.i));
+  cells.forEach((el, k) => { el.style.animationDelay = `${k * 45}ms`; el.classList.add('is-solved'); });
+  setTimeout(() => {
+    cells.forEach((el) => { el.style.animationDelay = ''; el.classList.remove('is-solved'); });
+    boardEl.classList.remove('is-solved');
+  }, 900);
+  planted += 1;
+  localStorage.setItem('pb.plants', String(planted));
+  plantsEl.textContent = planted;
+  vEl.dataset.state = 'ok';
+  vIcon.innerHTML = ICONS.ok;
+  vTitle.textContent = '解开了';
+  vBody.textContent = state.wrong === 0 ? '一次都没错。花园里长了一株。' : `错了 ${state.wrong} 次，但解开了。花园里长了一株。`;
+  document.getElementById('again').hidden = false;
+  document.getElementById('meterHint').textContent = state.wrong === 0 ? '一次都没错' : `错了 ${state.wrong} 次`;
+}
+
+/* ---------- modes ---------- */
+function enterMake(grid){
+  state.mode = 'make';
+  state.grid = grid ? grid.slice() : new Int16Array(16);
+  state.given = new Set();
+  state.sel = -1; state.solved = false; state.solution = null; state.wrong = 0;
+  titleEl.textContent = '让朋友解不出来';
+  subEl.textContent = '摆几个提示，看着徽章从「无解」翻到「只有一个答案」。那一下就是整台戏。';
+  hintEl.textContent = '空格也算数：一道题必须只有一个答案，而且要留下空格给人填。';
+  sharebox.hidden = true;
+  document.getElementById('share').hidden = false;
+  document.getElementById('again').hidden = true;
+  document.getElementById('meterMake').hidden = false;
+  document.getElementById('meterSolve').hidden = true;
+  boardEl.classList.remove('is-solved');
+  lastState = '';
+  paint(); paintVerdict();
+}
+
+function enterSolve(grid, fromLink){
+  state.mode = 'solve';
+  state.grid = grid.slice();
+  state.given = new Set();
+  grid.forEach((v,i) => { if (v) state.given.add(i); });
+  const g = state.grid.slice();
+  state.solution = solve(g);
+  state.sel = -1; state.solved = false; state.wrong = 0;
+  titleEl.textContent = fromLink ? '有人给你留了一道题' : '把它解开';
+  subEl.textContent = '用下面的生物填满空格。填错不会扣东西，只会告诉你这一格不对。';
+  hintEl.textContent = '这一步的乐趣是确定感：填对会「嗒」一声，填错会「不」一声。';
+  sharebox.hidden = true;
+  document.getElementById('share').hidden = true;
+  document.getElementById('again').hidden = true;
+  document.getElementById('meterMake').hidden = true;
+  document.getElementById('meterSolve').hidden = false;
+  boardEl.classList.remove('is-solved');
+  paint(); paintVerdict();
+  if (!state.solution){ vEl.dataset.state = 'bad'; vIcon.innerHTML = ICONS.bad; vTitle.textContent = '这道题坏了'; vBody.textContent = '它没有解，或者不止一个解。'; }
+}
+
+/* ---------- share ---------- */
+function encode(grid){
+  const raw = Array.from(grid).join('');
+  return btoa(raw).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+function decode(code){
+  try {
+    const raw = atob(code.replace(/-/g,'+').replace(/_/g,'/'));
+    if (!/^[0-4]{16}$/.test(raw)) return null;
+    return gridFromString(raw);
+  } catch { return null; }
+}
+
+/* ---------- wiring ---------- */
+buildBoard();
+buildKeypad();
+
+document.getElementById('clear').addEventListener('click', () => { sfx.place(); enterMake(); });
+document.getElementById('again').addEventListener('click', () => { sfx.place(); enterMake(); });
+document.getElementById('sample').addEventListener('click', () => { sfx.place(); enterMake(gridFromString(SAMPLE.join(''))); });
+
+shareEl.addEventListener('click', () => {
+  const code = encode(state.grid);
+  const base = location.protocol.startsWith('http') ? location.origin + location.pathname : '';
+  codeEl.value = `${base}?p=${code}`;
+  sharebox.hidden = false;
+  sfx.place();
+  codeEl.select();
+});
+
+document.getElementById('copy').addEventListener('click', async () => {
+  codeEl.select();
+  try { await navigator.clipboard.writeText(codeEl.value); codeEl.value = '已复制'; }
+  catch { /* selection is the fallback */ }
+});
+
+document.getElementById('playit').addEventListener('click', () => {
+  const g = decode(encode(state.grid));
+  if (g) enterSolve(g, false);
+});
+
+const soundBtn = document.getElementById('sound');
+soundBtn.addEventListener('click', () => {
+  soundOn = !soundOn;
+  soundBtn.textContent = soundOn ? '声音：开' : '声音：关';
+  soundBtn.setAttribute('aria-pressed', String(soundOn));
+  if (soundOn) sfx.place();
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key >= '1' && e.key <= '4') { place(Number(e.key)); e.preventDefault(); return; }
+  if (e.key === 'Backspace' || e.key === 'Delete') {
+    if (state.sel >= 0 && state.mode === 'make') { state.grid[state.sel] = 0; paint(); paintVerdict(); }
+    e.preventDefault();
+  }
+  if (e.key === 'ArrowRight') { state.sel = Math.min(15, state.sel + 1); if (state.sel < 0) state.sel = 0; paint(); e.preventDefault(); }
+  if (e.key === 'ArrowLeft') { state.sel = Math.max(0, (state.sel < 0 ? 16 : state.sel) - 1); paint(); e.preventDefault(); }
+});
+
+const shared = new URLSearchParams(location.search).get('p');
+if (shared && decode(shared)) enterSolve(decode(shared), true);
+else enterMake(gridFromString(SAMPLE.join('')));
+</script>
+</body>
+</html>

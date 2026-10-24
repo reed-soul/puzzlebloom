@@ -43,9 +43,13 @@ export default defineConfig({
   },
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-    // One cheap mobile run: the board and keypad reflow completely below 900px,
-    // and that reflow is where a layout regression would actually appear.
-    { name: 'mobile', use: { ...devices['Pixel 7'] } },
+    // The mobile project is an iPhone on WebKit, not an Android phone on
+    // Chromium, because the declared target is the current iPhone or iPad. On
+    // iOS every browser is WebKit underneath, so a Chromium phone run would
+    // exercise an engine no user of this site will ever run. The board and
+    // keypad reflow completely below 900px, and that reflow is where a layout
+    // regression would actually appear, so the run is worth its time.
+    { name: 'mobile', use: { ...devices['iPhone 17 Pro'] } },
   ],
   webServer: TARGET
     ? undefined

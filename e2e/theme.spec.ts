@@ -171,7 +171,11 @@ test.describe('sharing a theme', () => {
     const problems = trackProblems(page);
     await page.goto(`${STUDIO}?theme=${legacyToken}`);
 
-    expect(await readVar(page, '--pb-bg')).toBe('#fff7e0');
+    // `goto` resolves at `load`, but the studio is a lazy route: its chunk can
+    // still be arriving, so the theme has not been applied yet. Reading once
+    // here works on Chromium and races on WebKit. Poll, as the tests that read
+    // a token after a click already do.
+    await expect.poll(() => readVar(page, '--pb-bg')).toBe('#fff7e0');
     // `sky` did not exist when the link was made, so it must be derived rather
     // than left empty — an empty sky would paint the hero transparent.
     expect(await readVar(page, '--pb-sky')).toMatch(/^#[0-9a-f]{6}$/);
@@ -180,14 +184,27 @@ test.describe('sharing a theme', () => {
     expect(problems).toEqual([]);
   });
 
-  test('a link round-trips into a clean browser', async ({ page, browser, baseURL }) => {
-    await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], {
+  test('a link round-trips into a clean browser', async ({ page, browser, browserName, baseURL }) => {
+    // The two engines disagree about what a clipboard permission is, and in
+    // opposite directions. Chromium needs `clipboard-write` or `writeText`
+    // rejects with NotAllowedError; WebKit has no such permission, allows the
+    // write anyway once `clipboard-read` is granted, and — the trap — *accepts*
+    // the unknown name at grant time and only throws "Unknown permission:
+    // clipboard-write" when the next page is created, which reads like an
+    // unrelated failure.
+    const permissions = browserName === 'webkit' ? ['clipboard-read'] : ['clipboard-read', 'clipboard-write'];
+    await page.context().grantPermissions(permissions, {
       origin: baseURL ?? 'http://127.0.0.1:4173',
     });
 
     await page.goto(STUDIO);
     await page.getByLabel('Name it').fill('Sent to a friend');
     await setWell(page, 'Bright', '#FF6B6B');
+    // The copy handler builds the link out of React state, so clicking before
+    // the studio has actually taken the colour ships the previous one. That gap
+    // is invisible on Chromium and wide enough to lose on WebKit, where this
+    // test would copy a link whose accent is still the shipped default.
+    await expect.poll(() => readVar(page, '--pb-accent')).toBe('#ff6b6b');
     await page.getByRole('button', { name: /Copy a share link/ }).click();
 
     // Clipboard access can be refused; the studio then prints the link instead
@@ -196,6 +213,11 @@ test.describe('sharing a theme', () => {
     await expect(message).toBeVisible();
     let link = (await message.innerText()).trim();
     if (!link.startsWith('http')) {
+      // A read can also come back empty or stale for a moment on WebKit, so
+      // poll for something that is actually a link rather than reading once.
+      await expect
+        .poll(async () => (await page.evaluate(() => navigator.clipboard.readText())).trim())
+        .toContain('?theme=');
       link = (await page.evaluate(() => navigator.clipboard.readText())).trim();
     }
     expect(link).toContain('?theme=');
@@ -205,7 +227,9 @@ test.describe('sharing a theme', () => {
     const visit = await guest.newPage();
     await visit.goto(link);
 
-    expect(await readVar(visit, '--pb-accent')).toBe('#ff6b6b');
+    // Same reason as above: a fresh context has no warm module cache, so the
+    // arriving theme lands after `load` rather than with it.
+    await expect.poll(() => readVar(visit, '--pb-accent')).toBe('#ff6b6b');
     await expect(visit.locator('.pb-incoming')).toContainText('Sent to a friend');
 
     await visit.getByRole('button', { name: 'Keep it' }).click();

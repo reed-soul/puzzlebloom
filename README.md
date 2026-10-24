@@ -63,8 +63,16 @@ pnpm dev          # http://localhost:5173
 pnpm lint         # biome: lint and format, one tool, no plugin zoo
 pnpm typecheck    # tsc --noEmit across the app, the packages and the e2e specs
 pnpm test         # 189 engine tests + 42 palette guards
-pnpm test:e2e     # Playwright, against the production build
+pnpm test:e2e     # Playwright on Chromium and on WebKit as an iPhone
 pnpm verify       # all of the above, in the order CI runs them
+```
+
+The end-to-end suite needs both engines before its first run, and the WebKit one
+is not optional: the declared target is the current iPhone or iPad, and every
+browser on iOS is WebKit underneath.
+
+```bash
+pnpm exec playwright install chromium webkit
 ```
 
 Node 26.12+ (`.nvmrc`; Node 26 is the current line and takes the LTS badge
