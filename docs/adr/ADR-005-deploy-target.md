@@ -1,7 +1,7 @@
 # ADR-005 — Cloudflare Pages is the deploy target; Vercel stays as the fallback
 
 **Status:** Accepted · 2026-10-21
-**Supersedes:** nothing · **Relates to:** [ADR-001](ADR-001-static-monorepo.md)
+**Supersedes:** nothing · **Relates to:** [ADR-001](ADR-001-static-monorepo.md), [ADR-008](ADR-008-wrangler-remains-deployer.md)
 
 ## Background
 
