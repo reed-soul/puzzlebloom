@@ -1,4 +1,5 @@
 ---
+
 name: puzzlebloom-deploy
 description: Ship the PuzzleBloom site to Cloudflare Pages and verify what actually went live. This skill should be used when deploying puzzlebloom, when editing .github/workflows/ci.yml, wrangler.toml or the response headers, or when a deployment shipped bytes that do not match the repo. Covers both paths to production, the checks that must pass first, post-deploy verification, and the four failures that have really happened here.
 agent_created: true
@@ -18,11 +19,11 @@ Passing a directory by hand is how a deploy ships something nobody tested.
 
 ## Two paths to production
 
-| Trigger | What actually runs |
-|---|---|
+| Trigger        | What actually runs                                                                                                        |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | Push to `main` | CI `build` job, then a `deploy` job that downloads the `dist` artifact the E2E suite just ran against. It never rebuilds. |
-| `pnpm deploy` | `build:seo` → `wrangler pages deploy` → `scripts/indexnow.mjs` |
-| `pnpm verify` | The same checks, no upload. Use it to prove a tree is shipable without shipping it. |
+| `pnpm deploy`  | `build:seo` → `wrangler pages deploy` → `scripts/indexnow.mjs`                                                            |
+| `pnpm verify`  | The same checks, no upload. Use it to prove a tree is shipable without shipping it.                                       |
 
 Pull requests never deploy. Merging is the only thing that puts bytes in front
 of users.
