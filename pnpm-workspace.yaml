@@ -2,3 +2,12 @@ packages:
   - "apps/*"
   - "packages/*"
   - "games/*"
+
+# `wrangler pages deploy` uploads a directory of static files: it never bundles
+# a Worker and never starts a local runtime. Both of these dependencies ship a
+# postinstall that fetches a platform binary, and neither binary is reachable
+# from the Pages direct-upload path, so neither script is allowed to run.
+# Revisit if this project ever gains a Worker or a `wrangler dev` workflow.
+allowBuilds:
+  esbuild: false
+  workerd: false
