@@ -81,7 +81,7 @@ above: the first deploy was **direct upload**, not git integration.
 
 ```
 pnpm deploy                       # build + wrangler pages deploy
-→ puzzlebloom.pages.dev           (production, branch main)
+→ puzzlebloom.pages.dev           (production, branch master)
 
 puzzlebloom.taoliapp.com  CNAME  puzzlebloom.pages.dev
 ```

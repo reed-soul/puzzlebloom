@@ -2,7 +2,7 @@ name: ci
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
 
 jobs:
@@ -54,7 +54,7 @@ jobs:
       # rebuilding there is the whole point of the ordering above: what ships is
       # the directory the E2E suite just ran against, byte for byte.
       - name: Keep the built site
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: actions/upload-artifact@v7
         with:
           name: dist
@@ -65,7 +65,7 @@ jobs:
     needs: build
     # Merges only. A pull request has passed the same suite, but nothing about
     # a green branch should put it in front of users without a merge.
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     concurrency:
       # Never two deploys at once, and never cancel one halfway through an
