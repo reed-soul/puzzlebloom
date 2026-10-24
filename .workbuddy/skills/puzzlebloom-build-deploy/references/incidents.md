@@ -28,6 +28,12 @@ missing, the `dist` is a half-build. `sitemap.xml` should list 4 URLs.
 **Fix.** `pnpm exec playwright install chromium`, then rebuild. Never deploy a
 `dist` that a failed `build:seo` left behind.
 
+**Now guarded.** `scripts/check-artifact.mjs` runs at the end of `build:seo` and
+refuses to finish when any route's document is missing. This incident was
+previously survivable because the only defence was a person remembering to `ls`
+a file; the gate replaces the remembering. It was tested against a copy of the
+artifact with `play/sudoku/index.html` deleted, which it rejected.
+
 ## 2. The disk filled and took the deploy path with it
 
 **Symptom.** `npx --yes wrangler@4` failed with `ENOSPC`. Retrying produced

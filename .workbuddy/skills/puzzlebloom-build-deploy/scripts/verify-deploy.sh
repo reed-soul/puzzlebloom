@@ -13,9 +13,29 @@
 set -uo pipefail
 
 BASE="${1:-${PB_BASE_URL:-https://puzzlebloom.taoliapp.com}}"
+ROOT=$(cd "$(dirname "$0")/../../../.." && pwd)
+SITE="$ROOT/apps/web/site.json"
 STAMP=$(date +%s)
 checks=0
 fails=0
+
+# The route list comes from `site.json`, the same table the build prerenders
+# from and the sitemap is generated from. A second list kept in this script
+# would go stale the first time a page was added, and would fail right at the
+# moment someone was trying to ship that page.
+if [ -f "$SITE" ] && command -v node >/dev/null 2>&1; then
+	ROUTES=$(SITE="$SITE" node -e '
+		const site = require(process.env.SITE);
+		console.log(
+			Object.keys(site.pages)
+				.map((route) => (route === "/" ? "/" : `${route.replace(/\/+$/, "")}/`))
+				.join(" "),
+		);
+	')
+else
+	ROUTES="/ /play/sudoku/ /themes/ /parents/"
+fi
+EXPECTED=$(printf '%s\n' $ROUTES | wc -l | tr -d ' ')
 
 pass() { checks=$((checks + 1)); printf '  ok    %s\n' "$1"; }
 fail() { checks=$((checks + 1)); fails=$((fails + 1)); printf '  FAIL  %s\n' "$1"; }
@@ -26,7 +46,7 @@ echo "Verifying $BASE"
 
 echo
 echo "Routes"
-for path in / /play/sudoku/ /themes/ /parents/; do
+for path in $ROUTES; do
 	code=$(status "$BASE$path")
 	if [ "$code" = "200" ]; then
 		pass "$path"
@@ -109,10 +129,10 @@ fi
 
 sitemap=$(body "$BASE/sitemap.xml?cb=$STAMP")
 count=$(printf '%s' "$sitemap" | grep -c '<loc>')
-if [ "$count" -eq 4 ]; then
-	pass "sitemap lists 4 URLs"
+if [ "$count" -eq "$EXPECTED" ]; then
+	pass "sitemap lists $EXPECTED URLs"
 else
-	fail "sitemap lists $count URLs, want 4 — did a route get added without prerendering?"
+	fail "sitemap lists $count URLs, site.json has $EXPECTED — did a route get added without redeploying?"
 fi
 if printf '%s' "$sitemap" | grep -qE '<loc>[^<]*[^/]</loc>'; then
 	fail "sitemap has a URL without a trailing slash"

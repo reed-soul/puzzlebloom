@@ -22,7 +22,7 @@
     "test:live": "PB_BASE_URL=${PB_BASE_URL:-https://puzzlebloom.taoliapp.com} playwright test",
     "deploy": "pnpm run build:seo && wrangler pages deploy && node scripts/indexnow.mjs",
     "verify": "pnpm run lint && pnpm run check:headers && pnpm run typecheck && pnpm run test && pnpm run build:seo",
-    "build:seo": "pnpm run build && node scripts/seo.mjs",
+    "build:seo": "pnpm run build && node scripts/seo.mjs && node scripts/check-artifact.mjs",
     "indexnow": "node scripts/indexnow.mjs"
   },
   "keywords": [
