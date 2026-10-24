@@ -8,9 +8,18 @@
 
 # HSTS deliberately omits includeSubDomains: this host sits under a domain that
 # also carries mail and other apps, and they are not ours to pin to HTTPS.
+#
+# Two entries below are not self-explanatory either.
+# `X-Frame-Options: DENY` duplicates `frame-ancestors 'none'` in the CSP: any
+# browser that reads CSP already refuses to embed this page. It is kept for one
+# that does not, and because a header costs nothing to send.
+# `interest-cohort=()` predates FLoC's withdrawal and does nothing on a current
+# browser. It stays as a stance on a class of feature rather than a version pin,
+# which is why it carries no expiry.
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: no-referrer
+  X-Frame-Options: DENY
   Permissions-Policy: geolocation=(), camera=(), microphone=(), interest-cohort=()
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; worker-src 'self' blob:; base-uri 'self'; form-action 'none'; frame-ancestors 'none'
   Strict-Transport-Security: max-age=15552000
