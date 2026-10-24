@@ -66,13 +66,31 @@ export function useRouter(): RouterValue {
   return value;
 }
 
+/**
+ * The URL a browser is actually served from.
+ *
+ * Cloudflare Pages answers `/themes` with a 308 to `/themes/`, and the
+ * canonical tag names the trailing-slash form. An internal link that omitted
+ * the slash would send every crawler through a redirect that exists only
+ * because we asked for it. `read()` strips the slash again when matching, so
+ * both forms still reach the same page — this only decides what the anchor
+ * advertises.
+ */
+function hrefFor(to: string): string {
+  const cut = to.search(/[?#]/);
+  const path = cut === -1 ? to : to.slice(0, cut);
+  const rest = cut === -1 ? '' : to.slice(cut);
+  if (!path.startsWith('/')) return to;
+  return `${path.replace(/\/+$/, '')}/${rest}`.replace(/^\/\//, '/');
+}
+
 type LinkProps = AnchorHTMLAttributes<HTMLAnchorElement> & { to: string };
 
 export function Link({ to, onClick, children, ...rest }: LinkProps) {
   const { navigate } = useRouter();
   return (
     <a
-      href={to}
+      href={hrefFor(to)}
       onClick={(event) => {
         onClick?.(event);
         if (event.defaultPrevented) return;
