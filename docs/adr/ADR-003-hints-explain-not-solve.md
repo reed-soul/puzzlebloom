@@ -12,9 +12,8 @@ worse.
 
 ## Decision
 
-A hint is a sentence about *why*, produced by the same technique ladder that
+A hint is a sentence about _why_, produced by the same technique ladder that
 graded the puzzle:
-
 - it names the technique (`Naked single`, `Pointing pair`, `X-Wing`);
 - it points at the cells it read and the cells it concerns;
 - it states the reason in one sentence a nine-year-old can follow;

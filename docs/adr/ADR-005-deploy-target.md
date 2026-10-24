@@ -18,16 +18,16 @@ without anyone deciding it.
 
 Measured in October 2026, from both vendors' own docs:
 
-| | Vercel Hobby | Cloudflare Pages Free |
-| --- | --- | --- |
-| Transfer | 100 GB/month, hard cap | **unlimited** |
-| Requests | 1M CDN requests/month | **unlimited static requests** |
-| When over | the project **pauses** until the window resets | n/a |
-| Builds | 100 deployments/day, **1 concurrent** | 500 builds/month, 1 concurrent |
-| Structural caps | 200 projects, 50 domains/project | 20,000 files/site, 25 MiB/file |
-| Licence | **non-commercial personal use only** | no such clause |
-| Custom domain + TLS | free | free |
-| Native config | `vercel.json` (restatement) | `_headers` (already in repo) |
+|                     | Vercel Hobby                                   | Cloudflare Pages Free          |
+| ------------------- | ---------------------------------------------- | ------------------------------ |
+| Transfer            | 100 GB/month, hard cap                         | **unlimited**                  |
+| Requests            | 1M CDN requests/month                          | **unlimited static requests**  |
+| When over           | the project **pauses** until the window resets | n/a                            |
+| Builds              | 100 deployments/day, **1 concurrent**          | 500 builds/month, 1 concurrent |
+| Structural caps     | 200 projects, 50 domains/project               | 20,000 files/site, 25 MiB/file |
+| Licence             | **non-commercial personal use only**           | no such clause                 |
+| Custom domain + TLS | free                                           | free                           |
+| Native config       | `vercel.json` (restatement)                    | `_headers` (already in repo)   |
 
 Two of those rows decide it. A traffic spike on Vercel does not cost money, it
 turns the site **off** for up to 30 days — for a link a parent might paste into
@@ -41,12 +41,11 @@ a sponsor or runs an ad, it needs Pro at $20/month.
 a supported alternative — it costs nothing to keep and keeps the Vercel path
 honest — but the README leads with Cloudflare and the recommended flow is the
 dashboard's git integration, not a CLI.Two build settings are load-bearing:
-
-- `PNPM_VERSION=12.4.2` — the v3 build image ships pnpm 10.11.1 and, per its own
+- `PNPM_VERSION=12.15.0` — the v3 build image ships pnpm 10.11.1 and, per its own
   limitations list, does **not** read `packageManager` from `package.json`. Left
   unset, the install runs on an older pnpm than the lockfile was written by.
-- Node comes from `.nvmrc` (22.12.0); the image's default is 22.16.0, so this
-  only matters for pinning exactness.
+- Node comes from `.nvmrc` (26.12.1); with the image's default a major behind,
+  this pin is load-bearing, not cosmetic.
 
 ## Consequences
 
@@ -102,4 +101,3 @@ the CSP arrives as written in `_headers`, and fonts carry the immutable cache
 header. `Strict-Transport-Security` was added at the same time, without
 `includeSubDomains` — the parent domain also carries mail and other apps, and
 pinning those to HTTPS is not this host's call.
-

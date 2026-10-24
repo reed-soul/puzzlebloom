@@ -15,7 +15,6 @@ was worse than the palette suggested: mean chroma **0.0141**, with **98%** of th
 screen below C 0.05. The site was calm, coherent and completely unmemorable.
 
 The cause was structural, not aesthetic. One colour cannot be all three of:
-
 - readable text on a near-white surface (needs to be dark → capped chroma)
 - a filled button behind white text (needs to be mid-dark → capped chroma)
 - a large, bright block of colour (needs high chroma)
@@ -27,16 +26,15 @@ text — dragged the whole palette down to the quietest of its jobs.
 
 Add two roles and give the accent a job it can actually win.
 
-| role | obligation | chroma |
-| --- | --- | --- |
-| `bg` / `surface` | 4.5:1 body text | low |
-| `brand` | 4.5:1 as text (links, focus, selection) | capped |
-| `accent` | owns ~26% of the viewport; **label is `accentInk`** | uncapped |
-| `accentInk` | 4.5:1 on `accent` | derived, never chosen |
-| `sky` | decorative wash; only `ink` ever sits on it | uncapped |
+| role             | obligation                                          | chroma                |
+| ---------------- | --------------------------------------------------- | --------------------- |
+| `bg` / `surface` | 4.5:1 body text                                     | low                   |
+| `brand`          | 4.5:1 as text (links, focus, selection)             | capped                |
+| `accent`         | owns ~26% of the viewport; **label is `accentInk`** | uncapped              |
+| `accentInk`      | 4.5:1 on `accent`                                   | derived, never chosen |
+| `sky`            | decorative wash; only `ink` ever sits on it         | uncapped              |
 
 Two rules follow, and they are the whole ADR:
-
 1. **A bright fill is only legal if it ships with its own label colour.**
    `deriveAccentInk()` tries the theme's `ink`, then `#141412`, then pure black
    or white — for any sRGB fill one of black/white clears 4.58:1, so a label can

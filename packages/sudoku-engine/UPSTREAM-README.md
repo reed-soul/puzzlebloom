@@ -21,12 +21,12 @@ it a level. This one solves each candidate puzzle with a ladder of human
 techniques (`src/engine/techniques.js`) and reports the hardest one it needed,
 so the label describes the deductions the puzzle forces on you:
 
-| Level  | Clues | What it demands                                        |
-| ------ | ----- | ------------------------------------------------------ |
-| Easy   | 38    | Singles only, with plenty to start from                |
-| Medium | 30    | Still singles, but far fewer clues: expect to scan     |
-| Hard   | 25+   | Pointing pairs, box/line reductions, naked pairs       |
-| Expert | 22+   | Hidden subsets, X-Wings, Y-Wings                       |
+| Level  | Clues | What it demands                                    |
+| ------ | ----- | -------------------------------------------------- |
+| Easy   | 38    | Singles only, with plenty to start from            |
+| Medium | 30    | Still singles, but far fewer clues: expect to scan |
+| Hard   | 25+   | Pointing pairs, box/line reductions, naked pairs   |
+| Expert | 22+   | Hidden subsets, X-Wings, Y-Wings                   |
 
 Measuring difficulty that way turned up something worth knowing: most minimal
 Sudoku grids fall to singles alone, and the ones needing an X-Wing are scarce.
@@ -97,18 +97,18 @@ circle Android may crop it to.
 
 ## Keyboard
 
-| Key                    | Action                                  |
-| ---------------------- | --------------------------------------- |
-| Arrow keys, Home, End  | Move around the grid                    |
-| 1 to 9                 | Enter a digit                           |
-| Shift + 1 to 9         | Enter a pencil mark instead             |
-| Backspace, Delete, 0   | Clear the cell                          |
-| N                      | Toggle pencil-mark mode                 |
-| H                      | Hint                                    |
-| P                      | Pause                                   |
-| Ctrl/Cmd + Z           | Undo                                    |
-| Ctrl/Cmd + Shift + Z   | Redo                                    |
-| Escape                 | Dismiss the hint                        |
+| Key                   | Action                      |
+| --------------------- | --------------------------- |
+| Arrow keys, Home, End | Move around the grid        |
+| 1 to 9                | Enter a digit               |
+| Shift + 1 to 9        | Enter a pencil mark instead |
+| Backspace, Delete, 0  | Clear the cell              |
+| N                     | Toggle pencil-mark mode     |
+| H                     | Hint                        |
+| P                     | Pause                       |
+| Ctrl/Cmd + Z          | Undo                        |
+| Ctrl/Cmd + Shift + Z  | Redo                        |
+| Escape                | Dismiss the hint            |
 
 ## The Puter account
 
@@ -147,7 +147,6 @@ npm test
 ```
 
 333 tests. The ones worth knowing about:
-
 - **Technique soundness.** Every step the ladder takes, on every difficulty, is
   checked against the puzzle's unique solution: a placement must match it, and
   an elimination must never remove the digit that belongs in that cell. This is

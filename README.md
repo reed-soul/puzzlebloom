@@ -25,11 +25,11 @@ follows from that.
 
 The other half is art direction. Cartoon creatures are not decoration here —
 they are the accessibility feature. Nine numerals are nine abstract squiggles to
-a five-year-old; nine faces with their own ears and horns are nine *characters*.
+a five-year-old; nine faces with their own ears and horns are nine _characters_.
 The same board can be played with either.
 
-| Numerals | Creatures | Hints that explain |
-| --- | --- | --- |
+| Numerals                                        | Creatures                                           | Hints that explain                        |
+| ----------------------------------------------- | --------------------------------------------------- | ----------------------------------------- |
 | ![Numbers](docs/screenshots/sudoku-numbers.png) | ![Creatures](docs/screenshots/sudoku-creatures.png) | ![Hint](docs/screenshots/sudoku-hint.png) |
 
 ---
@@ -67,8 +67,9 @@ pnpm test:e2e     # Playwright, against the production build
 pnpm verify       # all of the above, in the order CI runs them
 ```
 
-Node 22.12+ (`.nvmrc`; Node 20 reached end of life in April 2026). The pnpm
-version is pinned in `package.json`, so a laptop and CI use the same binary.
+Node 26.12+ (`.nvmrc`; Node 26 is the current line and takes the LTS badge
+from 24 in late 2026). The pnpm version is pinned in `package.json`, so a
+laptop and CI use the same binary.
 
 Playwright does not test the dev server. It builds, serves `dist` through
 `vite preview`, and drives that — because the CSP, the worker chunk and the font
@@ -80,7 +81,6 @@ preloads only exist after a build, and those are half of what it is checking.
 port of [HeyPuter/everything's Sudoku](https://github.com/HeyPuter/everything/tree/main/src/sudoku)
 (MIT — see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)), kept verbatim
 except for types. It guarantees two things the UI leans on:
-
 - every puzzle has **exactly one** solution;
 - every puzzle is solvable by **logic alone**, using the eleven techniques in
   `techniques.js` — which is why the hint button always has something true to
@@ -96,11 +96,11 @@ a mood costs twelve lines.
 
 Three of the ten exist because one colour cannot do three jobs:
 
-| role | job | constraint |
-| --- | --- | --- |
-| `brand` | links, focus rings, the selected cell | 4.5:1 as text, so its chroma is capped |
-| `accent` | the loud colour: primary button, sun, bands | allowed to own ~26% of the screen |
-| `sky` | the wide decorative wash behind everything | no text on it, so its chroma is uncapped |
+| role     | job                                         | constraint                               |
+| -------- | ------------------------------------------- | ---------------------------------------- |
+| `brand`  | links, focus rings, the selected cell       | 4.5:1 as text, so its chroma is capped   |
+| `accent` | the loud colour: primary button, sun, bands | allowed to own ~26% of the screen        |
+| `sky`    | the wide decorative wash behind everything  | no text on it, so its chroma is uncapped |
 
 `accentInk` is the fourth and the one that unlocks the rest: a bright fill can
 only carry a label if the label is allowed to be dark, and that pairing is
@@ -173,15 +173,15 @@ pnpm deploy          # build:seo + wrangler pages deploy + IndexNow ping
 **Git integration** — connect the repo in the dashboard instead, and Pages
 builds on every push:
 
-| Setting | Value |
-| --- | --- |
-| Build command | `pnpm run build:seo` |
-| Build output directory | `apps/web/dist` |
-| Root directory | leave at `/` (the pnpm filter builds the workspace) |
-| Environment variable | `PNPM_VERSION=12.4.2` |
+| Setting                | Value                                               |
+| ---------------------- | --------------------------------------------------- |
+| Build command          | `pnpm run build:seo`                                |
+| Build output directory | `apps/web/dist`                                     |
+| Root directory         | leave at `/` (the pnpm filter builds the workspace) |
+| Environment variable   | `PNPM_VERSION=12.15.0`                              |
 
-Node comes from `.nvmrc`. The `PNPM_VERSION` line is not optional *in this
-path*: the v3 build image ships pnpm 10.11.1 and does not read `packageManager`
+Node comes from `.nvmrc`. The `PNPM_VERSION` line is not optional _in this
+path_: the v3 build image ships pnpm 10.11.1 and does not read `packageManager`
 from `package.json`, so without it the install runs on a pnpm older than the
 lockfile expects.
 
@@ -209,11 +209,11 @@ have to move into a `<meta>` tag and lose `frame-ancestors`.
 The live site is registered with both engines that matter, and the parts that
 can live in the repository do:
 
-| | |
-| --- | --- |
-| Google Search Console | property `https://puzzlebloom.taoliapp.com/`, verified by DNS, `sitemap.xml` submitted |
-| Bing Webmaster Tools | verification meta tag in `apps/web/index.html`, sitemap submitted |
-| IndexNow | key at `apps/web/public/<key>.txt`; `pnpm indexnow` pings Bing and friends after every deploy |
+|                       |                                                                                               |
+| --------------------- | --------------------------------------------------------------------------------------------- |
+| Google Search Console | property `https://puzzlebloom.taoliapp.com/`, verified by DNS, `sitemap.xml` submitted        |
+| Bing Webmaster Tools  | verification meta tag in `apps/web/index.html`, sitemap submitted                             |
+| IndexNow              | key at `apps/web/public/<key>.txt`; `pnpm indexnow` pings Bing and friends after every deploy |
 
 Everything else — title, description, canonical, Open Graph, JSON-LD, the
 sitemap, the 404 page — is generated, not typed twice:
@@ -243,12 +243,12 @@ three, a real 404 — is in [ADR-006](docs/adr/ADR-006-seo.md).
 
 ## Status
 
-| | |
-| --- | --- |
-| Sudoku | shipped — 4 levels, daily puzzle, hints that explain, creatures mode |
-| Nonogram | in the greenhouse |
-| Memory Garden | in the greenhouse |
-| Tangram | in the greenhouse |
+|               |                                                                      |
+| ------------- | -------------------------------------------------------------------- |
+| Sudoku        | shipped — 4 levels, daily puzzle, hints that explain, creatures mode |
+| Nonogram      | in the greenhouse                                                    |
+| Memory Garden | in the greenhouse                                                    |
+| Tangram       | in the greenhouse                                                    |
 
 ## Licence
 

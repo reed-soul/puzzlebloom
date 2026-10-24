@@ -6,7 +6,7 @@
 # This is the *direct upload* path: the build happens here, on a laptop or in
 # CI, and Pages only stores the result. The alternative — connecting the repo
 # in the dashboard so Pages builds on every push — needs NODE_VERSION from
-# `.nvmrc` and `PNPM_VERSION=12.4.2` in its environment variables, because the
+# `.nvmrc` and `PNPM_VERSION=12.15.0` in its environment variables, because the
 # v3 build image ships pnpm 10 and ignores `packageManager` in package.json.
 name = "puzzlebloom"
 pages_build_output_dir = "./apps/web/dist"

@@ -9,7 +9,7 @@
 
 ## The problem, stated precisely
 
-A single-page app presents *one* HTML document to a crawler, whichever route was
+A single-page app presents _one_ HTML document to a crawler, whichever route was
 asked for. Everything that distinguishes the pages — title, description,
 canonical, structured data — would be applied by JavaScript after the fetch.
 Google will execute that JavaScript; Bing largely will not, and the social
@@ -62,7 +62,7 @@ routes, no server, no per-user content, and no data fetching at build time. A
 framework would add a second build system, its own routing model, and an adapter
 for the host — to produce exactly the four HTML files the ninety-line script
 already produces. The script also has a property a framework does not: it renders
-the *real* app, with the *real* CSS and the *real* fonts, so the static file and
+the _real_ app, with the _real_ CSS and the _real_ fonts, so the static file and
 the live page cannot drift.
 
 If a fourth route needs data from an API at request time, this decision should be
@@ -75,7 +75,6 @@ Bing powers DuckDuckGo and (in China-facing contexts) is often the only western
 engine that crawls promptly, while Google is the traffic. Both were registered.
 
 Verification went where it survives:
-
 - **Google** — the property verified itself through DNS, because the apex zone
   already carried a Google verification record for a sibling host.
 - **Bing** — an `msvalidate.01` meta tag lives in `apps/web/index.html`, in
@@ -83,7 +82,7 @@ Verification went where it survives:
   be lost in a rebuild.
 
 **IndexNow** is the part that actually moves the needle for a site this small.
-Bing's crawler is not slow, it is *scheduled*, and a new subdomain is not on a
+Bing's crawler is not slow, it is _scheduled_, and a new subdomain is not on a
 schedule worth waiting for. `scripts/indexnow.mjs` posts the four URLs to
 `api.indexnow.org` after each deploy — verified first, because the endpoint
 fetches the key file and 403s if the deployment is not live yet. Submission also
@@ -94,7 +93,7 @@ participate; there the sitemap in Search Console is the equivalent.
 
 - A deploy now needs a browser. `pnpm run deploy` is `build:seo && wrangler &&
   indexnow`, and `build:seo` fails loudly with an install hint if Chromium is
-  missing. CI installs Playwright *before* the build step for this reason.
+  missing. CI installs Playwright _before_ the build step for this reason.
 - The end-to-end suite runs against `scripts/serve-dist.mjs` rather than
   `vite preview`, because preview cannot answer a 404 and a test server that
   cannot produce the failure mode cannot verify its absence.

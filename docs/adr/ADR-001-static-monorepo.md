@@ -13,7 +13,6 @@ moderation. None of that is needed to serve a puzzle.
 ## Decision
 
 A pnpm workspace with three layers:
-
 - `apps/web` — the only deployable. Static output.
 - `games/*` — one package per game, exporting a manifest and a component.
 - `packages/*` — engine, theme, UI kit. Framework-light, no side effects.

@@ -8,7 +8,6 @@
 The positioning is "cartoon that a child can make their own". That means a
 theme editor in the hands of a child, and it means themes must be shareable
 without a backend. Two naive designs both fail:
-
 1. **A theme is a full token set** (30+ values). A child changes six colours and
    the other twenty-four no longer match; the result looks broken, and the
    support surface is every combination.
