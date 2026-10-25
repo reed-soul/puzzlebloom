@@ -106,13 +106,43 @@ export function BloomGame({ onExit }: Props) {
     }
   }, [state.merges, state.blooms]);
 
-  // Pointer input: move to aim, release to drop. `onPointerDown` also aims,
-  // so a tap anywhere is "put it there" — the whole surface is the control.
+  // Pointer input: move to aim, release to drop. Aim follows the pointer
+  // across the WHOLE window, not just the stage — a desktop player moves the
+  // mouse toward the jar from wherever it was, and if the preview only
+  // reacts inside the jar it reads as "PC can't play this" (a real report).
+  // The stage still owns down/up: the drop is a claim about the jar.
+  useEffect(() => {
+    const onMove = (event: PointerEvent) => {
+      const rect = stageRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      aim(((event.clientX - rect.left) / rect.width) * JAR.width);
+    };
+    window.addEventListener('pointermove', onMove);
+    return () => window.removeEventListener('pointermove', onMove);
+  }, [aim]);
+
   const pointerX = (event: React.PointerEvent) => {
     const rect = stageRef.current?.getBoundingClientRect();
     if (!rect) return 0;
     return ((event.clientX - rect.left) / rect.width) * JAR.width;
   };
+
+  // A press that began on the jar must drop even if the release happens
+  // outside it — desktop players drag past the jar's edge constantly. The
+  // engine clamps the aim, so an outside release still drops at the wall.
+  const pressedRef = useRef(false);
+  useEffect(() => {
+    const onUp = (event: PointerEvent) => {
+      if (!pressedRef.current) return;
+      pressedRef.current = false;
+      const rect = stageRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      aim(((event.clientX - rect.left) / rect.width) * JAR.width);
+      drop();
+    };
+    window.addEventListener('pointerup', onUp);
+    return () => window.removeEventListener('pointerup', onUp);
+  }, [aim, drop]);
 
   return (
     <div className={`pb-play pb-bloom${state.over ? ' is-over' : ''}`}>
@@ -141,11 +171,9 @@ export function BloomGame({ onExit }: Props) {
             '--pb-bloom-scale': 'min(100vw / 340px, 82vh / 440px, 1)',
           } as CSSProperties
         }
-        onPointerMove={(e) => aim(pointerX(e))}
-        onPointerDown={(e) => aim(pointerX(e))}
-        onPointerUp={(e) => {
+        onPointerDown={(e) => {
+          pressedRef.current = true;
           aim(pointerX(e));
-          drop();
         }}
         role="application"
         aria-label="Drop blooms: move to aim, release to drop. Arrow keys aim, space drops."

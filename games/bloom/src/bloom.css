@@ -36,6 +36,9 @@
 .pb-bloom__stage {
   position: relative;
   touch-action: none;
+  /* Desktop players need the jar to say "I am interactive": grab while idle,
+     grabbing while pressed. A pointer-only cursor hid this on PC entirely. */
+  cursor: grab;
   width: calc(340px * var(--pb-bloom-scale, 1));
   height: calc(440px * var(--pb-bloom-scale, 1));
   border-radius: 0 0 26px 26px;
@@ -44,6 +47,10 @@
      frames the play area. The old CSS jar (borders + gradient) retired. */
   background: url('/art/bloom/jar-scene.webp') center top / cover no-repeat;
   overflow: hidden;
+}
+
+.pb-bloom__stage:active {
+  cursor: grabbing;
 }
 
 /* The rim line the overflow rule measures against, drawn on the stage. */
