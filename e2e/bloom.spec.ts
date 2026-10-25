@@ -85,11 +85,8 @@ test.describe('bloom drop', () => {
   // The canvas path needs Chromium launched with the API's flag; the mobile
   // project is WebKit, which cannot enable it — the DOM path above already
   // covers that engine, which is also its real-world path today.
-  test('canvas path: flagged Chromium draws the jar through HTML-in-Canvas', async (
-    // biome-ignore lint/correctness/noEmptyPattern: Playwright requires the first test argument to be a destructuring; this test wants no fixtures, only the TestInfo.
-    {},
-    testInfo,
-  ) => {
+  test('canvas path: flagged Chromium draws the jar through HTML-in-Canvas', async (// biome-ignore lint/correctness/noEmptyPattern: Playwright requires the first test argument to be a destructuring; this test wants no fixtures, only the TestInfo.
+  {}, testInfo) => {
     test.skip(testInfo.project.name !== 'chromium', 'HTML-in-Canvas is Chromium-only behind its flag');
     const browser = await chromium.launch({ args: ['--enable-blink-features=CanvasDrawElement'] });
     const page = await browser.newPage();
