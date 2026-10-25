@@ -1,5 +1,4 @@
 import { type BloomState, JAR, TIERS } from '@puzzlebloom/bloom-engine';
-import { CreatureGlyph } from '@puzzlebloom/ui';
 import { useEffect, useRef, useState } from 'react';
 
 /**
@@ -126,9 +125,8 @@ export function BloomCanvas({ state }: Props) {
   return (
     <canvas ref={canvasRef} className="pb-bloom__canvas" content="drawable" aria-label="The jar">
       {/* One div per tier. Never painted into the page; drawn wherever a
-          bloom of that tier is. The creature is the tier's identity: nine
-          tiers, nine glyph heads, so a merge is visibly "two ants became a
-          bunny" rather than "two circles became a bigger circle". */}
+          bloom of that tier is. The creature art is the tier's identity —
+          the same art the DOM path renders, so both paths show one world. */}
       {TIERS.map((tier, index) => (
         <div
           key={tier.name}
@@ -138,9 +136,7 @@ export function BloomCanvas({ state }: Props) {
           drawable
           className={`pb-bloom__tier pb-bloom__tier--${index}`}
         >
-          <span className="pb-bloom__face">
-            <CreatureGlyph digit={index + 1} size={512} />
-          </span>
+          <img src={`/art/bloom/creature-${tier.name}.png`} alt="" draggable={false} />
         </div>
       ))}
     </canvas>

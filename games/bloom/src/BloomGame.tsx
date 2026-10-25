@@ -1,6 +1,5 @@
 import { JAR, TIERS } from '@puzzlebloom/bloom-engine';
-import { CreatureGlyph } from '@puzzlebloom/ui';
-import { type CSSProperties, useRef } from 'react';
+import { type CSSProperties, useEffect, useRef, useState } from 'react';
 import { BloomCanvas, useHtmlInCanvasProbe } from './BloomCanvas';
 import { MergeJuice } from './MergeJuice';
 import { useBloom } from './useBloom';
@@ -25,7 +24,13 @@ interface Props {
  * the a11y DOM for the canvas path (whose fallback content these divs mirror
  * in structure). Scale comes from one CSS variable so both paths size alike.
  */
-function BloomDOM({ state }: { state: ReturnType<typeof useBloom>['state'] }) {
+function BloomDOM({
+  state,
+  poppedId,
+}: {
+  state: ReturnType<typeof useBloom>['state'];
+  poppedId: number | null;
+}) {
   const scale = 'calc(var(--pb-bloom-scale, 1))';
   return (
     <>
@@ -38,14 +43,22 @@ function BloomDOM({ state }: { state: ReturnType<typeof useBloom>['state'] }) {
           height: `calc(${r * 2}px * ${scale})`,
         } as CSSProperties;
         return (
-          <span key={b.id} className={`pb-bloom__tier pb-bloom__tier--${b.tier}`} style={style}>
-            <span className="pb-bloom__face">
-              <CreatureGlyph digit={b.tier + 1} />
-            </span>
+          <span
+            key={b.id}
+            className={`pb-bloom__tier pb-bloom__tier--${b.tier}${b.id === poppedId ? ' is-popped' : ''}`}
+            style={style}
+          >
+            <img
+              src={`/art/bloom/creature-${TIERS[b.tier].name}.png`}
+              alt=""
+              draggable={false}
+              loading="eager"
+              decoding="sync"
+            />
           </span>
         );
       })}
-      {/* The aim preview: same tier image, floating at the pending x. */}
+      {/* The aim preview: same creature art, floating at the pending x. */}
       <span
         className={`pb-bloom__tier pb-bloom__tier--${state.pending.tier} pb-bloom__tier--pending`}
         style={
@@ -57,21 +70,41 @@ function BloomDOM({ state }: { state: ReturnType<typeof useBloom>['state'] }) {
           } as CSSProperties
         }
       >
-        <span className="pb-bloom__face">
-          <CreatureGlyph digit={state.pending.tier + 1} />
-        </span>
+        <img
+          src={`/art/bloom/creature-${TIERS[state.pending.tier].name}.png`}
+          alt=""
+          draggable={false}
+          loading="eager"
+          decoding="sync"
+        />
       </span>
     </>
   );
 }
 
 export function BloomGame({ onExit }: Props) {
-  const { state, aim, drop, restart, combo, celebration } = useBloom();
+  const { state, aim, drop, restart, combo, celebration, pops } = useBloom();
   const stageRef = useRef<HTMLDivElement>(null);
   // One probe, two consumers: the canvas layer mounts only when the API is
   // there, and the DOM layer hides only then too — never both, never neither.
   const canvasPath = useHtmlInCanvasProbe();
   const comboAlive = combo.count >= 2 && performance.now() < combo.until;
+  // The newest bloom pops (squash & spring back, game-feel style): track the
+  // id of the last merge-born creature so its img gets the one-shot class.
+  const [poppedId, setPoppedId] = useState<number | null>(null);
+  const lastMergeId = useRef(0);
+  useEffect(() => {
+    if (state.merges.length === 0) return;
+    // The merged child took state.seq - blooms.length + i … simplest: the
+    // freshest id in the jar right after a merge is the popped one.
+    const newest = Math.max(...state.blooms.map((b) => b.id));
+    if (newest !== lastMergeId.current) {
+      lastMergeId.current = newest;
+      setPoppedId(newest);
+      const clear = setTimeout(() => setPoppedId(null), 320);
+      return () => clearTimeout(clear);
+    }
+  }, [state.merges, state.blooms]);
 
   // Pointer input: move to aim, release to drop. `onPointerDown` also aims,
   // so a tap anywhere is "put it there" — the whole surface is the control.
@@ -119,9 +152,27 @@ export function BloomGame({ onExit }: Props) {
       >
         <BloomCanvas state={state} />
         <div className="pb-bloom__dom-stage" hidden={canvasPath}>
-          <BloomDOM state={state} />
+          <BloomDOM state={state} poppedId={poppedId} />
         </div>
         <MergeJuice merges={state.merges} />
+
+        {/* Score pops: each merge's points float up where it happened. */}
+        <div className="pb-bloom__pops" aria-hidden="true">
+          {pops.map((pop) => (
+            <span
+              key={pop.id}
+              className="pb-bloom__pop"
+              style={
+                {
+                  left: `calc(${pop.x}px * var(--pb-bloom-scale, 1))`,
+                  top: `calc(${pop.y}px * var(--pb-bloom-scale, 1))`,
+                } as CSSProperties
+              }
+            >
+              {pop.text}
+            </span>
+          ))}
+        </div>
 
         {comboAlive ? (
           <p className="pb-bloom__combo" aria-live="polite">
@@ -132,7 +183,7 @@ export function BloomGame({ onExit }: Props) {
         {celebration ? (
           <div className="pb-bloom__celebrate" role="status">
             <span className="pb-bloom__celebrate-creature">
-              <CreatureGlyph digit={celebration.tier + 1} size={72} />
+              <img src={`/art/bloom/creature-${TIERS[celebration.tier].name}.png`} alt="" draggable={false} />
             </span>
             <p>A {TIERS[celebration.tier].name}! First time in this garden.</p>
           </div>

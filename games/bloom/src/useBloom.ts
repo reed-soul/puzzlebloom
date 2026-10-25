@@ -63,6 +63,33 @@ export function useBloom() {
     setCelebration(null);
   }, []);
 
+  // ── Score pops: each merge's points float up where it happened, game-feel
+  // style (number pop is one of the 5–8 stacked responses). Kept as derived
+  // events, not state — the DOM layer animates them once and drops them.
+  const [pops, setPops] = useState<Array<{ id: number; x: number; y: number; text: string }>>([]);
+  const popsSeen = useRef(new Set<string>());
+  useEffect(() => {
+    if (state.merges.length === 0) return;
+    const fresh = state.merges
+      .filter((m) => {
+        const key = `${m.x.toFixed(1)}:${m.y.toFixed(1)}:${m.tier}`;
+        if (popsSeen.current.has(key)) return false;
+        popsSeen.current.add(key);
+        return true;
+      })
+      .map((m) => ({
+        id: performance.now() + m.x,
+        x: m.x,
+        y: m.y,
+        text: `+${(m.tier + 1) * (m.tier + 2)}`,
+      }));
+    if (fresh.length === 0) return;
+    setPops((current) => [...current.slice(-8), ...fresh]);
+    const oldest = fresh[0].id;
+    const clear = setTimeout(() => setPops((c) => c.filter((p) => p.id > oldest)), 900);
+    return () => clearTimeout(clear);
+  }, [state.merges]);
+
   // ── Combo: merges within the window chain; the window is generous because
   // chain reactions in a settling jar take seconds to unfold, and a combo
   // counter that resets mid-chain reads as broken, not challenging.
@@ -114,7 +141,7 @@ export function useBloom() {
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  return { state, aim, drop, restart, combo, celebration } as const;
+  return { state, aim, drop, restart, combo, celebration, pops } as const;
 }
 
 /** How long a merge keeps the combo alive. Chains take seconds to settle. */
