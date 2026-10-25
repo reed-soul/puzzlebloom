@@ -1,0 +1,552 @@
+/**
+ * Memory Garden screen.
+ *
+ * Every rule is scoped under `.pb-memory`, and that is load-bearing rather than
+ * tidy. The shell this page shares with the other games lives in sudoku's
+ * stylesheet, which arrives with the sudoku chunk — a player who opens this
+ * route first never loads it. So the shell is re-declared here, with the same
+ * measurements because it is the same design, and the scoping means four games
+ * cannot fight over `.pb-play` when their files happen to be in the document
+ * together.
+ *
+ * The column count is not decided here. It arrives as `--pb-memory-columns`,
+ * written by the game from the same `columnsFor` the hint uses, because a hint
+ * that says "the second row" and a grid drawn in a different number of columns
+ * would contradict each other on a phone.
+ *
+ * Colour is state and nothing else. A card face down is a surface with a faint
+ * weave; a card face up is the creature; a kept card has a brand-coloured edge,
+ * which is the only reward in the game and says "this pair is finished" rather
+ * than "well done".
+ */
+
+.pb-memory {
+  width: min(100%, var(--pb-page));
+  margin: 0 auto;
+  padding: clamp(0.75rem, 2vw, 1.5rem) clamp(0.75rem, 3vw, 2rem) 7rem;
+
+  /* The smallest a card may be drawn. Twelve cards in three columns on a 320px
+     screen come out at about 93px, and eighteen in three at the same width about
+     the same, so this is a floor rather than a target. */
+  --pb-memory-min-card: 64px;
+}
+
+/* ---------------- loading ---------------- */
+
+.pb-memory--loading {
+  display: grid;
+  place-items: center;
+  gap: 1rem;
+  min-height: 60vh;
+}
+
+.pb-memory-skeleton {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: min(100%, 300px);
+  aspect-ratio: 3 / 4;
+  padding: 10px;
+  border: 3px solid var(--pb-line);
+  border-radius: var(--pb-r-lg);
+  background: var(--pb-surface);
+  animation: pb-memory-breathe 1.8s var(--pb-ease) infinite;
+}
+
+.pb-memory-skeleton::before,
+.pb-memory-skeleton::after {
+  content: '';
+  grid-column: 1 / -1;
+  border-radius: var(--pb-r-md);
+  background: var(--pb-surface-2);
+}
+
+.pb-memory-skeleton::before {
+  aspect-ratio: 3 / 1;
+}
+
+.pb-memory-skeleton::after {
+  aspect-ratio: 3 / 1;
+}
+
+@keyframes pb-memory-breathe {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+.pb-memory__note {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--pb-ink-soft);
+  font-size: var(--pb-fs-sm);
+}
+
+/* ---------------- header ---------------- */
+
+.pb-memory .pb-play__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.pb-memory .pb-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: var(--pb-r-pill);
+  border: 1.5px solid var(--pb-line);
+  background: var(--pb-surface);
+  color: var(--pb-ink);
+  cursor: pointer;
+  transition: background var(--pb-dur) var(--pb-ease);
+}
+
+.pb-memory .pb-back:hover {
+  background: var(--pb-surface-2);
+}
+
+.pb-memory .pb-play__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  row-gap: 0.2rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.pb-memory .pb-play__level {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--pb-font-display);
+  font-size: var(--pb-fs-lg);
+  font-weight: 600;
+}
+
+.pb-memory__count {
+  color: var(--pb-ink-soft);
+  font-size: var(--pb-fs-xs);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.pb-memory .pb-play__clock {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-left: auto;
+  color: var(--pb-ink-soft);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--pb-fs-sm);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* ---------------- layout ---------------- */
+
+.pb-memory .pb-play__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: clamp(1rem, 2.5vw, 2rem);
+  align-items: start;
+}
+
+.pb-memory .pb-play__side {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.pb-memory__stage {
+  position: relative;
+  display: grid;
+  justify-items: center;
+}
+
+/* ---------------- the grid of cards ---------------- */
+
+.pb-memory__grid {
+  display: grid;
+  grid-template-columns: repeat(var(--pb-memory-columns, 3), minmax(0, 1fr));
+  gap: clamp(6px, 1.8vw, 12px);
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  /* A fieldset, for the group semantics, with everything a fieldset brings by
+     default taken back off: the border, the padding, the `min-content` width
+     that would stop it shrinking on a phone, and the legend gap. */
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  /* A press, not a gesture: nothing here should wait to see whether a swipe is
+     coming, and nothing here should zoom the page when a small finger taps
+     twice. */
+  touch-action: manipulation;
+}
+
+.pb-memory__card {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  min-height: var(--pb-memory-min-card);
+  padding: 0;
+  border: 0;
+  border-radius: var(--pb-r-md);
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  /* The flip is a 3D rotation, so the rotation needs somewhere to happen. */
+  perspective: 620px;
+}
+
+.pb-memory__card:focus-visible {
+  outline: 3px solid var(--pb-brand);
+  outline-offset: 3px;
+  border-radius: var(--pb-r-md);
+}
+
+.pb-memory__card-inner {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  transform-style: preserve-3d;
+  /* Duration comes from the token, so reduced motion turns the flip into an
+     instant swap without this file knowing anything about it. */
+  transition: transform var(--pb-dur) var(--pb-ease);
+}
+
+.pb-memory__card.is-up .pb-memory__card-inner,
+.pb-memory__card.is-kept .pb-memory__card-inner {
+  transform: rotateY(180deg);
+}
+
+.pb-memory__face {
+  grid-area: 1 / 1;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--pb-line-strong);
+  border-radius: var(--pb-r-md);
+  background: var(--pb-surface);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/*
+ * The back of a card: a faint diagonal weave and nothing drawn on it.
+ *
+ * Not a question mark, not a pattern of leaves, not a logo. A card face down is
+ * an unknown, and the only thing worth showing is that there is something
+ * underneath — a texture reads as paper, where an illustration reads as
+ * information the player is supposed to decode.
+ *
+ * The card sits on a hard offset edge, the same trick the rest of the site uses
+ * to lift a panel off a pale background. Without it a white card on a pale sky
+ * is a rectangle of nearly the same value as the sky, and the grid reads as a
+ * printout rather than as twelve things you could pick up.
+ */
+.pb-memory__back {
+  background:
+    repeating-linear-gradient(
+      135deg,
+      transparent 0 7px,
+      color-mix(in oklab, var(--pb-ink) 8%, transparent) 7px 8px
+    ),
+    var(--pb-surface);
+  box-shadow: 0 3px 0 var(--pb-shadow);
+}
+
+.pb-memory__front {
+  transform: rotateY(180deg);
+}
+
+/*
+ * A kept pair, and the only positive feedback in the game.
+ *
+ * It says "this pair is finished", not "well done", so it is a change of state
+ * rather than a burst: a heavier brand-coloured edge and a tint of brand on the
+ * card. The edge goes from two pixels to three, which is the one difference that
+ * survives a dark theme — in a dark palette a tint of brand on a near-black
+ * surface is a difference of a few percent, and a pair that is kept has to be
+ * tellable from a pair that happens to be face up at this moment.
+ */
+.pb-memory__card.is-kept .pb-memory__front {
+  border: 3px solid var(--pb-brand);
+  background: color-mix(in oklab, var(--pb-brand) 12%, var(--pb-surface));
+  box-shadow: none;
+}
+
+@media (hover: hover) {
+  .pb-memory__card.is-down:hover .pb-memory__back {
+    border-color: color-mix(in oklab, var(--pb-ink) 40%, var(--pb-bg));
+    box-shadow: 0 4px 0 var(--pb-shadow);
+  }
+}
+
+/*
+ * The creature is sized against the card, not against the screen.
+ *
+ * A fixed pixel size would be tiny in a six-column grid on a laptop and enormous
+ * in a three-column grid on a phone; a percentage of the card keeps the drawing
+ * the same fraction of the same card everywhere. The ends of the clamp are there
+ * so a very small card still has a recognisable face and a very large one does
+ * not turn into a poster.
+ */
+.pb-memory__glyph {
+  display: grid;
+  place-items: center;
+}
+
+.pb-memory__glyph svg {
+  width: clamp(26px, 58%, 56px);
+  height: auto;
+}
+
+/* ---------------- tools ---------------- */
+
+.pb-memory__tools {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.pb-memory__hintline {
+  color: var(--pb-ink-soft);
+  font-size: var(--pb-fs-xs);
+  line-height: 1.45;
+}
+
+.pb-memory .pb-tools {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+
+.pb-memory .pb-tool {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 0.5rem 0.2rem;
+  border: 1.5px solid var(--pb-line);
+  border-radius: var(--pb-r-sm);
+  background: var(--pb-surface);
+  color: var(--pb-ink-soft);
+  font-size: 0.66rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background var(--pb-dur) var(--pb-ease),
+    color var(--pb-dur) var(--pb-ease),
+    border-color var(--pb-dur) var(--pb-ease);
+}
+
+.pb-memory .pb-tool:hover:not(:disabled) {
+  background: var(--pb-surface-2);
+  color: var(--pb-ink);
+}
+
+.pb-memory .pb-tool:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ---------------- size picker ---------------- */
+
+.pb-memory__levels {
+  display: grid;
+  gap: 0.55rem;
+  padding-top: 0.9rem;
+  border-top: 1.5px dashed var(--pb-line-strong);
+}
+
+.pb-memory__pick-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pb-ink-faint);
+}
+
+/* ---------------- pause curtain ---------------- */
+
+.pb-memory .pb-curtain {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  border-radius: var(--pb-r-lg);
+  background: color-mix(in oklab, var(--pb-bg) 82%, transparent);
+  backdrop-filter: blur(7px);
+  color: var(--pb-ink-soft);
+  animation: pb-memory-fade var(--pb-dur) var(--pb-ease);
+}
+
+@keyframes pb-memory-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ---------------- hint sheet ---------------- */
+
+.pb-memory .pb-hint {
+  position: fixed;
+  left: 50%;
+  bottom: 1.25rem;
+  z-index: 20;
+  width: min(560px, calc(100% - 2rem));
+  transform: translateX(-50%);
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.9rem 1.1rem;
+  border: 2px solid var(--pb-line-strong);
+  border-radius: var(--pb-r-lg);
+  background: var(--pb-surface);
+  box-shadow: 0 6px 0 var(--pb-shadow);
+  animation: pb-memory-rise var(--pb-dur-slow) var(--pb-ease);
+}
+
+@keyframes pb-memory-rise {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 14px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.pb-memory .pb-hint__head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--pb-ink-soft);
+}
+
+.pb-memory .pb-hint__text {
+  font-size: var(--pb-fs-md);
+  line-height: 1.5;
+}
+
+.pb-memory .pb-hint__actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+/* ---------------- the end of a round ---------------- */
+
+.pb-memory .pb-win {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: color-mix(in oklab, var(--pb-ink) 52%, transparent);
+  animation: pb-memory-fade var(--pb-dur-slow) var(--pb-ease);
+}
+
+.pb-memory .pb-win__card {
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+  width: min(440px, 100%);
+  /* Four sentences and two buttons fit a phone in landscape; anything longer
+     scrolls inside the card rather than off the bottom of the screen. */
+  max-height: min(88vh, 640px);
+  overflow-y: auto;
+  padding: 1.4rem 1.5rem 1.5rem;
+  text-align: center;
+  background: var(--pb-surface);
+  border: 2px solid var(--pb-line-strong);
+  border-radius: var(--pb-r-xl);
+  box-shadow: 0 8px 0 color-mix(in oklab, var(--pb-ink) 22%, transparent);
+  animation: pb-memory-pop var(--pb-dur-slow) var(--pb-ease);
+}
+
+@keyframes pb-memory-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.pb-memory .pb-win__title {
+  font-size: var(--pb-fs-xl);
+}
+
+.pb-memory .pb-win__sub {
+  color: var(--pb-ink-soft);
+  font-size: var(--pb-fs-sm);
+}
+
+.pb-memory .pb-win__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 0.4rem;
+}
+
+/*
+ * The three facts.
+ *
+ * A list of sentences rather than a table, because a table of three one-line
+ * statistics is what a dashboard does and this is a description of a round. The
+ * marker is a dash: no ticks, because there is nothing here that can be failed.
+ */
+.pb-memory__recap {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0.2rem 0 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+  color: var(--pb-ink-soft);
+  font-size: var(--pb-fs-sm);
+  line-height: 1.45;
+}
+
+.pb-memory__recap li {
+  position: relative;
+  padding-left: 1.1rem;
+}
+
+.pb-memory__recap li::before {
+  content: '–';
+  position: absolute;
+  left: 0;
+  color: var(--pb-ink-faint);
+}
+
+/* ---------------- narrow screens ---------------- */
+
+@media (max-width: 900px) {
+  .pb-memory .pb-play__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

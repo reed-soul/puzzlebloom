@@ -1,0 +1,29 @@
+{
+  "name": "@puzzlebloom/game-memory-garden",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Memory Garden for PuzzleBloom: the garden's nine creatures dealt face down, a missed pair left face up until the player moves on, and a plain account of the round at the end.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./manifest": "./src/manifest.ts",
+    "./memory-garden.css": "./src/memory-garden.css"
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@puzzlebloom/memory-garden-engine": "workspace:*",
+    "@puzzlebloom/ui": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@puzzlebloom/game-sudoku": "workspace:*",
+    "@types/react": "^19.3.0",
+    "react": "^19.0.0"
+  }
+}
