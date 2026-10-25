@@ -58,6 +58,12 @@ const ROUTES = [
     heading: 'Frog Road for kids',
   },
   {
+    path: '/play/bloom/',
+    title: 'Bloom Drop — merge a garden, seed to moonflower | PuzzleBloom',
+    canonical: 'https://puzzlebloom.taoliapp.com/play/bloom/',
+    heading: 'Bloom Drop for kids',
+  },
+  {
     path: '/themes/',
     title: 'Theme studio — make the puzzle yours | PuzzleBloom',
     canonical: 'https://puzzlebloom.taoliapp.com/themes/',
@@ -113,7 +119,7 @@ test('the home page describes the site and every game it ships, and nothing inve
   expect(ofType('WebSite')).toHaveLength(1);
   expect(ofType('WebPage')).toHaveLength(1);
   const applications = ofType('WebApplication');
-  expect(applications).toHaveLength(6);
+  expect(applications).toHaveLength(7);
 
   // One application per ready game, each naming its own URL — and the lookup by
   // URL is deliberate, because taking the first `WebApplication` would silently
@@ -121,6 +127,7 @@ test('the home page describes the site and every game it ships, and nothing inve
   const byUrl = new Map(applications.map((node) => [node.url as string, node]));
   expect([...byUrl.keys()].sort()).toEqual([
     'https://puzzlebloom.taoliapp.com/play/balance/',
+    'https://puzzlebloom.taoliapp.com/play/bloom/',
     'https://puzzlebloom.taoliapp.com/play/frog-road/',
     'https://puzzlebloom.taoliapp.com/play/memory-garden/',
     'https://puzzlebloom.taoliapp.com/play/nonogram/',
@@ -128,9 +135,9 @@ test('the home page describes the site and every game it ships, and nothing inve
     'https://puzzlebloom.taoliapp.com/play/tangram/',
   ]);
 
-  // Six nodes with one `@id` is an invalid graph, and it is exactly what
+  // Seven nodes with one `@id` is an invalid graph, and it is exactly what
   // generating them from a list invites. The identity has to name the game.
-  expect(new Set(applications.map((node) => node['@id'])).size).toBe(6);
+  expect(new Set(applications.map((node) => node['@id'])).size).toBe(7);
   for (const node of applications) expect(node['@id']).toBe(`${node.url}#application`);
 
   for (const node of applications) {
@@ -208,6 +215,11 @@ for (const game of [
     id: 'https://puzzlebloom.taoliapp.com/play/frog-road/#application',
     name: 'PuzzleBloom Frog Road',
   },
+  {
+    path: '/play/bloom/',
+    id: 'https://puzzlebloom.taoliapp.com/play/bloom/#application',
+    name: 'PuzzleBloom Bloom Drop',
+  },
 ]) {
   test(`${game.path} describes itself and only itself`, async ({ page }) => {
     await page.goto(game.path);
@@ -262,8 +274,8 @@ test('every sitemap URL is a page that exists and points back at itself', async 
   expect(response.status()).toBe(200);
 
   const locations = [...(await response.text()).matchAll(/<loc>(.*?)<\/loc>/g)].map((match) => match[1]);
-  // One per entry in `site.json`: home, six games, themes, parents.
-  expect(locations).toHaveLength(9);
+  // One per entry in `site.json`: home, seven games, themes, parents.
+  expect(locations).toHaveLength(10);
 
   for (const location of locations) {
     const url = new URL(location);

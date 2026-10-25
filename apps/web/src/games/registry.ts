@@ -10,6 +10,7 @@
 // them through the package index would drag the whole game into the garden
 // bundle.
 import { balanceManifest } from '@puzzlebloom/game-balance/manifest';
+import { bloomManifest } from '@puzzlebloom/game-bloom/manifest';
 import { frogRoadManifest } from '@puzzlebloom/game-frog-road/manifest';
 import { memoryGardenManifest } from '@puzzlebloom/game-memory-garden/manifest';
 import { nonogramManifest } from '@puzzlebloom/game-nonogram/manifest';
@@ -25,6 +26,7 @@ export const GAMES: GameManifest[] = [
   memoryGardenManifest,
   balanceManifest,
   frogRoadManifest,
+  bloomManifest,
 ];
 
 /**

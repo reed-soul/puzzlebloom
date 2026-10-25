@@ -32,6 +32,9 @@ const BalanceGame = lazy(() =>
 const FrogRoadGame = lazy(() =>
   import('@puzzlebloom/game-frog-road').then((module) => ({ default: module.FrogRoadGame })),
 );
+const BloomGame = lazy(() =>
+  import('@puzzlebloom/game-bloom').then((module) => ({ default: module.BloomGame })),
+);
 
 function Routes() {
   const { path, navigate } = useRouter();
@@ -45,7 +48,8 @@ function Routes() {
     path === '/play/tangram' ||
     path === '/play/memory-garden' ||
     path === '/play/balance' ||
-    path === '/play/frog-road';
+    path === '/play/frog-road' ||
+    path === '/play/bloom';
 
   // Layout effect, not effect: the title and canonical should be right before
   // the new page paints, the same way the theme is.
@@ -96,6 +100,13 @@ function Routes() {
       return (
         <Suspense fallback={<p className="pb-page-note">Unfolding the road…</p>}>
           <FrogRoadGame onExit={() => navigate('/')} />
+        </Suspense>
+      );
+    }
+    if (path === '/play/bloom') {
+      return (
+        <Suspense fallback={<p className="pb-page-note">Scattering the seeds…</p>}>
+          <BloomGame onExit={() => navigate('/')} />
         </Suspense>
       );
     }

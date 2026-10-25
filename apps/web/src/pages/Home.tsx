@@ -188,6 +188,22 @@ function RoadArt() {
   );
 }
 
+/**
+ * A jar caught mid-drop: three tiers of the ladder visible, the smallest
+ * falling toward two who are about to become one. The merge is the game, so
+ * the card shows the moment before it.
+ */
+function BloomsArt() {
+  return (
+    <div className="pb-card__art-blooms" aria-hidden="true">
+      <span className="is-falling" />
+      <span className="is-pair-a" />
+      <span className="is-pair-b" />
+      <span className="is-big" />
+    </div>
+  );
+}
+
 function Art({ game }: { game: GameManifest }) {
   if (game.status === 'ready') {
     return (
@@ -197,6 +213,7 @@ function Art({ game }: { game: GameManifest }) {
         {game.art === 'pairs' ? <PairsArt /> : null}
         {game.art === 'balance' ? <BalanceArt /> : null}
         {game.art === 'road' ? <RoadArt /> : null}
+        {game.art === 'blooms' ? <BloomsArt /> : null}
         {game.art === 'creatures' || !game.art ? <CreaturesArt /> : null}
       </div>
     );

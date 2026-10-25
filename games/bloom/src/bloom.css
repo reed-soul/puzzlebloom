@@ -1,0 +1,238 @@
+/*
+ * Bloom Drop.
+ *
+ * The stage is one aspect-fixed box scaled by --pb-bloom-scale; the engine's
+ * 340×440 world maps onto it once, and both render paths position children in
+ * engine coordinates through that one variable. The jar is drawn by the stage
+ * itself (walls, floor, a soft rim); blooms are circles whose look comes from
+ * the tier classes — so themes restyle the game without touching physics.
+ *
+ * Tier colours ride the theme's accent ramp via color-mix; each tier also
+ * grows a distinct face (the ::after dot pattern), because colour alone is
+ * never the only signal in this garden.
+ */
+
+.pb-bloom {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  padding: 16px clamp(12px, 4vw, 32px) 32px;
+}
+
+.pb-bloom__score,
+.pb-bloom__best {
+  margin: 0;
+  font-size: var(--pb-fs-sm);
+  color: var(--pb-ink-soft);
+}
+
+.pb-bloom__score strong {
+  font-family: var(--pb-font-display);
+  color: var(--pb-ink);
+  font-size: var(--pb-fs-lg);
+}
+
+.pb-bloom__stage {
+  position: relative;
+  touch-action: none;
+  width: calc(340px * var(--pb-bloom-scale, 1));
+  height: calc(440px * var(--pb-bloom-scale, 1));
+  border-radius: 0 0 22px 22px;
+  border: 3px solid var(--pb-line);
+  border-top: none;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--pb-surface) 55%, transparent),
+    var(--pb-surface) 30%
+  );
+  box-shadow: inset 0 6px 0 color-mix(in oklab, var(--pb-line) 60%, transparent);
+  overflow: hidden;
+}
+
+/* The rim line the overflow rule measures against, drawn on the stage. */
+.pb-bloom__stage::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -3px;
+  right: -3px;
+  height: 3px;
+  background: var(--pb-line);
+}
+
+.pb-bloom__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.pb-bloom__dom-stage {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.pb-bloom__dom-stage[hidden] {
+  display: none;
+}
+
+/* A tier circle. Both paths use these classes; only the positioning differs. */
+.pb-bloom__tier {
+  position: relative;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 2px solid var(--pb-line);
+  background: var(--pb-brand);
+}
+
+.pb-bloom__dom-stage .pb-bloom__tier {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+.pb-bloom__tier--pending {
+  opacity: 0.75;
+}
+
+/* The tier ramp: nine steps from brand toward accent, each lighter. The
+   engine knows nothing of colour; this is the whole visual identity. */
+.pb-bloom__tier--0 {
+  background: color-mix(in oklab, var(--pb-brand) 72%, var(--pb-surface));
+}
+.pb-bloom__tier--1 {
+  background: color-mix(in oklab, var(--pb-brand) 64%, var(--pb-surface));
+}
+.pb-bloom__tier--2 {
+  background: color-mix(in oklab, var(--pb-brand) 56%, var(--pb-surface));
+}
+.pb-bloom__tier--3 {
+  background: color-mix(in oklab, var(--pb-brand) 48%, var(--pb-accent) 8%);
+}
+.pb-bloom__tier--4 {
+  background: color-mix(in oklab, var(--pb-brand) 40%, var(--pb-accent) 16%);
+}
+.pb-bloom__tier--5 {
+  background: color-mix(in oklab, var(--pb-brand) 32%, var(--pb-accent) 26%);
+}
+.pb-bloom__tier--6 {
+  background: color-mix(in oklab, var(--pb-brand) 24%, var(--pb-accent) 38%);
+}
+.pb-bloom__tier--7 {
+  background: color-mix(in oklab, var(--pb-brand) 16%, var(--pb-accent) 52%);
+}
+.pb-bloom__tier--8 {
+  background: color-mix(in oklab, var(--pb-accent) 72%, var(--pb-surface));
+}
+
+/* The face: one to nine dots, so tiers read without colour. Sized in
+   container-relative units, so the same class serves any tier radius. */
+.pb-bloom__face {
+  display: grid;
+  gap: 8%;
+  width: 46%;
+  height: 46%;
+}
+
+.pb-bloom__face::before,
+.pb-bloom__face::after {
+  content: '';
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--pb-surface) 78%, transparent);
+}
+
+.pb-bloom__tier--0 .pb-bloom__face {
+  grid-template-columns: 1fr;
+}
+.pb-bloom__tier--0 .pb-bloom__face::after {
+  display: none;
+}
+
+.pb-bloom__tier--1 .pb-bloom__face {
+  grid-template-columns: repeat(2, 1fr);
+}
+.pb-bloom__tier--1 .pb-bloom__face::after {
+  display: none;
+}
+
+.pb-bloom__tier--2 .pb-bloom__face,
+.pb-bloom__tier--3 .pb-bloom__face,
+.pb-bloom__tier--4 .pb-bloom__face {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.pb-bloom__tier--3 .pb-bloom__face::before {
+  box-shadow: 0 120% 0 color-mix(in oklab, var(--pb-surface) 78%, transparent);
+}
+.pb-bloom__tier--4 .pb-bloom__face::before {
+  box-shadow: 0 120% 0 color-mix(in oklab, var(--pb-surface) 78%, transparent);
+}
+.pb-bloom__tier--4 .pb-bloom__face::after {
+  box-shadow: 0 120% 0 color-mix(in oklab, var(--pb-surface) 78%, transparent);
+}
+
+.pb-bloom__tier--5 .pb-bloom__face,
+.pb-bloom__tier--6 .pb-bloom__face,
+.pb-bloom__tier--7 .pb-bloom__face,
+.pb-bloom__tier--8 .pb-bloom__face {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.pb-bloom__hint {
+  margin: 0;
+  font-size: var(--pb-fs-sm);
+  color: var(--pb-ink-faint, var(--pb-ink-soft));
+  text-align: center;
+}
+
+.pb-bloom__over {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  background: color-mix(in oklab, var(--pb-page) 66%, transparent);
+}
+
+.pb-bloom__over-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  padding: 22px 28px;
+  border-radius: var(--pb-r-lg, 22px);
+  background: var(--pb-surface);
+  border: 2px solid var(--pb-line);
+  box-shadow: 0 5px 0 var(--pb-line);
+  text-align: center;
+  max-width: 300px;
+}
+
+.pb-bloom__over-card h2 {
+  margin: 0;
+  font-family: var(--pb-font-display);
+  color: var(--pb-ink);
+}
+
+.pb-bloom__over-card p {
+  margin: 0;
+  color: var(--pb-ink);
+}
+
+.pb-bloom__over-note {
+  font-size: var(--pb-fs-sm);
+  color: var(--pb-ink-soft);
+}
+
+.pb-bloom__over-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+/* No reduced-motion canvas rule: the probe in BloomCanvas refuses to mount
+   the canvas layer under prefers-reduced-motion, so the DOM path renders the
+   world without a repaint loop. A CSS override here would only fight it. */

@@ -30,6 +30,12 @@
       "changeFrequency": "monthly",
       "priority": 0.7
     },
+    "/play/bloom": {
+      "title": "Bloom Drop — merge a garden, seed to moonflower | PuzzleBloom",
+      "description": "Drop seeds into a jar; two of a kind grow into the next, through nine tiers from seed to moonflower. No timer, no losing until the jar is full. Ages 4 and up.",
+      "changeFrequency": "monthly",
+      "priority": 0.7
+    },
     "/play/nonogram": {
       "title": "Kids' nonogram: count the squares, uncover the picture | PuzzleBloom",
       "description": "Free nonogram for children in the browser. Two sizes, hand-drawn pictures, crosses for the squares you rule out, and hints that explain the counting. No timer, no score, no ads.",
