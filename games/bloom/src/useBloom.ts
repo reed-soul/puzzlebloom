@@ -6,7 +6,6 @@ import {
   step,
 } from '@puzzlebloom/bloom-engine';
 import { useCallback, useEffect, useRef, useState } from 'react';
-
 /**
  * Bloom Drop's screen state: one rAF loop, engine ticks, React repaints.
  *
@@ -58,7 +57,44 @@ export function useBloom() {
 
   const aim = useCallback((x: number) => setState((s) => engineAim(s, x)), []);
   const drop = useCallback(() => setState((s) => engineDrop(s)), []);
-  const restart = useCallback(() => setState(createBloom()), []);
+  const restart = useCallback(() => {
+    setState(createBloom());
+    setCombo({ count: 0, until: 0 });
+    setCelebration(null);
+  }, []);
+
+  // ── Combo: merges within the window chain; the window is generous because
+  // chain reactions in a settling jar take seconds to unfold, and a combo
+  // counter that resets mid-chain reads as broken, not challenging.
+  const [combo, setCombo] = useState({ count: 0, until: 0 });
+  const merges = state.merges;
+  useEffect(() => {
+    if (merges.length === 0) return;
+    const now = performance.now();
+    setCombo((current) => {
+      const alive = now < current.until;
+      const count = alive ? current.count + merges.length : merges.length;
+      return { count, until: now + COMBO_WINDOW_MS };
+    });
+  }, [merges]);
+
+  // ── Celebration: the first time a high tier (ram or above) appears, the
+  // garden throws a party. Once per run per tier, announced politely.
+  const [celebration, setCelebration] = useState<{ tier: number } | null>(null);
+  const celebrated = useRef(new Set<number>());
+  useEffect(() => {
+    for (const merge of state.merges) {
+      if (merge.tier >= 6 && !celebrated.current.has(merge.tier)) {
+        celebrated.current.add(merge.tier);
+        setCelebration({ tier: merge.tier });
+      }
+    }
+  }, [state.merges]);
+  useEffect(() => {
+    if (!celebration) return;
+    const clear = setTimeout(() => setCelebration(null), CELEBRATION_MS);
+    return () => clearTimeout(clear);
+  }, [celebration]);
 
   // Keyboard parity with the pointer: left/right aim in steps, space drops.
   useEffect(() => {
@@ -78,5 +114,10 @@ export function useBloom() {
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  return { state, aim, drop, restart } as const;
+  return { state, aim, drop, restart, combo, celebration } as const;
 }
+
+/** How long a merge keeps the combo alive. Chains take seconds to settle. */
+const COMBO_WINDOW_MS = 2600;
+/** How long the first-of-a-high-tier celebration stays on screen. */
+const CELEBRATION_MS = 2200;

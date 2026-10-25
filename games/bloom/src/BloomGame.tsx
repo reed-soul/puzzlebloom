@@ -1,6 +1,8 @@
 import { JAR, TIERS } from '@puzzlebloom/bloom-engine';
+import { CreatureGlyph } from '@puzzlebloom/ui';
 import { type CSSProperties, useRef } from 'react';
 import { BloomCanvas, useHtmlInCanvasProbe } from './BloomCanvas';
+import { MergeJuice } from './MergeJuice';
 import { useBloom } from './useBloom';
 import './bloom.css';
 
@@ -37,7 +39,9 @@ function BloomDOM({ state }: { state: ReturnType<typeof useBloom>['state'] }) {
         } as CSSProperties;
         return (
           <span key={b.id} className={`pb-bloom__tier pb-bloom__tier--${b.tier}`} style={style}>
-            <span className="pb-bloom__face" />
+            <span className="pb-bloom__face">
+              <CreatureGlyph digit={b.tier + 1} />
+            </span>
           </span>
         );
       })}
@@ -53,18 +57,21 @@ function BloomDOM({ state }: { state: ReturnType<typeof useBloom>['state'] }) {
           } as CSSProperties
         }
       >
-        <span className="pb-bloom__face" />
+        <span className="pb-bloom__face">
+          <CreatureGlyph digit={state.pending.tier + 1} />
+        </span>
       </span>
     </>
   );
 }
 
 export function BloomGame({ onExit }: Props) {
-  const { state, aim, drop, restart } = useBloom();
+  const { state, aim, drop, restart, combo, celebration } = useBloom();
   const stageRef = useRef<HTMLDivElement>(null);
   // One probe, two consumers: the canvas layer mounts only when the API is
   // there, and the DOM layer hides only then too — never both, never neither.
   const canvasPath = useHtmlInCanvasProbe();
+  const comboAlive = combo.count >= 2 && performance.now() < combo.until;
 
   // Pointer input: move to aim, release to drop. `onPointerDown` also aims,
   // so a tap anywhere is "put it there" — the whole surface is the control.
@@ -114,6 +121,22 @@ export function BloomGame({ onExit }: Props) {
         <div className="pb-bloom__dom-stage" hidden={canvasPath}>
           <BloomDOM state={state} />
         </div>
+        <MergeJuice merges={state.merges} />
+
+        {comboAlive ? (
+          <p className="pb-bloom__combo" aria-live="polite">
+            {combo.count} in a row!
+          </p>
+        ) : null}
+
+        {celebration ? (
+          <div className="pb-bloom__celebrate" role="status">
+            <span className="pb-bloom__celebrate-creature">
+              <CreatureGlyph digit={celebration.tier + 1} size={72} />
+            </span>
+            <p>A {TIERS[celebration.tier].name}! First time in this garden.</p>
+          </div>
+        ) : null}
 
         {state.over ? (
           <div className="pb-bloom__over" role="status">

@@ -36,8 +36,17 @@ export interface Pending {
   y: number;
 }
 
+/** One turn's merge, where it happened: the juice layer's input. */
+export interface MergeEvent {
+  x: number;
+  y: number;
+  tier: number;
+}
+
 export interface BloomState {
   blooms: Bloom[];
+  /** Merges from the most recent tick; empty when nothing merged. */
+  merges: MergeEvent[];
   pending: Pending;
   nextTier: number;
   score: number;
@@ -57,15 +66,15 @@ export interface BloomState {
  * things a four-year-old can say.
  */
 export const TIERS = [
-  { name: 'seed', radius: 13 },
-  { name: 'sprout', radius: 16.5 },
-  { name: 'bud', radius: 21 },
-  { name: 'bloom', radius: 26.5 },
-  { name: 'rose', radius: 33 },
-  { name: 'tulip', radius: 41 },
-  { name: 'sunflower', radius: 50 },
-  { name: 'puffball', radius: 61 },
-  { name: 'moonflower', radius: 74 },
+  { name: 'ant', radius: 13 },
+  { name: 'bunny', radius: 16.5 },
+  { name: 'sprout', radius: 21 },
+  { name: 'fox', radius: 26.5 },
+  { name: 'frog', radius: 33 },
+  { name: 'bird', radius: 41 },
+  { name: 'ram', radius: 50 },
+  { name: 'panda', radius: 61 },
+  { name: 'crown', radius: 74 },
 ] as const;
 
 export const TIER_COUNT = TIERS.length;
@@ -181,9 +190,11 @@ export function step(state: BloomState): BloomState {
 
   // Merges: same tier, touching. One sweep per tick; newly merged blooms do
   // not merge again until the next tick, which reads as rhythm rather than
-  // as a chain-explosion.
+  // as a chain-explosion. Recorded as events so the screen can celebrate
+  // each one where it happened — the juice layer subscribes to these.
   const merged = new Set<number>();
   const out: Bloom[] = [];
+  const merges: MergeEvent[] = [];
   let score = state.score;
   let bestTier = state.bestTier;
   for (let i = 0; i < blooms.length; i++) {
@@ -209,6 +220,7 @@ export function step(state: BloomState): BloomState {
       merged.add(a.id);
       merged.add(b.id);
       out.push(child);
+      merges.push({ x: child.x, y: child.y, tier });
       score += (tier + 1) * (tier + 2);
       bestTier = Math.max(bestTier, tier);
       break;
@@ -226,6 +238,7 @@ export function step(state: BloomState): BloomState {
   return {
     ...state,
     blooms,
+    merges,
     score,
     bestTier,
     over: overTick >= OVERFLOW_TICKS,
@@ -238,6 +251,7 @@ export function step(state: BloomState): BloomState {
 export function createBloom(seed: () => number = Math.random): BloomState {
   const state: BloomState = {
     blooms: [],
+    merges: [],
     pending: { tier: 0, x: JAR.width / 2, y: 60 },
     nextTier: randomTier(seed),
     score: 0,
@@ -284,6 +298,7 @@ export function drop(state: BloomState, rand: () => number = Math.random): Bloom
   return {
     ...state,
     blooms: [...state.blooms, bloom],
+    merges: [],
     pending: { tier: state.nextTier, x: state.pending.x, y: 60 },
     nextTier: randomTier(rand),
     seq: state.seq + 1,

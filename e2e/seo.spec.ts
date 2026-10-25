@@ -59,7 +59,7 @@ const ROUTES = [
   },
   {
     path: '/play/bloom/',
-    title: 'Bloom Drop — merge a garden, seed to moonflower | PuzzleBloom',
+    title: 'Bloom Drop — merge a garden, ant to crown | PuzzleBloom',
     canonical: 'https://puzzlebloom.taoliapp.com/play/bloom/',
     heading: 'Bloom Drop for kids',
   },

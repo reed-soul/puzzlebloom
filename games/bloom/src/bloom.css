@@ -98,87 +98,49 @@
   opacity: 0.75;
 }
 
-/* The tier ramp: nine steps from brand toward accent, each lighter. The
-   engine knows nothing of colour; this is the whole visual identity. */
+/* The creature is the tier: each tier's disc is a soft wash of its glyph
+   colour (the glyph itself carries the identity — ears, horn, crown), and
+   the wash keeps the disc legible against the jar at every size. */
 .pb-bloom__tier--0 {
-  background: color-mix(in oklab, var(--pb-brand) 72%, var(--pb-surface));
+  background: color-mix(in oklab, #e4736b 26%, var(--pb-surface));
 }
 .pb-bloom__tier--1 {
-  background: color-mix(in oklab, var(--pb-brand) 64%, var(--pb-surface));
+  background: color-mix(in oklab, #e9a23b 26%, var(--pb-surface));
 }
 .pb-bloom__tier--2 {
-  background: color-mix(in oklab, var(--pb-brand) 56%, var(--pb-surface));
+  background: color-mix(in oklab, #e3c244 26%, var(--pb-surface));
 }
 .pb-bloom__tier--3 {
-  background: color-mix(in oklab, var(--pb-brand) 48%, var(--pb-accent) 8%);
+  background: color-mix(in oklab, #7fb069 26%, var(--pb-surface));
 }
 .pb-bloom__tier--4 {
-  background: color-mix(in oklab, var(--pb-brand) 40%, var(--pb-accent) 16%);
+  background: color-mix(in oklab, #4fa3a5 26%, var(--pb-surface));
 }
 .pb-bloom__tier--5 {
-  background: color-mix(in oklab, var(--pb-brand) 32%, var(--pb-accent) 26%);
+  background: color-mix(in oklab, #5b8fd6 26%, var(--pb-surface));
 }
 .pb-bloom__tier--6 {
-  background: color-mix(in oklab, var(--pb-brand) 24%, var(--pb-accent) 38%);
+  background: color-mix(in oklab, #8e7cc3 26%, var(--pb-surface));
 }
 .pb-bloom__tier--7 {
-  background: color-mix(in oklab, var(--pb-brand) 16%, var(--pb-accent) 52%);
+  background: color-mix(in oklab, #d98cb3 26%, var(--pb-surface));
 }
 .pb-bloom__tier--8 {
-  background: color-mix(in oklab, var(--pb-accent) 72%, var(--pb-surface));
+  background: color-mix(in oklab, #b08d6e 30%, var(--pb-surface));
 }
 
-/* The face: one to nine dots, so tiers read without colour. Sized in
-   container-relative units, so the same class serves any tier radius. */
+/* The face: the glyph creature fills the disc. Colour is never the only
+   signal — each creature has its own outline feature. */
 .pb-bloom__face {
   display: grid;
-  gap: 8%;
-  width: 46%;
-  height: 46%;
+  place-items: center;
+  width: 100%;
+  height: 100%;
 }
 
-.pb-bloom__face::before,
-.pb-bloom__face::after {
-  content: '';
-  border-radius: 50%;
-  background: color-mix(in oklab, var(--pb-surface) 78%, transparent);
-}
-
-.pb-bloom__tier--0 .pb-bloom__face {
-  grid-template-columns: 1fr;
-}
-.pb-bloom__tier--0 .pb-bloom__face::after {
-  display: none;
-}
-
-.pb-bloom__tier--1 .pb-bloom__face {
-  grid-template-columns: repeat(2, 1fr);
-}
-.pb-bloom__tier--1 .pb-bloom__face::after {
-  display: none;
-}
-
-.pb-bloom__tier--2 .pb-bloom__face,
-.pb-bloom__tier--3 .pb-bloom__face,
-.pb-bloom__tier--4 .pb-bloom__face {
-  grid-template-columns: repeat(2, 1fr);
-}
-
-.pb-bloom__tier--3 .pb-bloom__face::before {
-  box-shadow: 0 120% 0 color-mix(in oklab, var(--pb-surface) 78%, transparent);
-}
-.pb-bloom__tier--4 .pb-bloom__face::before {
-  box-shadow: 0 120% 0 color-mix(in oklab, var(--pb-surface) 78%, transparent);
-}
-.pb-bloom__tier--4 .pb-bloom__face::after {
-  box-shadow: 0 120% 0 color-mix(in oklab, var(--pb-surface) 78%, transparent);
-}
-
-.pb-bloom__tier--5 .pb-bloom__face,
-.pb-bloom__tier--6 .pb-bloom__face,
-.pb-bloom__tier--7 .pb-bloom__face,
-.pb-bloom__tier--8 .pb-bloom__face {
-  grid-template-columns: repeat(3, 1fr);
+.pb-bloom__face svg {
+  width: 88%;
+  height: 88%;
 }
 
 .pb-bloom__hint {
@@ -236,3 +198,189 @@
 /* No reduced-motion canvas rule: the probe in BloomCanvas refuses to mount
    the canvas layer under prefers-reduced-motion, so the DOM path renders the
    world without a repaint loop. A CSS override here would only fight it. */
+
+/* ── Merge juice (ADR: feedback triple, budgets in MergeJuice.tsx) ── */
+
+/* Squash: a merged bloom pops. Applied to the *new* tier by keying off the
+   fresh id — cheap version: the burst layer carries the motion instead, so
+   this rule stays for the DOM-path discs nearest a merge. */
+.pb-bloom__burst {
+  position: absolute;
+  z-index: 3;
+  width: var(--burst-size);
+  height: var(--burst-size);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  animation: pb-burst-pop 0.45s ease-out forwards;
+}
+
+.pb-bloom__burst i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 9%;
+  height: 9%;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.9;
+  animation: pb-spark-fly 0.45s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+}
+
+.pb-bloom__burst--0 {
+  color: #e4736b;
+}
+.pb-bloom__burst--1 {
+  color: #e9a23b;
+}
+.pb-bloom__burst--2 {
+  color: #e3c244;
+}
+.pb-bloom__burst--3 {
+  color: #7fb069;
+}
+.pb-bloom__burst--4 {
+  color: #4fa3a5;
+}
+.pb-bloom__burst--5 {
+  color: #5b8fd6;
+}
+.pb-bloom__burst--6 {
+  color: #8e7cc3;
+}
+.pb-bloom__burst--7 {
+  color: #d98cb3;
+}
+.pb-bloom__burst--8 {
+  color: #b08d6e;
+}
+
+@keyframes pb-burst-pop {
+  0% {
+    transform: translate(-50%, -50%) scale(0.4);
+    opacity: 0.9;
+  }
+  55% {
+    transform: translate(-50%, -50%) scale(1.12);
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes pb-spark-fly {
+  0% {
+    transform: rotate(var(--spark-angle)) translateY(0) scale(1);
+    opacity: 0.95;
+  }
+  100% {
+    transform: rotate(var(--spark-angle)) translateY(-320%) scale(0.3);
+    opacity: 0;
+  }
+}
+
+.pb-bloom__juice {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Reduced motion: sparks and pops go away entirely; the chime stays (audio
+   is not motion), and the merge still reads through the score and the new
+   creature appearing. */
+@media (prefers-reduced-motion: reduce) {
+  .pb-bloom__burst,
+  .pb-bloom__burst i {
+    animation-duration: 0.01s;
+    opacity: 0;
+  }
+}
+
+/* ── Combo & celebration ── */
+
+.pb-bloom__combo {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  margin: 0;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: var(--pb-surface);
+  border: 2px solid var(--pb-line);
+  font-family: var(--pb-font-display);
+  color: var(--pb-ink);
+  animation: pb-combo-in 0.25s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+
+@keyframes pb-combo-in {
+  from {
+    transform: translateX(-50%) scale(0.6);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+  }
+}
+
+.pb-bloom__celebrate {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  background: color-mix(in oklab, var(--pb-page) 45%, transparent);
+  animation: pb-celebrate-in 0.4s ease-out;
+}
+
+.pb-bloom__celebrate p {
+  margin: 0;
+  font-family: var(--pb-font-display);
+  font-size: var(--pb-fs-lg);
+  color: var(--pb-ink);
+  text-align: center;
+  padding: 0 16px;
+}
+
+.pb-bloom__celebrate-creature {
+  animation: pb-celebrate-bounce 0.9s cubic-bezier(0.3, 1.6, 0.4, 1);
+  filter: drop-shadow(0 4px 0 color-mix(in oklab, var(--pb-line) 60%, transparent));
+}
+
+@keyframes pb-celebrate-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pb-celebrate-bounce {
+  0% {
+    transform: scale(0.2) rotate(-8deg);
+  }
+  60% {
+    transform: scale(1.15) rotate(4deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pb-bloom__combo,
+  .pb-bloom__celebrate,
+  .pb-bloom__celebrate-creature {
+    animation-duration: 0.01s;
+  }
+}

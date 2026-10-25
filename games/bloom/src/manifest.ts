@@ -11,9 +11,9 @@ import type { GameManifest } from '@puzzlebloom/game-sudoku/manifest';
 export const bloomManifest: GameManifest = {
   id: 'bloom',
   title: 'Bloom Drop',
-  tagline: 'Drop them, meet them, grow them.',
+  tagline: 'Two little friends become one bigger friend.',
   blurb:
-    'Seeds fall into a jar. Two of a kind that touch become one of the next kind, all the way from seed to moonflower. No timer, no losing until the jar is truly full — just the next drop, and the garden it grows into.',
+    'Little creatures fall into a jar. Two of a kind that touch become one bigger friend, all the way from ant to crowned king. No timer, no losing until the jar is truly full — just the next drop, and the friends it makes.',
   route: '/play/bloom',
   skills: ['Aiming', 'Planning ahead', 'Patience'],
   ageRange: '4 and up',
