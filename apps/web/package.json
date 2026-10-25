@@ -11,8 +11,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@puzzlebloom/game-memory-garden": "workspace:*",
+    "@puzzlebloom/game-nonogram": "workspace:*",
     "@puzzlebloom/game-sudoku": "workspace:*",
+    "@puzzlebloom/game-tangram": "workspace:*",
     "@puzzlebloom/sudoku-engine": "workspace:*",
+    "@puzzlebloom/tangram-engine": "workspace:*",
     "@puzzlebloom/theme-core": "workspace:*",
     "@puzzlebloom/ui": "workspace:*",
     "react": "^19.3.1",

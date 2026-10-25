@@ -6,52 +6,32 @@
  * touched — the cards and the shelf are generated from this list.
  */
 
-// The manifest is imported from its own entry point on purpose: pulling it
-// through the package index would drag the whole game into the garden bundle.
+// The manifests are imported from their own entry points on purpose: pulling
+// them through the package index would drag the whole game into the garden
+// bundle.
+import { memoryGardenManifest } from '@puzzlebloom/game-memory-garden/manifest';
+import { nonogramManifest } from '@puzzlebloom/game-nonogram/manifest';
 import { type GameManifest, sudokuManifest } from '@puzzlebloom/game-sudoku/manifest';
+import { tangramManifest } from '@puzzlebloom/game-tangram/manifest';
 
 export type { GameManifest };
 
-export const GAMES: GameManifest[] = [sudokuManifest];
-
-export const SPROUTING: GameManifest[] = [
-  {
-    id: 'nonogram',
-    title: 'Nonogram',
-    tagline: 'Count the squares, uncover the picture.',
-    blurb:
-      'Rows and columns of numbers that add up to a hidden drawing. The reward for correct logic is a picture appearing.',
-    route: '/play/nonogram',
-    skills: ['Counting', 'Spatial reasoning'],
-    ageRange: '7 and up',
-    typicalMinutes: '5–15 min',
-    status: 'sprouting',
-    tone: 'water',
-  },
-  {
-    id: 'memory-garden',
-    title: 'Memory Garden',
-    tagline: 'Turn over two, keep the pair that matches.',
-    blurb:
-      'A memory game where the cards are the garden’s own creatures, in four sizes so the difficulty grows with the player.',
-    route: '/play/memory-garden',
-    skills: ['Memory', 'Attention'],
-    ageRange: '4 and up',
-    typicalMinutes: '3–8 min',
-    status: 'sprouting',
-    tone: 'sun',
-  },
-  {
-    id: 'tangram',
-    title: 'Tangram',
-    tagline: 'Seven shapes, a hundred animals.',
-    blurb:
-      'Drag the classic seven pieces into the silhouette of a cat, a boat, a bird. No timer, no score, just the shape.',
-    route: '/play/tangram',
-    skills: ['Geometry', 'Visualisation'],
-    ageRange: '6 and up',
-    typicalMinutes: '6–20 min',
-    status: 'sprouting',
-    tone: 'clay',
-  },
+export const GAMES: GameManifest[] = [
+  sudokuManifest,
+  nonogramManifest,
+  tangramManifest,
+  memoryGardenManifest,
 ];
+
+/**
+ * Games that are announced but not playable.
+ *
+ * The home page renders these as dead cards on purpose: the shelf is a promise
+ * about what is coming, and a link to an empty route would break that promise
+ * the first time a child followed it.
+ *
+ * Empty for now, and the array stays rather than being deleted: the home page
+ * reads it to decide whether to say "nothing else growing yet", and the next
+ * game will need somewhere to sit before it is playable.
+ */
+export const SPROUTING: GameManifest[] = [];

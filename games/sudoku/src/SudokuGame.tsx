@@ -1,6 +1,6 @@
 import type { DifficultyId } from '@puzzlebloom/sudoku-engine';
-import { Button, Chip, Icon, Segmented } from '@puzzlebloom/ui';
-import { useCallback, useEffect } from 'react';
+import { Button, Chip, Icon, Segmented, useModalFocus } from '@puzzlebloom/ui';
+import { useCallback, useEffect, useRef } from 'react';
 import { Board } from './Board';
 import { HintPanel } from './HintPanel';
 import { Keypad } from './Keypad';
@@ -134,6 +134,19 @@ export function SudokuGame({ onExit }: Props) {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [onKeyDown]);
 
+  const winRef = useRef<HTMLDivElement>(null);
+  const pauseRef = useRef<HTMLDivElement>(null);
+
+  // Both overlays claim to be dialogs, so both have to behave like one: while
+  // either is up, the board underneath takes no input and the only exit is a
+  // button inside. Without this the announcement said "modal" and Tab walked
+  // the grid behind it, which a screen reader has no way to disbelieve.
+  //
+  // `!solved` on the curtain because two open dialogs would pull focus at each
+  // other; once the grid is finished the clock is stopped anyway.
+  useModalFocus(pauseRef, paused && !solved);
+  useModalFocus(winRef, solved);
+
   if (status === 'loading' || !game) {
     return (
       <div className="pb-play pb-play--loading">
@@ -191,7 +204,14 @@ export function SudokuGame({ onExit }: Props) {
             onSelect={select}
           />
           {paused ? (
-            <div className="pb-curtain" role="dialog" aria-label="Paused">
+            <div
+              className="pb-curtain"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Paused"
+              ref={pauseRef}
+              tabIndex={-1}
+            >
               <Icon name="pause" size={32} />
               <p>Paused. Take your time.</p>
               <Button variant="primary" size="md" iconLeft="play" onClick={resume}>
@@ -264,8 +284,11 @@ export function SudokuGame({ onExit }: Props) {
       ) : null}
 
       {solved ? (
+        // No Escape handler, on purpose: a finished grid has no "cancel", and a
+        // modal a child can dismiss with one key is a modal they can lose the
+        // result to. The two buttons are the exits.
         <div className="pb-win" role="dialog" aria-modal="true" aria-labelledby="pb-win-title">
-          <div className="pb-win__card">
+          <div className="pb-win__card" ref={winRef} tabIndex={-1}>
             <span className="pb-win__icon">
               <Icon name="trophy" size={32} />
             </span>

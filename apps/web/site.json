@@ -7,14 +7,32 @@
   "ogImage": "/og.png",
   "pages": {
     "/": {
-      "title": "PuzzleBloom — calm sudoku for kids, no ads, no accounts",
-      "description": "Quiet puzzle games for curious kids: sudoku that explains why a number goes where it does, an eight-colour theme studio, and no ads or accounts.",
+      "title": "PuzzleBloom — calm puzzle games for kids, no ads, no accounts",
+      "description": "Quiet puzzle games for curious kids: sudoku that explains why a number goes where it does, nonogram that turns counting into a picture, an eight-colour theme studio, and no ads or accounts.",
       "changeFrequency": "monthly",
       "priority": 1
     },
     "/play/sudoku": {
       "title": "Kids' sudoku with hints that explain the reason | PuzzleBloom",
       "description": "Free sudoku for children in the browser. Four levels, hints that teach the technique instead of giving the answer, and a creature mode for every digit.",
+      "changeFrequency": "monthly",
+      "priority": 0.9
+    },
+    "/play/nonogram": {
+      "title": "Kids' nonogram: count the squares, uncover the picture | PuzzleBloom",
+      "description": "Free nonogram for children in the browser. Two sizes, hand-drawn pictures, crosses for the squares you rule out, and hints that explain the counting. No timer, no score, no ads.",
+      "changeFrequency": "monthly",
+      "priority": 0.9
+    },
+    "/play/tangram": {
+      "title": "Kids' tangram: seven pieces, one shape | PuzzleBloom",
+      "description": "Free tangram for children in the browser. Drag the classic seven pieces into a silhouette; any arrangement that covers it exactly counts as solved. Hints that describe, never place.",
+      "changeFrequency": "monthly",
+      "priority": 0.9
+    },
+    "/play/memory-garden": {
+      "title": "Kids' memory game: turn over two, keep the pair | PuzzleBloom",
+      "description": "Free memory game for children in the browser. Six, eight or nine pairs of the garden's creatures, face down; a pair that misses stays face up until you turn the next card, so there is nothing to be quick about.",
       "changeFrequency": "monthly",
       "priority": 0.9
     },

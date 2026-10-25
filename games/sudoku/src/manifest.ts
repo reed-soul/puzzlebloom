@@ -24,6 +24,12 @@ export interface GameManifest {
   status: GameStatus;
   /** Accent hue used by the card's artwork block. */
   tone: 'grass' | 'sun' | 'water' | 'clay';
+  /**
+   * What the card draws above the title. Optional, and the home page falls back
+   * to the plain dot grid, so a game in the growing list needs no artwork of its
+   * own — and the home page never has to import a game package to find out.
+   */
+  art?: 'creatures' | 'squares' | 'tangram' | 'pairs';
 }
 
 export const sudokuManifest: GameManifest = {
@@ -38,4 +44,5 @@ export const sudokuManifest: GameManifest = {
   typicalMinutes: '8–20 min',
   status: 'ready',
   tone: 'grass',
+  art: 'creatures',
 };

@@ -13,15 +13,31 @@ import './styles/shell.css';
 import './styles/pages.css';
 import './styles/studio.css';
 
-// The game is the only heavy chunk. The garden paints without it.
+// Each game is a heavy chunk of its own. The garden paints without any of them.
 const SudokuGame = lazy(() =>
   import('@puzzlebloom/game-sudoku').then((module) => ({ default: module.SudokuGame })),
+);
+const NonogramGame = lazy(() =>
+  import('@puzzlebloom/game-nonogram').then((module) => ({ default: module.NonogramGame })),
+);
+const TangramGame = lazy(() =>
+  import('@puzzlebloom/game-tangram').then((module) => ({ default: module.TangramGame })),
+);
+const MemoryGarden = lazy(() =>
+  import('@puzzlebloom/game-memory-garden').then((module) => ({ default: module.MemoryGame })),
 );
 
 function Routes() {
   const { path, navigate } = useRouter();
   const isPlaying = path.startsWith('/play/');
-  const known = path === '/' || path === '/themes' || path === '/parents' || path === '/play/sudoku';
+  const known =
+    path === '/' ||
+    path === '/themes' ||
+    path === '/parents' ||
+    path === '/play/sudoku' ||
+    path === '/play/nonogram' ||
+    path === '/play/tangram' ||
+    path === '/play/memory-garden';
 
   // Layout effect, not effect: the title and canonical should be right before
   // the new page paints, the same way the theme is.
@@ -37,6 +53,27 @@ function Routes() {
       return (
         <Suspense fallback={<p className="pb-page-note">Unpacking the grid…</p>}>
           <SudokuGame onExit={() => navigate('/')} />
+        </Suspense>
+      );
+    }
+    if (path === '/play/nonogram') {
+      return (
+        <Suspense fallback={<p className="pb-page-note">Counting out the clues…</p>}>
+          <NonogramGame onExit={() => navigate('/')} />
+        </Suspense>
+      );
+    }
+    if (path === '/play/tangram') {
+      return (
+        <Suspense fallback={<p className="pb-page-note">Cutting the seven pieces…</p>}>
+          <TangramGame onExit={() => navigate('/')} />
+        </Suspense>
+      );
+    }
+    if (path === '/play/memory-garden') {
+      return (
+        <Suspense fallback={<p className="pb-page-note">Turning the cards over…</p>}>
+          <MemoryGarden onExit={() => navigate('/')} />
         </Suspense>
       );
     }

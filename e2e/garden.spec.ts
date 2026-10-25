@@ -11,9 +11,41 @@ test.describe('the garden', () => {
     await expect(page.locator('.pb-btn--loud')).toHaveCount(1);
     await expect(page.locator('.pb-btn--loud')).toContainText('Play Sudoku');
 
-    // The shelf: one shipped game, three growing.
     await expect(page.getByRole('heading', { name: 'In the garden' })).toBeVisible();
+    // Four shipped games and nothing left in the ground. Four cards, and every
+    // one of them is a card you can press.
     await expect(page.locator('.pb-card')).toHaveCount(4);
+
+    // A ready card is a real link with a real href. A card that looks pressable
+    // and goes nowhere is the failure this replaces the old counting assertion
+    // with — the shelf used to have one playable game and three promises.
+    const ready = page.locator('.pb-card--ready');
+    await expect(ready).toHaveCount(4);
+    const hrefs = await ready.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('href')));
+    // Trailing slashes, because that is the form the canonical tag names and an
+    // internal link without one would bounce every crawler through a redirect.
+    // The order is the register's order (`GAMES`), which is also the order the
+    // shelf is read in: sudoku first, because it is the one the hero offers.
+    expect(hrefs).toEqual(['/play/sudoku/', '/play/nonogram/', '/play/tangram/', '/play/memory-garden/']);
+    const tags = await ready.evaluateAll((nodes) => nodes.map((node) => node.tagName));
+    expect(tags).toEqual(['A', 'A', 'A', 'A']);
+
+    // Nothing is growing, so there is no growing card at all — and no residue of
+    // the disabled-card treatment the shelf used to need. This is the assertion
+    // that catches a `SPROUTING` list emptied of its entries but not of its
+    // markup: a dead card left behind, or an `aria-disabled` on a real link.
+    await expect(page.locator('.pb-card--soon')).toHaveCount(0);
+    await expect(page.locator('.pb-cards [aria-disabled]')).toHaveCount(0);
+    await expect(page.locator('.pb-cards > *')).toHaveCount(4);
+
+    // The sentence above the shelf counts the register instead of repeating a
+    // number: the numbers are words up to five (`countWord`), which is why this
+    // reads "Four" rather than "4". The wording is taken from the built page —
+    // the shelf says the garden is full rather than promising more, because
+    // there is nothing in the ground to promise.
+    await expect(page.locator('.pb-section__head').first()).toContainText(
+      'Four games finished and nothing else growing yet. The garden is full for now.',
+    );
 
     expect(problems).toEqual([]);
   });
@@ -87,5 +119,49 @@ test.describe('the fonts are ours', () => {
     // talk to anyone else, and it is cheaper to prove it than to promise it.
     expect(offsite).toEqual([]);
     await expect(page.locator('link[href*="fonts.googleapis"]')).toHaveCount(0);
+  });
+});
+
+test.describe('what is stored on this device can actually be cleared', () => {
+  /**
+   * The button says "Clear everything on this device", and it used to be a lie
+   * by one character: the theme studio namespaced its keys `pb:` while the
+   * games namespace theirs `pb.`, and the handler filtered for one prefix — so
+   * a parent could press it, watch the page reload, and find every puzzle
+   * save still there.
+   *
+   * Both spellings are planted here, from the keys the packages really use, and
+   * an unrelated key is planted beside them: a fix that clears storage wholesale
+   * would pass a "the saves are gone" assertion and quietly break everything
+   * else on the origin.
+   */
+  const OWN_KEYS = ['pb:sudoku:save:v1', 'pb:sudoku:stats:v1', 'pb:themes:v1'];
+  const GAME_KEYS = ['pb.nonogram.progress.v1', 'pb.tangram.progress.v1'];
+  const FOREIGN_KEY = 'someone-elses-app:notes';
+
+  test('clears both spellings and nothing else', async ({ page }) => {
+    const problems = trackProblems(page);
+    await page.goto('/parents');
+
+    await page.evaluate(
+      ([own, game, foreign]) => {
+        for (const key of [...own, ...game]) localStorage.setItem(key, 'planted');
+        localStorage.setItem(foreign, 'keep me');
+      },
+      [OWN_KEYS, GAME_KEYS, FOREIGN_KEY] as const,
+    );
+
+    await page.getByRole('button', { name: 'Clear everything on this device' }).click();
+    // The handler reloads the page rather than re-rendering, so the assertion
+    // has to survive the navigation.
+    await page.waitForLoadState('load');
+
+    await expect
+      .poll(() => page.evaluate(() => Object.keys(localStorage).sort()), {
+        message: 'the saves should be gone',
+      })
+      .toEqual([FOREIGN_KEY]);
+
+    expect(problems).toEqual([]);
   });
 });

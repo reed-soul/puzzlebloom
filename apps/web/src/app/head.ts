@@ -19,6 +19,7 @@
  */
 
 import site from '../../site.json';
+import { GAMES, type GameManifest } from '../games/registry';
 
 type MetaKey = 'name' | 'property';
 
@@ -65,29 +66,23 @@ export function pageMeta(path: string): { title: string; description: string } {
 }
 
 /**
- * Structured data. Deliberately small: the two entities a search engine can
- * actually use here are the site and the one application it ships. Inventing
- * `FAQPage` or `Rating` markup for content that does not exist is how sites
- * get manual actions.
+ * Structured data. Deliberately small: the entities a search engine can actually
+ * use here are the site and the games it ships. Inventing `FAQPage` or `Rating`
+ * markup for content that does not exist is how sites get manual actions.
+ *
+ * The application node is generated from the registry rather than written out
+ * here, so a game gets one by existing. The home page lists every playable game;
+ * a game's own page lists just that one. Both read their description from
+ * `site.json`, which is also what the prerender writes into the document, so the
+ * markup and the page can never disagree.
  */
-function structuredData(path: string, title: string, description: string): object[] {
-  const url = absoluteUrl(path);
-  const isHome = path === '/';
-
-  const webSite = {
-    '@type': 'WebSite',
-    '@id': `${site.url}/#website`,
-    url: `${site.url}/`,
-    name: site.name,
-    inLanguage: site.language,
-    description: site.pages['/'].description,
-  };
-
-  const application = {
+function applicationNode(game: GameManifest): object {
+  const page = site.pages[game.route as keyof typeof site.pages];
+  return {
     '@type': 'WebApplication',
-    '@id': `${site.url}/#application`,
-    name: 'PuzzleBloom Sudoku',
-    url: absoluteUrl('/play/sudoku'),
+    '@id': `${absoluteUrl(game.route)}#application`,
+    name: `${site.name} ${game.title}`,
+    url: absoluteUrl(game.route),
     applicationCategory: 'GameApplication',
     applicationSubCategory: 'Puzzle',
     operatingSystem: 'Any',
@@ -98,7 +93,20 @@ function structuredData(path: string, title: string, description: string): objec
     inLanguage: site.language,
     isPartOf: { '@id': `${site.url}/#website` },
     screenshot: `${site.url}${site.ogImage}`,
-    description: site.pages['/play/sudoku'].description,
+    description: page?.description ?? game.blurb,
+  };
+}
+
+function structuredData(path: string, title: string, description: string): object[] {
+  const url = absoluteUrl(path);
+
+  const webSite = {
+    '@type': 'WebSite',
+    '@id': `${site.url}/#website`,
+    url: `${site.url}/`,
+    name: site.name,
+    inLanguage: site.language,
+    description: site.pages['/'].description,
   };
 
   const webPage = {
@@ -111,8 +119,10 @@ function structuredData(path: string, title: string, description: string): objec
     isPartOf: { '@id': `${site.url}/#website` },
   };
 
-  if (isHome) return [webSite, application, webPage];
-  return [webPage];
+  if (path === '/') return [webSite, ...GAMES.map(applicationNode), webPage];
+
+  const game = GAMES.find((candidate) => candidate.route === path);
+  return game ? [webPage, applicationNode(game)] : [webPage];
 }
 
 export interface HeadOptions {

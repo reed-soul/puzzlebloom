@@ -43,8 +43,12 @@ const LEVELS = [
 export function Parents() {
   const clearEverything = () => {
     try {
+      // Both spellings. The theme studio namespaced its keys `pb:` and the games
+      // namespace theirs `pb.`, so a filter for one prefix quietly left the
+      // other kind of key behind — a button labelled "clear everything" that
+      // did not clear everything.
       Object.keys(localStorage)
-        .filter((key) => key.startsWith('pb:'))
+        .filter((key) => key.startsWith('pb.') || key.startsWith('pb:'))
         .forEach((key) => {
           localStorage.removeItem(key);
         });
@@ -139,7 +143,10 @@ export function Parents() {
         </div>
         <p className="pb-prose__aside">
           Under six, turn on the creatures instead of numerals. Nine faces are far easier to hold in mind than
-          nine symbols that all look like sticks.
+          nine symbols that all look like sticks. Nonogram has two sizes rather than four levels: 5×5 for a
+          first attempt, 10×10 once counting a line feels automatic. Tangram has neither sizes nor levels —
+          the pieces are the difficulty, and the shape a child picks from the list is the level. Memory Garden
+          has three: six pairs for a first game, then eight, then all nine creatures.
         </p>
       </section>
 
@@ -177,6 +184,15 @@ export function Parents() {
           <li>
             The whole board is keyboard playable: arrows to move, digits to place, N for notes, H for a hint.
           </li>
+          <li>
+            Tangram is keyboard playable as well: Tab to a piece, arrows to nudge it, R to turn it, F to
+            mirror it, and Cmd or Ctrl with Z to undo.
+          </li>
+          <li>
+            Memory Garden is keyboard playable: Tab into the grid, arrows to move between cards, Enter or
+            Space to turn one over, H for a reminder. A card is announced as “Card 5, the snail, kept”, so the
+            three states of a card can be told apart without seeing them.
+          </li>
           <li>Every cell is announced with its row, column and contents to a screen reader.</li>
           <li>
             The theme studio measures contrast and offers a one-tap repair rather than letting pale text
@@ -194,12 +210,23 @@ export function Parents() {
         <div className="pb-band__copy">
           <h2>Ready when you are</h2>
           <p>
-            The first puzzle is one tap away, and the tab can be closed at any point without losing anything.
+            All four puzzles are one tap away, and the tab can be closed at any point without losing anything.
           </p>
         </div>
-        <LinkButton to="/play/sudoku" variant="primary" size="md" iconLeft="play">
-          Open Sudoku
-        </LinkButton>
+        <div className="pb-band__actions">
+          <LinkButton to="/play/sudoku" variant="primary" size="md" iconLeft="play">
+            Open Sudoku
+          </LinkButton>
+          <LinkButton to="/play/nonogram" variant="secondary" size="md" iconLeft="play">
+            Open Nonogram
+          </LinkButton>
+          <LinkButton to="/play/tangram" variant="secondary" size="md" iconLeft="play">
+            Open Tangram
+          </LinkButton>
+          <LinkButton to="/play/memory-garden" variant="secondary" size="md" iconLeft="play">
+            Open Memory Garden
+          </LinkButton>
+        </div>
       </section>
     </div>
   );
