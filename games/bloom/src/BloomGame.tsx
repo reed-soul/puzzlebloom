@@ -32,21 +32,27 @@ function BloomDOM({
   poppedId: number | null;
 }) {
   const scale = 'calc(var(--pb-bloom-scale, 1))';
+  // Centre on the physics point with the transform ONLY: left/top carry the
+  // coordinate, and the CSS translate(-50%,-50%) centres the box on it. The
+  // old `- 50%` in left/top was a SECOND centre against the parent's width
+  // (170px on the jar), which offset every creature up-left of its physics —
+  // the real reason the game read as unplayable with a mouse.
+  const pos = (x: number, y: number, d: number): CSSProperties =>
+    ({
+      left: `calc(${x}px * ${scale})`,
+      top: `calc(${y}px * ${scale})`,
+      width: `calc(${d}px * ${scale})`,
+      height: `calc(${d}px * ${scale})`,
+    }) as CSSProperties;
   return (
     <>
       {state.blooms.map((b) => {
         const r = TIERS[b.tier].radius;
-        const style = {
-          left: `calc(${b.x}px * ${scale} - 50%)`,
-          top: `calc(${b.y}px * ${scale} - 50%)`,
-          width: `calc(${r * 2}px * ${scale})`,
-          height: `calc(${r * 2}px * ${scale})`,
-        } as CSSProperties;
         return (
           <span
             key={b.id}
             className={`pb-bloom__tier pb-bloom__tier--${b.tier}${b.id === poppedId ? ' is-popped' : ''}`}
-            style={style}
+            style={pos(b.x, b.y, r * 2)}
           >
             <img
               src={`/art/bloom/creature-${TIERS[b.tier].name}.png`}
@@ -61,14 +67,7 @@ function BloomDOM({
       {/* The aim preview: same creature art, floating at the pending x. */}
       <span
         className={`pb-bloom__tier pb-bloom__tier--${state.pending.tier} pb-bloom__tier--pending`}
-        style={
-          {
-            left: `calc(${state.pending.x}px * ${scale} - 50%)`,
-            top: `calc(${state.pending.y}px * ${scale} - 50%)`,
-            width: `calc(${TIERS[state.pending.tier].radius * 2}px * ${scale})`,
-            height: `calc(${TIERS[state.pending.tier].radius * 2}px * ${scale})`,
-          } as CSSProperties
-        }
+        style={pos(state.pending.x, state.pending.y, TIERS[state.pending.tier].radius * 2)}
       >
         <img
           src={`/art/bloom/creature-${TIERS[state.pending.tier].name}.png`}
