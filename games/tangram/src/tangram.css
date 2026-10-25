@@ -1,0 +1,315 @@
+/**
+ * Tangram screen.
+ *
+ * Every rule is scoped under `.pb-tangram`, and that is load-bearing rather than
+ * tidy. The shell this page shares with sudoku lives in sudoku's stylesheet,
+ * which arrives with the sudoku chunk — a player who opens this route first
+ * never loads it. So the shell is re-declared here, with the same measurements
+ * because it is the same design, and the scoping means the three games cannot
+ * fight over `.pb-play` when their files happen to be in the document together.
+ *
+ * The board is one SVG in a `viewBox`, so there is no measurement here at all:
+ * no cell size, no aspect ratio, no offsets. The layout engine decided where
+ * everything is in figure units and the browser decides how big that is.
+ *
+ * Colour is a state, not a decoration. While a figure is unfinished every piece
+ * is one tint, because a tangram set is one colour and a player matching a piece
+ * to a hole by hue would be playing a different game. The moment it is finished
+ * the pieces take seven colours at once, and that change *is* the reward — there
+ * is no confetti here because the picture arriving is the confetti.
+ */
+
+.pb-tangram {
+  /* The hole, and the piece that has to fill it. The gap between these two is
+     the whole interface: if they read at the same weight a player cannot tell
+     what is theirs from what is wanted, and the puzzle turns into a smear. The
+     hole stays a low-contrast grey — it is the question, not an object. */
+  --pb-tangram-ghost: color-mix(in oklab, var(--pb-ink) 12%, var(--pb-surface));
+  --pb-tangram-piece: color-mix(in oklab, var(--pb-brand) 52%, var(--pb-surface));
+  /* Stroke colour for the seams. Without a stroke the renderer's antialiasing
+     leaves a hairline of background where two shapes abut, so a silhouette
+     built from seven polygons looks cracked. */
+  --pb-tangram-edge: var(--pb-surface);
+
+  width: min(100%, var(--pb-page));
+  margin: 0 auto;
+  padding: clamp(0.75rem, 2vw, 1.5rem) clamp(0.75rem, 3vw, 2rem) 7rem;
+}
+
+/* ---------------- loading ---------------- */
+
+.pb-tangram--loading {
+  display: grid;
+  place-items: center;
+  gap: 1rem;
+  min-height: 60vh;
+}
+
+.pb-tangram-skeleton {
+  width: min(100%, 320px);
+  aspect-ratio: 4 / 3;
+  border: 3px solid var(--pb-line);
+  border-radius: var(--pb-r-lg);
+  background:
+    linear-gradient(135deg, transparent 45%, var(--pb-line) 45% 55%, transparent 55%),
+    linear-gradient(45deg, transparent 66%, var(--pb-line) 66% 74%, transparent 74%);
+  animation: pb-tangram-breathe 1.8s var(--pb-ease) infinite;
+}
+
+@keyframes pb-tangram-breathe {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+.pb-tangram__note {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--pb-ink-soft);
+  font-size: var(--pb-fs-sm);
+}
+
+/* ---------------- header ---------------- */
+
+.pb-tangram .pb-play__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.pb-tangram .pb-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: var(--pb-r-pill);
+  border: 1.5px solid var(--pb-line);
+  background: var(--pb-surface);
+  color: var(--pb-ink);
+  cursor: pointer;
+  transition: background var(--pb-dur) var(--pb-ease);
+}
+
+.pb-tangram .pb-back:hover {
+  background: var(--pb-surface-2);
+}
+
+.pb-tangram .pb-play__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  row-gap: 0.2rem;
+  flex: 1;
+  min-width: 0;
+}
+
+/* "The box they came in" is a sentence, not a label, so it is allowed to be the
+   longest thing in the bar — and to give way first when the bar is narrow. */
+.pb-tangram .pb-play__level {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--pb-font-display);
+  font-size: var(--pb-fs-lg);
+  font-weight: 600;
+}
+
+.pb-tangram__placed {
+  color: var(--pb-ink-soft);
+  font-size: var(--pb-fs-xs);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.pb-tangram .pb-play__clock {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-left: auto;
+  color: var(--pb-ink-soft);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--pb-fs-sm);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* ---------------- layout ---------------- */
+
+.pb-tangram .pb-play__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: clamp(1rem, 2.5vw, 2rem);
+  align-items: start;
+}
+
+.pb-tangram .pb-play__side {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.pb-tangram__stage {
+  position: relative;
+  display: grid;
+  justify-items: center;
+}
+
+/* ---------------- the board ---------------- */
+
+/*
+ * The board is sized by its *height*, not its width, and that is the whole of
+ * this rule.
+ *
+ * The painting is taller than it is wide — a figure with a tray under it comes
+ * out around two to one — so filling the column with it produced a board 645px
+ * wide and a thousand tall on a laptop, with the tray, which is the only thing
+ * a player can actually pick up, entirely below the fold. Capping the height and
+ * letting the width follow the viewBox keeps the whole board on screen at every
+ * size: wide and short on a laptop, narrow and tall on a phone, and in both
+ * cases the pieces are reachable without scrolling to find them.
+ */
+.pb-tangram-board {
+  display: block;
+  height: min(72vh, 600px);
+  width: auto;
+  max-width: 100%;
+  margin: 0 auto;
+  border-radius: var(--pb-r-lg);
+  background: var(--pb-surface);
+  box-shadow: var(--pb-lift-1);
+  /* A drag is the only gesture here, so the page must not scroll under it.
+     Leaving this at `manipulation` would cancel every diagonal drag on a
+     touchscreen at the moment it stopped being purely vertical. */
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pb-tangram__tray {
+  fill: var(--pb-sunken);
+  /* Without an edge the band is invisible against a white board, and then the
+     pieces look like they are floating under the painting. */
+  stroke: color-mix(in oklab, var(--pb-ink) 13%, var(--pb-surface));
+  stroke-width: 0.02;
+}
+
+.pb-tangram__silhouette polygon {
+  fill: var(--pb-tangram-ghost);
+  /* The same colour as the fill, so the seams between these seven polygons are
+     drawn twice and cannot show background through. See the header comment. */
+  stroke: var(--pb-tangram-ghost);
+  stroke-width: 0.02;
+  stroke-linejoin: round;
+}
+
+.pb-tangram__piece {
+  fill: var(--pb-tangram-piece);
+  stroke: var(--pb-tangram-edge);
+  stroke-width: 0.014;
+  stroke-linejoin: round;
+  cursor: grab;
+  transition:
+    fill var(--pb-dur) var(--pb-ease),
+    stroke var(--pb-dur) var(--pb-ease);
+}
+
+.pb-tangram__piece.is-tray {
+  --pb-tangram-piece: color-mix(in oklab, var(--pb-brand) 44%, var(--pb-surface));
+}
+
+.pb-tangram__piece.is-selected {
+  --pb-tangram-piece: color-mix(in oklab, var(--pb-brand) 70%, var(--pb-surface));
+  stroke: color-mix(in oklab, var(--pb-brand) 55%, var(--pb-ink));
+  stroke-width: 0.03;
+}
+
+.pb-tangram__piece.is-dragging {
+  cursor: grabbing;
+}
+
+/* A finished figure is not a board any more. The pieces stop advertising a grab
+   they will refuse. */
+.pb-tangram-board.is-solved .pb-tangram__piece {
+  cursor: default;
+}
+
+/* SVG ignores `outline` in most engines, so the focus ring is a heavier stroke.
+   It has to be a ring the player can see from across the room: this is the only
+   thing telling a keyboard player which of seven pieces the arrows will move. */
+.pb-tangram__piece:focus-visible {
+  outline: none;
+  stroke: var(--pb-brand);
+  stroke-width: 0.075;
+}
+
+/* ---------------- the reveal ---------------- */
+
+.pb-tangram.is-solved .pb-tangram__piece {
+  --pb-tangram-edge: color-mix(in oklab, var(--pb-ink) 26%, var(--pb-surface));
+}
+
+/*
+ * Three hues, two weights each, plus a neutral — the only way to get seven
+ * distinguishable colours out of a palette of four. Deep brand, pale brand, deep
+ * accent, pale accent, deep sky, pale sky, ink: neighbouring pieces differ in
+ * both hue and value, so no two ever look like one shape.
+ */
+.pb-tangram.is-solved [data-piece='large-1'] {
+  --pb-tangram-piece: color-mix(in oklab, var(--pb-brand) 76%, var(--pb-surface));
+}
+
+.pb-tangram.is-solved [data-piece='large-2'] {
+  --pb-tangram-piece: color-mix(in oklab, var(--pb-brand) 40%, var(--pb-surface));
+}
+
+.pb-tangram.is-solved [data-piece='medium'] {
+  --pb-tangram-piece: color-mix(in oklab, var(--pb-accent) 80%, var(--pb-surface));
+}
+
+.pb-tangram.is-solved [data-piece='parallelogram'] {
+  --pb-tangram-piece: color-mix(in oklab, var(--pb-accent) 44%, var(--pb-surface));
+}
+
+.pb-tangram.is-solved [data-piece='square'] {
+  --pb-tangram-piece: color-mix(in oklab, var(--pb-sky) 82%, var(--pb-surface));
+}
+
+.pb-tangram.is-solved [data-piece='small-1'] {
+  --pb-tangram-piece: color-mix(in oklab, var(--pb-sky) 46%, var(--pb-surface));
+}
+
+.pb-tangram.is-solved [data-piece='small-2'] {
+  --pb-tangram-piece: color-mix(in oklab, var(--pb-ink) 34%, var(--pb-surface));
+}
+
+.pb-tangram-reveal {
+  display: block;
+  width: min(190px, 52vw);
+  height: auto;
+  margin-bottom: 0.2rem;
+}
+
+.pb-tangram-reveal polygon {
+  fill: var(--pb-tangram-piece);
+  stroke: var(--pb-tangram-edge);
+  stroke-width: 0.03;
+  stroke-linejoin: round;
+}
+
+/* ---------------- narrow screens ---------------- */
+
+@media (max-width: 900px) {
+  .pb-tangram .pb-play__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

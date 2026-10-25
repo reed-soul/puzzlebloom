@@ -1,0 +1,25 @@
+{
+  "name": "@puzzlebloom/tangram-engine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Framework-agnostic Tangram engine: seven pieces, hand-placed figures, coverage checking, hints, daily selection, serialization.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./card": "./src/card.ts",
+    "./raw/*": "./src/*"
+  },
+  "files": [
+    "src",
+    "tests"
+  ],
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "vitest": "^5.0.5"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "@puzzlebloom/game-tangram",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Tangram for PuzzleBloom: the classic seven pieces dragged into a silhouette, judged by coverage rather than by the author's answer.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./manifest": "./src/manifest.ts",
+    "./tangram.css": "./src/tangram.css"
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@puzzlebloom/tangram-engine": "workspace:*",
+    "@puzzlebloom/ui": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@puzzlebloom/game-sudoku": "workspace:*",
+    "@types/react": "^19.3.0",
+    "react": "^19.0.0"
+  }
+}
