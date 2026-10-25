@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@puzzlebloom/game-balance": "workspace:*",
+    "@puzzlebloom/game-frog-road": "workspace:*",
     "@puzzlebloom/game-memory-garden": "workspace:*",
     "@puzzlebloom/game-nonogram": "workspace:*",
     "@puzzlebloom/game-sudoku": "workspace:*",

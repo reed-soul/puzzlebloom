@@ -169,6 +169,25 @@ function BalanceArt() {
   );
 }
 
+/**
+ * A road caught mid-ride: a run of plus squares behind the car, a minus square
+ * ahead of it, frogs aboard. That is the whole game in one glance — where you
+ * are decides what the dice do to your count.
+ */
+function RoadArt() {
+  return (
+    <div className="pb-card__art-road" aria-hidden="true">
+      <span className="is-plus">+</span>
+      <span className="is-plus">+</span>
+      <span className="is-here">
+        <i aria-hidden="true" />
+      </span>
+      <span className="is-minus">−</span>
+      <span className="is-minus">−</span>
+    </div>
+  );
+}
+
 function Art({ game }: { game: GameManifest }) {
   if (game.status === 'ready') {
     return (
@@ -177,6 +196,7 @@ function Art({ game }: { game: GameManifest }) {
         {game.art === 'tangram' ? <TrianglesArt /> : null}
         {game.art === 'pairs' ? <PairsArt /> : null}
         {game.art === 'balance' ? <BalanceArt /> : null}
+        {game.art === 'road' ? <RoadArt /> : null}
         {game.art === 'creatures' || !game.art ? <CreaturesArt /> : null}
       </div>
     );

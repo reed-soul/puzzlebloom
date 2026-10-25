@@ -1,0 +1,24 @@
+{
+  "name": "@puzzlebloom/frog-road-engine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Framework-agnostic ± passenger board engine: two decorrelated dice, a road of + and − squares, a running total that persists across turns, fixed-length sessions.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./raw/*": "./src/*"
+  },
+  "files": [
+    "src",
+    "tests"
+  ],
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "vitest": "^5.0.5"
+  }
+}

@@ -29,7 +29,7 @@ export interface GameManifest {
    * to the plain dot grid, so a game in the growing list needs no artwork of its
    * own — and the home page never has to import a game package to find out.
    */
-  art?: 'creatures' | 'squares' | 'tangram' | 'pairs' | 'balance';
+  art?: 'creatures' | 'squares' | 'tangram' | 'pairs' | 'balance' | 'road';
 }
 
 export const sudokuManifest: GameManifest = {

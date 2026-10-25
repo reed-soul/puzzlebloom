@@ -480,6 +480,51 @@
   border: 1px solid color-mix(in oklab, var(--pb-brand) 52%, transparent);
 }
 
+/* A road mid-ride: pluses behind, the car, minuses ahead. The car is a dot on
+   wheels rather than an emoji, because a card is 96px of art and a car emoji
+   at that size is a smudge. */
+.pb-card__art-road {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.pb-card__art-road span {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  border: 1.5px solid color-mix(in oklab, var(--pb-ink) 16%, transparent);
+  font-family: var(--pb-font-display);
+  font-size: 13px;
+  color: var(--pb-ink-soft);
+}
+
+.pb-card__art-road span.is-plus {
+  border-color: color-mix(in oklab, var(--pb-brand) 45%, transparent);
+  color: var(--pb-ink);
+}
+
+.pb-card__art-road span.is-minus {
+  border-color: color-mix(in oklab, var(--pb-accent) 45%, transparent);
+  color: var(--pb-ink);
+}
+
+.pb-card__art-road span.is-here {
+  border-color: var(--pb-brand);
+  background: var(--pb-surface);
+}
+
+.pb-card__art-road span.is-here i {
+  width: 10px;
+  height: 8px;
+  border-radius: 4px 4px 2px 2px;
+  background: color-mix(in oklab, var(--pb-brand) 70%, var(--pb-ink));
+}
+
 .pb-card__art-triangles polygon:nth-child(3) {
   fill: color-mix(in oklab, var(--pb-accent) 72%, var(--pb-surface));
 }

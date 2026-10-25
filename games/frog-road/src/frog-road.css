@@ -1,0 +1,198 @@
+/*
+ * Frog Road.
+ *
+ * The road is a horizontally scrolling strip: 24 squares is longer than a
+ * phone is wide, and the strip scrolls itself to keep the car in view rather
+ * than shrinking squares until the signs are unreadable. The signs are the
+ * content — a + a child cannot see is a + a child cannot apply.
+ */
+
+.pb-road {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  padding: 16px clamp(12px, 4vw, 32px) 40px;
+}
+
+.pb-road__turn {
+  margin: 0;
+  font-size: var(--pb-fs-sm);
+  color: var(--pb-ink-soft);
+  white-space: nowrap;
+}
+
+.pb-road__strip {
+  display: flex;
+  gap: 6px;
+  width: min(720px, 100%);
+  overflow-x: auto;
+  padding: 10px 4px 14px;
+  scroll-behavior: smooth;
+  /* Keep the car's square in view: the strip scrolls to the .is-here square. */
+  scroll-snap-type: x proximity;
+}
+
+.pb-road__sq {
+  position: relative;
+  flex: 0 0 auto;
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  border: 2px solid var(--pb-line);
+  background: var(--pb-surface);
+  scroll-snap-align: center;
+}
+
+.pb-road__sign {
+  font-family: var(--pb-font-display);
+  font-size: 22px;
+  line-height: 1;
+}
+
+.pb-road__sq.is-plus .pb-road__sign {
+  color: var(--pb-success, var(--pb-brand));
+}
+
+.pb-road__sq.is-minus .pb-road__sign {
+  color: var(--pb-danger, var(--pb-accent));
+}
+
+.pb-road__sq.is-here {
+  border-color: var(--pb-brand);
+  background: var(--pb-surface-2, var(--pb-surface));
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pb-brand) 30%, transparent);
+}
+
+.pb-road__car {
+  position: absolute;
+  top: -14px;
+  right: -6px;
+  font-size: 20px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 0 color-mix(in oklab, var(--pb-ink) 20%, transparent));
+}
+
+.pb-road__aboard {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+}
+
+.pb-road__aboard-label {
+  margin: 0;
+  font-size: var(--pb-fs-sm);
+  color: var(--pb-ink-soft);
+}
+
+.pb-road__aboard-frogs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  max-width: 260px;
+  min-height: 20px;
+}
+
+.pb-road__frog {
+  line-height: 0;
+}
+
+.pb-road__controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  width: min(560px, 100%);
+}
+
+.pb-road__dice {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.pb-road__die {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 72px;
+  padding: 8px 12px;
+  border-radius: var(--pb-r-md, 16px);
+  border: 2px solid var(--pb-line);
+  background: var(--pb-surface);
+  font-family: var(--pb-font-display);
+  font-size: var(--pb-fs-lg);
+  color: var(--pb-ink);
+}
+
+.pb-road__die--empty {
+  font-family: inherit;
+  font-size: var(--pb-fs-sm);
+  color: var(--pb-ink-soft);
+  border-style: dashed;
+}
+
+.pb-road__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.pb-road__last {
+  margin: 0;
+  font-size: var(--pb-fs-sm);
+  color: var(--pb-ink-soft);
+  text-align: center;
+}
+
+.pb-road__recap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  padding: 20px 24px;
+  border-radius: var(--pb-r-lg, 22px);
+  background: var(--pb-surface);
+  border: 2px solid var(--pb-line);
+  box-shadow: 0 5px 0 var(--pb-line);
+  text-align: center;
+}
+
+.pb-road__recap h2 {
+  margin: 0;
+  font-family: var(--pb-font-display);
+  color: var(--pb-ink);
+}
+
+.pb-road__final {
+  margin: 0;
+  color: var(--pb-ink);
+}
+
+.pb-road__log {
+  margin: 0;
+  padding: 0 0 0 18px;
+  font-size: var(--pb-fs-sm);
+  color: var(--pb-ink-soft);
+  text-align: left;
+  max-width: 420px;
+}
+
+.pb-road__log li {
+  margin: 2px 0;
+}
+
+.pb-road__recap-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pb-road__strip {
+    scroll-behavior: auto;
+  }
+}

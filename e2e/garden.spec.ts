@@ -12,15 +12,15 @@ test.describe('the garden', () => {
     await expect(page.locator('.pb-btn--loud')).toContainText('Play Sudoku');
 
     await expect(page.getByRole('heading', { name: 'In the garden' })).toBeVisible();
-    // Five shipped games and nothing left in the ground. Five cards, and every
+    // Six shipped games and nothing left in the ground. Six cards, and every
     // one of them is a card you can press.
-    await expect(page.locator('.pb-card')).toHaveCount(5);
+    await expect(page.locator('.pb-card')).toHaveCount(6);
 
     // A ready card is a real link with a real href. A card that looks pressable
     // and goes nowhere is the failure this replaces the old counting assertion
     // with — the shelf used to have one playable game and three promises.
     const ready = page.locator('.pb-card--ready');
-    await expect(ready).toHaveCount(5);
+    await expect(ready).toHaveCount(6);
     const hrefs = await ready.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('href')));
     // Trailing slashes, because that is the form the canonical tag names and an
     // internal link without one would bounce every crawler through a redirect.
@@ -32,9 +32,10 @@ test.describe('the garden', () => {
       '/play/tangram/',
       '/play/memory-garden/',
       '/play/balance/',
+      '/play/frog-road/',
     ]);
     const tags = await ready.evaluateAll((nodes) => nodes.map((node) => node.tagName));
-    expect(tags).toEqual(['A', 'A', 'A', 'A', 'A']);
+    expect(tags).toEqual(['A', 'A', 'A', 'A', 'A', 'A']);
 
     // Nothing is growing, so there is no growing card at all — and no residue of
     // the disabled-card treatment the shelf used to need. This is the assertion
@@ -42,15 +43,15 @@ test.describe('the garden', () => {
     // markup: a dead card left behind, or an `aria-disabled` on a real link.
     await expect(page.locator('.pb-card--soon')).toHaveCount(0);
     await expect(page.locator('.pb-cards [aria-disabled]')).toHaveCount(0);
-    await expect(page.locator('.pb-cards > *')).toHaveCount(5);
+    await expect(page.locator('.pb-cards > *')).toHaveCount(6);
 
     // The sentence above the shelf counts the register instead of repeating a
-    // number: the numbers are words up to five (`countWord`), which is why this
-    // reads "Four" rather than "4". The wording is taken from the built page —
-    // the shelf says the garden is full rather than promising more, because
-    // there is nothing in the ground to promise.
+    // number: the numbers are words up to five and digits past it, so a sixth
+    // game reads "6 games finished" — honest about being a count. The wording
+    // is taken from the built page: the shelf says the garden is full rather
+    // than promising more, because there is nothing in the ground to promise.
     await expect(page.locator('.pb-section__head').first()).toContainText(
-      'Five games finished and nothing else growing yet. The garden is full for now.',
+      '6 games finished and nothing else growing yet. The garden is full for now.',
     );
 
     expect(problems).toEqual([]);

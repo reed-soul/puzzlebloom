@@ -24,6 +24,12 @@
       "changeFrequency": "monthly",
       "priority": 0.7
     },
+    "/play/frog-road": {
+      "title": "Frog Road — some get on, some get off | PuzzleBloom",
+      "description": "A car, a road of plus and minus squares, and two dice that never agree: one says how far, the other how many frogs. Eight turns of holding a running total. Ages 5 and up.",
+      "changeFrequency": "monthly",
+      "priority": 0.7
+    },
     "/play/nonogram": {
       "title": "Kids' nonogram: count the squares, uncover the picture | PuzzleBloom",
       "description": "Free nonogram for children in the browser. Two sizes, hand-drawn pictures, crosses for the squares you rule out, and hints that explain the counting. No timer, no score, no ads.",
