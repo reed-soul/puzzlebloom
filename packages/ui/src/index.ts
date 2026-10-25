@@ -11,3 +11,4 @@ export {
 export { CreatureGlyph, GLYPH_COLORS } from './CreatureGlyph';
 export { Icon, type IconName, type IconProps } from './icons';
 export { Chip, Segmented } from './Segmented';
+export { useModalFocus } from './useModalFocus';

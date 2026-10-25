@@ -38,7 +38,9 @@ export type IconName =
   | 'userOff'
   | 'cloudOff'
   | 'trophy'
-  | 'menu';
+  | 'menu'
+  | 'rotate'
+  | 'flip';
 
 const PATHS: Record<IconName, ReactElement> = {
   play: (
@@ -149,6 +151,21 @@ const PATHS: Record<IconName, ReactElement> = {
     </>
   ),
   menu: <path d="M4 7h16M4 12h16M4 17h16" />,
+  // A quarter turn about the centre, for a game whose only rotation is a step.
+  rotate: (
+    <>
+      <path d="M4.6 12a7.4 7.4 0 1 0 2.7-5.8" />
+      <path d="M4.2 4.4v4.6h4.6" />
+    </>
+  ),
+  // Two mirrored halves either side of an axis: a mirror, not a copy.
+  flip: (
+    <>
+      <path d="M12 3.4v17.2" strokeDasharray="2.6 2.6" />
+      <path d="M9.4 6.8 4.4 17.2h5z" />
+      <path d="M14.6 6.8 19.6 17.2h-5z" />
+    </>
+  ),
 };
 
 export interface IconProps extends Omit<SVGProps<SVGSVGElement>, 'name'> {
