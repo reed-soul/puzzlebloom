@@ -244,3 +244,52 @@
     transition: none;
   }
 }
+
+/* HTML-in-Canvas enhancement (ADR-009). Mounts only when the probe passes;
+   the CSS beam below remains the complete fallback. */
+.pb-bal-canvas__stage {
+  position: relative;
+  width: min(560px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pb-bal-canvas__canvas {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  display: block;
+  touch-action: manipulation;
+}
+
+/* The drawable pans: laid out by the canvas (not painted into the page) and
+   drawn at beam-end coordinates each frame. They must not take space in the
+   normal flow — the canvas owns the geometry now. */
+.pb-bal-canvas__canvas .pb-bal__pan {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  min-height: 0;
+}
+
+.pb-bal-canvas__ghost {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  visibility: hidden;
+}
+
+.pb-bal__frog-dot {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--pb-brand);
+  border: 2px solid var(--pb-surface);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pb-bal-canvas__canvas {
+    display: none;
+  }
+}

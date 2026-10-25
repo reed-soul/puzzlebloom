@@ -1,7 +1,9 @@
 import { CreatureGlyph, Segmented } from '@puzzlebloom/ui';
 import { type CSSProperties, useEffect } from 'react';
+import { BalanceCanvas } from './BalanceCanvas';
 import { balanceManifest } from './manifest';
 import { useBalance } from './useBalance';
+import { useHtmlInCanvas } from './useHtmlInCanvas';
 import './balance.css';
 
 /**
@@ -67,6 +69,10 @@ function Beam({
 export function BalanceGame({ onExit }: Props) {
   const game = useBalance();
   const { puzzle, angle, leftSum, rightSum, status, equation } = game;
+  // Progressive enhancement: the canvas beam when the engine can draw DOM into
+  // a canvas, the CSS beam otherwise. The DOM stays the complete game either
+  // way — see ADR-009.
+  const canvasBeam = useHtmlInCanvas();
 
   // Announce the outcome politely. aria-live rather than an alert, because a
   // wrong weigh is information, not an error, and information gets phrased
@@ -112,12 +118,21 @@ export function BalanceGame({ onExit }: Props) {
         </p>
       </header>
 
-      <Beam
-        angle={angle}
-        leftTiles={puzzle.left}
-        rightTiles={game.state.right.tiles}
-        rightFrogs={game.state.right.frogs}
-      />
+      {canvasBeam ? (
+        <BalanceCanvas
+          targetAngle={angle}
+          leftTiles={puzzle.left}
+          rightTiles={game.state.right.tiles}
+          rightFrogs={game.state.right.frogs}
+        />
+      ) : (
+        <Beam
+          angle={angle}
+          leftTiles={puzzle.left}
+          rightTiles={game.state.right.tiles}
+          rightFrogs={game.state.right.frogs}
+        />
+      )}
 
       <div className="pb-bal__controls">
         <div className="pb-bal__tray">
