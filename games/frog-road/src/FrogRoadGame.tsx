@@ -64,7 +64,7 @@ function Aboard({ count }: { count: number }) {
 }
 
 export function FrogRoadGame({ onExit }: Props) {
-  const { state, rolled, lastSentence, roll, confirm, restart } = useFrogRoad();
+  const { state, rolled, lastSentence, ridingHigh, roll, confirm, restart } = useFrogRoad();
   const turn = Math.min(state.turn, state.totalTurns);
 
   return (
@@ -92,6 +92,11 @@ export function FrogRoadGame({ onExit }: Props) {
               <strong>{state.frogsAboard}</strong> frog{state.frogsAboard === 1 ? '' : 's'} made it to the
               end.
             </p>
+            {ridingHigh >= 3 ? (
+              <p className="pb-road__streak">
+                Longest lucky run: {ridingHigh} turns of frogs climbing aboard.
+              </p>
+            ) : null}
             <ul className="pb-road__log">
               {state.log.map((entry) => (
                 <li key={entry.turn}>{turnSentence(entry)}</li>
@@ -122,6 +127,11 @@ export function FrogRoadGame({ onExit }: Props) {
                 <span className="pb-road__die pb-road__die--empty">Roll to see the two numbers</span>
               )}
             </div>
+            {ridingHigh >= 2 ? (
+              <p className="pb-road__riding" aria-live="polite">
+                {ridingHigh} turns riding high!
+              </p>
+            ) : null}
             <div className="pb-road__actions">
               <button type="button" className="pb-btn pb-btn--loud" onClick={roll} disabled={rolled !== null}>
                 Roll

@@ -1,6 +1,7 @@
 import { CreatureGlyph, Segmented } from '@puzzlebloom/ui';
 import { type CSSProperties, useEffect } from 'react';
 import { BalanceCanvas } from './BalanceCanvas';
+import { BalanceJuice } from './BalanceJuice';
 import { balanceManifest } from './manifest';
 import { useBalance } from './useBalance';
 import { useHtmlInCanvas } from './useHtmlInCanvas';
@@ -68,7 +69,7 @@ function Beam({
 
 export function BalanceGame({ onExit }: Props) {
   const game = useBalance();
-  const { puzzle, angle, leftSum, rightSum, status, equation } = game;
+  const { puzzle, angle, leftSum, rightSum, status, equation, streak, solvedAt } = game;
   // Progressive enhancement: the canvas beam when the engine can draw DOM into
   // a canvas, the CSS beam otherwise. The DOM stays the complete game either
   // way — see ADR-009.
@@ -182,6 +183,11 @@ export function BalanceGame({ onExit }: Props) {
             <p className="pb-bal__win-note">
               Both sides hold the same number. That is all the equals sign ever meant.
             </p>
+            {streak >= 2 ? (
+              <p className="pb-bal__streak">
+                {streak} balanced in a row{streak >= 4 ? ' — the scale barely wobbles now' : ''}
+              </p>
+            ) : null}
             <div className="pb-bal__win-actions">
               <button type="button" className="pb-btn pb-btn--loud" onClick={game.nextPuzzle}>
                 Next puzzle
@@ -193,6 +199,7 @@ export function BalanceGame({ onExit }: Props) {
               ) : null}
             </div>
           </div>
+          <BalanceJuice solvedAt={solvedAt} streak={streak} />
         </div>
       ) : null}
     </div>

@@ -1,0 +1,70 @@
+/* The garden's shared spark burst. Lives in the ui package with the
+   component it styles; games import both or neither. */
+
+.pb-juice {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.pb-juice__burst {
+  position: absolute;
+  width: var(--burst-size);
+  height: var(--burst-size);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  animation: pb-juice-pop 0.45s ease-out forwards;
+}
+
+.pb-juice__burst i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 9%;
+  height: 9%;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.9;
+  animation: pb-juice-fly 0.45s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+}
+
+@keyframes pb-juice-pop {
+  0% {
+    transform: translate(-50%, -50%) scale(0.4);
+    opacity: 0.9;
+  }
+
+  55% {
+    transform: translate(-50%, -50%) scale(1.12);
+    opacity: 0.95;
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes pb-juice-fly {
+  0% {
+    transform: rotate(var(--spark-angle)) translateY(0) scale(1);
+    opacity: 0.95;
+  }
+
+  100% {
+    transform: rotate(var(--spark-angle)) translateY(-320%) scale(0.3);
+    opacity: 0;
+  }
+}
+
+/* Reduced motion: the burst collapses to nothing. The chime (in juice.ts)
+   still plays — audio is not motion. */
+@media (prefers-reduced-motion: reduce) {
+  .pb-juice__burst,
+  .pb-juice__burst i {
+    animation-duration: 0.01s;
+    opacity: 0;
+  }
+}

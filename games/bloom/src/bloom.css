@@ -199,122 +199,14 @@
    the canvas layer under prefers-reduced-motion, so the DOM path renders the
    world without a repaint loop. A CSS override here would only fight it. */
 
-/* ── Merge juice (ADR: feedback triple, budgets in MergeJuice.tsx) ── */
-
-/* Squash: a merged bloom pops. Applied to the *new* tier by keying off the
-   fresh id — cheap version: the burst layer carries the motion instead, so
-   this rule stays for the DOM-path discs nearest a merge. */
-.pb-bloom__burst {
-  position: absolute;
-  z-index: 3;
-  width: var(--burst-size);
-  height: var(--burst-size);
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  animation: pb-burst-pop 0.45s ease-out forwards;
-}
-
-.pb-bloom__burst i {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 9%;
-  height: 9%;
-  border-radius: 50%;
-  background: currentColor;
-  opacity: 0.9;
-  animation: pb-spark-fly 0.45s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
-}
-
-.pb-bloom__burst--0 {
-  color: #e4736b;
-}
-.pb-bloom__burst--1 {
-  color: #e9a23b;
-}
-.pb-bloom__burst--2 {
-  color: #e3c244;
-}
-.pb-bloom__burst--3 {
-  color: #7fb069;
-}
-.pb-bloom__burst--4 {
-  color: #4fa3a5;
-}
-.pb-bloom__burst--5 {
-  color: #5b8fd6;
-}
-.pb-bloom__burst--6 {
-  color: #8e7cc3;
-}
-.pb-bloom__burst--7 {
-  color: #d98cb3;
-}
-.pb-bloom__burst--8 {
-  color: #b08d6e;
-}
-
-@keyframes pb-burst-pop {
-  0% {
-    transform: translate(-50%, -50%) scale(0.4);
-    opacity: 0.9;
-  }
-  55% {
-    transform: translate(-50%, -50%) scale(1.12);
-    opacity: 0.95;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 0;
-  }
-}
-
-@keyframes pb-spark-fly {
-  0% {
-    transform: rotate(var(--spark-angle)) translateY(0) scale(1);
-    opacity: 0.95;
-  }
-  100% {
-    transform: rotate(var(--spark-angle)) translateY(-320%) scale(0.3);
-    opacity: 0;
-  }
-}
-
+/* ── Merge juice: bursts & chime live in @puzzlebloom/ui (SparkBursts);
+   this container only scopes them to the stage. ── */
 .pb-bloom__juice {
   position: absolute;
   inset: 0;
   z-index: 3;
   pointer-events: none;
   overflow: hidden;
-}
-
-/* Reduced motion: sparks and pops go away entirely; the chime stays (audio
-   is not motion), and the merge still reads through the score and the new
-   creature appearing. */
-@media (prefers-reduced-motion: reduce) {
-  .pb-bloom__burst,
-  .pb-bloom__burst i {
-    animation-duration: 0.01s;
-    opacity: 0;
-  }
-}
-
-/* ── Combo & celebration ── */
-
-.pb-bloom__combo {
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 4;
-  margin: 0;
-  padding: 4px 14px;
-  border-radius: 999px;
-  background: var(--pb-surface);
-  border: 2px solid var(--pb-line);
-  font-family: var(--pb-font-display);
-  color: var(--pb-ink);
-  animation: pb-combo-in 0.25s cubic-bezier(0.2, 1.4, 0.4, 1);
 }
 
 @keyframes pb-combo-in {

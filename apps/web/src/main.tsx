@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 // Order matters: tokens first, component css next, page css last.
 import '@puzzlebloom/theme-core/tokens.css';
 import '@puzzlebloom/ui/button.css';
+import '@puzzlebloom/ui/juice.css';
 import '@puzzlebloom/ui/segmented.css';
 import App from './App';
 

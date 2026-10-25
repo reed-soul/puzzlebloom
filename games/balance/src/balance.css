@@ -293,3 +293,17 @@
     display: none;
   }
 }
+
+/* The solved streak, announced on the win card. */
+.pb-bal__streak {
+  margin: 2px 0 0;
+  font-family: var(--pb-font-display);
+  color: var(--pb-brand);
+}
+
+/* The juice overlay covers the whole game while the win card is up; bursts
+   are positioned by the shared SparkBursts in viewport coordinates, so the
+   overlay must not clip them. */
+.pb-bal__win {
+  overflow: visible;
+}

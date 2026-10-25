@@ -10,5 +10,7 @@ export {
 } from './Button';
 export { CreatureGlyph, GLYPH_COLORS } from './CreatureGlyph';
 export { Icon, type IconName, type IconProps } from './icons';
+export { chime, useReducedMotion } from './juice';
 export { Chip, Segmented } from './Segmented';
+export { type SparkBurst, SparkBursts } from './SparkBursts';
 export { useModalFocus } from './useModalFocus';

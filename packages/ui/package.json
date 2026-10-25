@@ -9,6 +9,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./button.css": "./src/button.css",
+    "./juice.css": "./src/juice.css",
     "./segmented.css": "./src/segmented.css"
   },
   "files": [

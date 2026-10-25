@@ -14,7 +14,7 @@ import {
   tilt,
   weigh,
 } from '@puzzlebloom/balance-engine';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 /**
  * The Number Balance screen's state.
@@ -51,6 +51,24 @@ export function useBalance(initialLevel: BalanceLevel = 1) {
   const leftSum = leftTotal(puzzle);
   const rightSum = panTotal(state.right);
 
+  // ── The solved streak: consecutive puzzles balanced without emptying the
+  // pan in defeat. A weigh that lands wrong breaks it; "next puzzle" after a
+  // solve extends it. The chime climbs with it.
+  const [streak, setStreak] = useState(0);
+  const [solvedAt, setSolvedAt] = useState(0);
+  const weighed = state.weighed;
+  const solved = state.solved;
+  useEffect(() => {
+    if (!weighed) return;
+    if (solved) {
+      setStreak((n) => n + 1);
+      setSolvedAt(performance.now());
+    } else {
+      // A wrong weigh is information, not failure — but it does end a streak.
+      setStreak(0);
+    }
+  }, [weighed, solved]);
+
   const placeTile = useCallback((value: number) => setState((s) => addTile(s, value)), []);
   const dropFrog = useCallback(() => setState((s) => addFrog(s)), []);
   const liftFrog = useCallback(() => setState((s) => removeFrog(s)), []);
@@ -83,6 +101,8 @@ export function useBalance(initialLevel: BalanceLevel = 1) {
     rightSum,
     status: state.solved ? 'solved' : 'playing',
     equation: state.solved ? equationOf(state) : null,
+    streak,
+    solvedAt,
     tilesOffered,
     placeTile,
     dropFrog,

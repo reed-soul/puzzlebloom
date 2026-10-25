@@ -196,3 +196,38 @@
     scroll-behavior: auto;
   }
 }
+
+/* Riding-high counter: consecutive turns that gained frogs. */
+.pb-road__riding {
+  margin: 0;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: var(--pb-surface);
+  border: 2px solid var(--pb-line);
+  font-family: var(--pb-font-display);
+  color: var(--pb-ink);
+  animation: pb-riding-in 0.25s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+
+@keyframes pb-riding-in {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.pb-road__streak {
+  margin: 0;
+  font-family: var(--pb-font-display);
+  color: var(--pb-brand);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pb-road__riding {
+    animation-duration: 0.01s;
+  }
+}
