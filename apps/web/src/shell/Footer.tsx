@@ -20,9 +20,6 @@ export function Footer() {
           <Link to="/">The garden</Link>
           <Link to="/themes">Themes</Link>
           <Link to="/parents">For parents</Link>
-          <a href="https://github.com/HeyPuter/everything" rel="noreferrer noopener" target="_blank">
-            Built on open source
-          </a>
         </nav>
 
         <p className="pb-footer__fine">
