@@ -1,0 +1,29 @@
+{
+  "name": "@puzzlebloom/game-nonogram",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Nonogram for PuzzleBloom: hand-drawn pictures read backwards into clues, two sizes, hints that explain the counting.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./manifest": "./src/manifest.ts",
+    "./nonogram.css": "./src/nonogram.css"
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@puzzlebloom/nonogram-engine": "workspace:*",
+    "@puzzlebloom/ui": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@puzzlebloom/game-sudoku": "workspace:*",
+    "@types/react": "^19.3.0",
+    "react": "^19.0.0"
+  }
+}

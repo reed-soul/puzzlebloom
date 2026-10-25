@@ -1,0 +1,275 @@
+/**
+ * The things around the board: the marking switch, the tools, the hint sheet
+ * and the finished picture.
+ *
+ * Standalone for the same reason as the board's stylesheet — sudoku's chunk may
+ * never load on this route — and scoped the same way for the same reason.
+ * Targets are bigger than desktop convention asks for: a seven-year-old on a
+ * tablet misses a 32px button, and a miss does not read as "wrong tap", it reads
+ * as "the game is broken".
+ */
+
+.pb-nono__modes {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.pb-nono__legend {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pb-ink-faint);
+}
+
+.pb-nono__hintline {
+  color: var(--pb-ink-soft);
+  font-size: var(--pb-fs-xs);
+  line-height: 1.45;
+}
+
+/* ---------------- tools ---------------- */
+
+.pb-nono .pb-tools {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.pb-nono .pb-tool {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 0.5rem 0.25rem;
+  border: 1.5px solid var(--pb-line);
+  border-radius: var(--pb-r-sm);
+  background: var(--pb-surface);
+  color: var(--pb-ink-soft);
+  font-size: 0.68rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background var(--pb-dur) var(--pb-ease),
+    color var(--pb-dur) var(--pb-ease),
+    border-color var(--pb-dur) var(--pb-ease);
+}
+
+.pb-nono .pb-tool:hover:not(:disabled) {
+  background: var(--pb-surface-2);
+  color: var(--pb-ink);
+}
+
+.pb-nono .pb-tool:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pb-nono .pb-levels {
+  display: grid;
+  gap: 0.55rem;
+  padding-top: 0.9rem;
+  border-top: 1.5px dashed var(--pb-line-strong);
+}
+
+.pb-nono .pb-levels__label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pb-ink-faint);
+}
+
+/* ---------------- pause curtain ---------------- */
+
+.pb-nono .pb-curtain {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  border-radius: var(--pb-r-lg);
+  background: color-mix(in oklab, var(--pb-bg) 82%, transparent);
+  backdrop-filter: blur(7px);
+  color: var(--pb-ink-soft);
+  animation: pb-nono-fade var(--pb-dur) var(--pb-ease);
+}
+
+@keyframes pb-nono-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ---------------- hint sheet ---------------- */
+
+.pb-nono .pb-hint {
+  position: fixed;
+  left: 50%;
+  bottom: 1.25rem;
+  z-index: 20;
+  width: min(560px, calc(100% - 2rem));
+  transform: translateX(-50%);
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.9rem 1.1rem;
+  border: 2px solid var(--pb-line-strong);
+  border-radius: var(--pb-r-lg);
+  background: var(--pb-surface);
+  box-shadow: 0 6px 0 var(--pb-shadow);
+  animation: pb-nono-rise var(--pb-dur-slow) var(--pb-ease);
+}
+
+@keyframes pb-nono-rise {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 14px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.pb-nono .pb-hint--conflict {
+  border-color: var(--pb-danger);
+}
+
+.pb-nono .pb-hint__head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--pb-ink-soft);
+}
+
+.pb-nono .pb-hint__text {
+  font-size: var(--pb-fs-md);
+  line-height: 1.5;
+}
+
+.pb-nono .pb-hint__actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+/* ---------------- finished picture ---------------- */
+
+.pb-nono .pb-win {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: color-mix(in oklab, var(--pb-ink) 52%, transparent);
+  animation: pb-nono-fade var(--pb-dur-slow) var(--pb-ease);
+}
+
+.pb-nono .pb-win__card {
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+  width: min(420px, 100%);
+  padding: 1.6rem 1.5rem 1.5rem;
+  text-align: center;
+  background: var(--pb-surface);
+  border: 2px solid var(--pb-line-strong);
+  border-radius: var(--pb-r-xl);
+  box-shadow: 0 8px 0 color-mix(in oklab, var(--pb-ink) 22%, transparent);
+  animation: pb-nono-pop var(--pb-dur-slow) var(--pb-ease);
+}
+
+@keyframes pb-nono-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.pb-nono .pb-win__title {
+  font-size: var(--pb-fs-xl);
+}
+
+.pb-nono .pb-win__sub {
+  color: var(--pb-ink-soft);
+  font-size: var(--pb-fs-sm);
+}
+
+.pb-nono .pb-win__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 0.4rem;
+}
+
+/*
+ * The picture itself, drawn without a single mark that helped you count it.
+ * It fades in as one thing rather than square by square: the reward is the
+ * drawing, and a fifty-step cascade would put the app between the player and it.
+ */
+.pb-nono-reveal {
+  display: grid;
+  place-items: center;
+  width: 100%;
+}
+
+.pb-nono-reveal__grid {
+  display: grid;
+  width: min(220px, 58vw);
+  aspect-ratio: 1;
+  gap: 2px;
+  padding: 10px;
+  border-radius: var(--pb-r-md);
+  background: color-mix(in oklab, var(--pb-sky) 24%, var(--pb-surface));
+  animation: pb-rise var(--pb-dur-slow) var(--pb-ease);
+}
+
+.pb-nono--small .pb-nono-reveal__grid {
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+}
+
+.pb-nono--medium .pb-nono-reveal__grid {
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(10, 1fr);
+}
+
+.pb-nono-reveal__grid span {
+  border-radius: 2px;
+}
+
+.pb-nono-reveal__grid span.is-lit {
+  background: var(--pb-brand);
+}
+
+/* ---------------- narrow screens ---------------- */
+
+@media (max-width: 900px) {
+  .pb-nono .pb-play__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pb-nono__modes {
+    order: 1;
+  }
+
+  .pb-nono .pb-tools {
+    order: 2;
+  }
+
+  .pb-nono .pb-levels {
+    order: 3;
+  }
+}

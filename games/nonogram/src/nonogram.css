@@ -1,0 +1,350 @@
+/**
+ * Nonogram screen.
+ *
+ * Every rule is scoped under `.pb-nono`, and that is load-bearing rather than
+ * tidy. The shell this page shares with sudoku lives in sudoku's stylesheet,
+ * which arrives with the sudoku chunk — a player who opens this route first
+ * never loads it. So the shell is re-declared here, with the same measurements
+ * because it is the same design, and the scoping means the two games cannot
+ * fight over `.pb-play` when both files happen to be in the document.
+ *
+ * One measurement drives the page: `--pb-nono-cell`. The board and both clue
+ * strips are built from it, which is what keeps the numbers over the columns
+ * they belong to without a single pixel of measurement in JavaScript.
+ */
+
+.pb-nono {
+  --pb-nono-cell: clamp(2rem, 16vw, 3.6rem);
+
+  /* The shared `--pb-grid-line` is tuned for a sudoku box, which is outlined
+     three pixels thick and can afford faint inner rules. Here every line does
+     the work of a ruler, so the inner rule is a shade heavier: a child counting
+     four squares along a row should not have to squint at where one ends. */
+  --pb-nono-rule: color-mix(in oklab, var(--pb-ink) 18%, var(--pb-cell));
+
+  width: min(100%, var(--pb-page));
+  margin: 0 auto;
+  padding: clamp(0.75rem, 2vw, 1.5rem) clamp(0.75rem, 3vw, 2rem) 7rem;
+}
+
+/* Ten columns, and a clue column beside them, still have to fit a 320px phone.
+   7vw is the number that survives that arithmetic with room to spare; the
+   clamp's upper bound is where a square stops being a square and starts being
+   a card. */
+.pb-nono--medium {
+  --pb-nono-cell: clamp(1.2rem, 7vw, 2.6rem);
+}
+
+/* ---------------- loading ---------------- */
+
+.pb-nono--loading {
+  display: grid;
+  place-items: center;
+  gap: 1rem;
+  min-height: 60vh;
+}
+
+.pb-nono-skeleton {
+  width: min(100%, 300px);
+  aspect-ratio: 1;
+  border: 3px solid var(--pb-line);
+  border-radius: var(--pb-r-lg);
+  background:
+    repeating-linear-gradient(to right, transparent 0 9.6%, var(--pb-line) 9.6% 10%),
+    repeating-linear-gradient(to bottom, transparent 0 9.6%, var(--pb-line) 9.6% 10%);
+  animation: pb-nono-breathe 1.8s var(--pb-ease) infinite;
+}
+
+@keyframes pb-nono-breathe {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+.pb-nono__note {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--pb-ink-soft);
+  font-size: var(--pb-fs-sm);
+}
+
+/* ---------------- header ---------------- */
+
+.pb-nono .pb-play__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.pb-nono .pb-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: var(--pb-r-pill);
+  border: 1.5px solid var(--pb-line);
+  background: var(--pb-surface);
+  color: var(--pb-ink);
+  cursor: pointer;
+  transition: background var(--pb-dur) var(--pb-ease);
+}
+
+.pb-nono .pb-back:hover {
+  background: var(--pb-surface-2);
+}
+
+.pb-nono .pb-play__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.pb-nono .pb-play__level {
+  font-family: var(--pb-font-display);
+  font-size: var(--pb-fs-lg);
+  font-weight: 600;
+}
+
+.pb-nono .pb-play__clock {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-left: auto;
+  color: var(--pb-ink-soft);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--pb-fs-sm);
+  font-weight: 700;
+}
+
+/* ---------------- layout ---------------- */
+
+.pb-nono .pb-play__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: clamp(1rem, 2.5vw, 2rem);
+  align-items: start;
+}
+
+.pb-nono .pb-play__side {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.pb-nono__stage {
+  position: relative;
+  display: grid;
+  justify-items: center;
+}
+
+/*
+ * Four quadrants: corner, column clues, row clues, board.
+ *
+ * The clue strips and the board are built from the same track size and sit in
+ * the same grid column or row as each other, so they line up by construction.
+ * That is why nothing here is positioned with offsets — an offset would be one
+ * more number to keep in step with `--pb-nono-cell`.
+ */
+.pb-nono__frame {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto;
+  gap: 3px;
+  max-width: 100%;
+}
+
+.pb-nono__corner {
+  grid-area: 1 / 1;
+}
+
+/* ---------------- clues ---------------- */
+
+.pb-nono-clues {
+  display: grid;
+  gap: 0; /* The board has no gaps, only borders. A gap here would drift. */
+}
+
+.pb-nono-clues--column {
+  grid-area: 1 / 2;
+  align-items: end;
+}
+
+.pb-nono-clues--row {
+  grid-area: 2 / 1;
+  justify-items: end;
+}
+
+.pb-nono--small .pb-nono-clues--column {
+  grid-template-columns: repeat(5, var(--pb-nono-cell));
+}
+
+.pb-nono--small .pb-nono-clues--row {
+  grid-template-rows: repeat(5, var(--pb-nono-cell));
+}
+
+.pb-nono--medium .pb-nono-clues--column {
+  grid-template-columns: repeat(10, var(--pb-nono-cell));
+}
+
+.pb-nono--medium .pb-nono-clues--row {
+  grid-template-rows: repeat(10, var(--pb-nono-cell));
+}
+
+.pb-nono-clue {
+  display: flex;
+  gap: 2px;
+  font-size: calc(var(--pb-nono-cell) * 0.42);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--pb-ink-soft);
+  transition: color var(--pb-dur) var(--pb-ease);
+}
+
+.pb-nono-clues--row .pb-nono-clue {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 3px;
+}
+
+.pb-nono-clues--column .pb-nono-clue {
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 3px;
+}
+
+/* A `0` is a fact, not a number to count: it means the whole line is blank. */
+.pb-nono-clue__run.is-none {
+  color: var(--pb-ink-faint);
+}
+
+/* The one piece of feedback the game gives while playing. It is about the line,
+   not about the player: there is nothing left to work out here. */
+.pb-nono-clue.is-done {
+  color: var(--pb-brand);
+}
+
+/* ---------------- board ---------------- */
+
+.pb-nono-board {
+  grid-area: 2 / 2;
+  display: grid;
+  border-radius: var(--pb-r-sm);
+  overflow: hidden;
+  background: var(--pb-cell);
+  box-shadow: var(--pb-lift-1);
+  /* A drag is the main gesture here, so the page must not scroll under it.
+     Leaving this at `manipulation` would cancel every vertical stroke. */
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.pb-nono--small .pb-nono-board {
+  grid-template-columns: repeat(5, var(--pb-nono-cell));
+  grid-template-rows: repeat(5, var(--pb-nono-cell));
+}
+
+.pb-nono--medium .pb-nono-board {
+  grid-template-columns: repeat(10, var(--pb-nono-cell));
+  grid-template-rows: repeat(10, var(--pb-nono-cell));
+}
+
+/*
+ * Grid lines are cell borders, never extra elements. With `border-box` a
+ * thickened border eats into its own cell, so emphasising the middle rule of a
+ * 10×10 cannot knock the strip above it out of alignment.
+ */
+.pb-nono-cell {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-right: 1px solid var(--pb-nono-rule);
+  border-bottom: 1px solid var(--pb-nono-rule);
+  background: var(--pb-cell);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background var(--pb-dur) var(--pb-ease);
+}
+
+.pb-nono-cell.is-first-row {
+  border-top: 1px solid var(--pb-nono-rule);
+}
+
+.pb-nono-cell.is-first-col {
+  border-left: 1px solid var(--pb-nono-rule);
+}
+
+.pb-nono-cell.is-last-col {
+  border-right: 1px solid var(--pb-grid-box);
+}
+
+.pb-nono-cell.is-last-row {
+  border-bottom: 1px solid var(--pb-grid-box);
+}
+
+.pb-nono-cell.is-mid-col {
+  border-right: 2px solid var(--pb-grid-box);
+}
+
+.pb-nono-cell.is-mid-row {
+  border-bottom: 2px solid var(--pb-grid-box);
+}
+
+.pb-nono-cell:hover {
+  background: var(--pb-cell-peer);
+}
+
+.pb-nono-cell.is-filled {
+  background: color-mix(in oklab, var(--pb-brand) 10%, var(--pb-cell));
+}
+
+.pb-nono-cell.is-crossed {
+  background: var(--pb-cell-given);
+}
+
+.pb-nono-cell.is-hint {
+  background: var(--pb-cell-hint);
+}
+
+/* The filled square sits inside the cell rather than replacing it, so the grid
+   lines stay visible and a run still reads as a row of separate squares. */
+.pb-nono-cell__fill {
+  width: calc(100% - 3px);
+  height: calc(100% - 3px);
+  border-radius: calc(var(--pb-nono-cell) * 0.14);
+  background: var(--pb-brand);
+  animation: pb-land var(--pb-dur-land) var(--pb-ease-out);
+}
+
+/* Two diagonal bands clipped to a small box: half the weight of a full-cell
+   cross, which would read as a filled square at a glance. */
+.pb-nono-cell__cross {
+  width: 52%;
+  height: 52%;
+  background:
+    linear-gradient(45deg, transparent 44%, var(--pb-ink-faint) 44% 56%, transparent 56%),
+    linear-gradient(-45deg, transparent 44%, var(--pb-ink-faint) 44% 56%, transparent 56%);
+}
+
+.pb-nono-cell:focus-visible {
+  z-index: 1;
+  outline: 3px solid var(--pb-brand);
+  outline-offset: -3px;
+  border-radius: 0;
+}
