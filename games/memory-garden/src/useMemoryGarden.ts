@@ -73,6 +73,8 @@ export interface MemoryController {
   solved: boolean;
   isDaily: boolean;
   flip: (index: number) => void;
+  /** The latest kept pair (card indices + timestamp), for the celebration layer. */
+  pairFlash: { a: number; b: number; at: number } | null;
   askHint: () => void;
   dismissHint: () => void;
   pause: () => void;
@@ -208,6 +210,24 @@ export function useMemoryGarden(): MemoryController {
     [paused, persist, solved],
   );
 
+  // ── Pair celebrations: when a turn keeps a pair, the juice layer fires at
+  // both cards' positions. Derived from the same log the announcement reads,
+  // so screen readers and sparks always tell the same story.
+  const [pairFlash, setPairFlash] = useState<{ a: number; b: number; at: number } | null>(null);
+  const flipRef = useRef(flip);
+  flipRef.current = flip;
+  const flipWithJuice = useCallback((index: number) => {
+    const before = boardRef.current;
+    flipRef.current(index);
+    const after = boardRef.current;
+    if (!before || !after) return;
+    const last = after.log[after.log.length - 1];
+    const prevCount = before.log.length;
+    if (last && after.log.length > prevCount && last.matched) {
+      setPairFlash({ a: last.a, b: last.b, at: performance.now() });
+    }
+  }, []);
+
   const askHint = useCallback(() => {
     const current = boardRef.current;
     if (!current || paused || solved) return;
@@ -328,7 +348,8 @@ export function useMemoryGarden(): MemoryController {
     paused,
     solved,
     isDaily,
-    flip,
+    flip: flipWithJuice,
+    pairFlash,
     askHint,
     dismissHint,
     pause,

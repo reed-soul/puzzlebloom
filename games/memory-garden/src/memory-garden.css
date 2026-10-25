@@ -257,14 +257,8 @@
  * printout rather than as twelve things you could pick up.
  */
 .pb-memory__back {
-  background:
-    repeating-linear-gradient(
-      135deg,
-      transparent 0 7px,
-      color-mix(in oklab, var(--pb-ink) 8%, transparent) 7px 8px
-    ),
-    var(--pb-surface);
-  box-shadow: 0 3px 0 var(--pb-shadow);
+  background: url('/art/memory/card-back.webp') center / cover no-repeat;
+  border: 3px solid color-mix(in oklab, var(--pb-brand) 45%, transparent);
 }
 
 .pb-memory__front {
@@ -285,6 +279,14 @@
   border: 3px solid var(--pb-brand);
   background: color-mix(in oklab, var(--pb-brand) 12%, var(--pb-surface));
   box-shadow: none;
+}
+
+.pb-memory__front img {
+  width: 84%;
+  height: 84%;
+  object-fit: contain;
+  -webkit-user-drag: none;
+  user-select: none;
 }
 
 @media (hover: hover) {

@@ -1,6 +1,20 @@
 import { type Board as BoardState, creatureName } from '@puzzlebloom/memory-garden-engine';
-import { CreatureGlyph } from '@puzzlebloom/ui';
 import { type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, useRef, useState } from 'react';
+
+/** The generated creature art per engine creature 1–9 — the same clay-matte
+ *  family Bloom Drop wears (one style bible, two games), so the garden's
+ *  characters stay one world. Names follow the engine's shapes. */
+const ART: Record<number, string> = {
+  1: 'bear',
+  2: 'rabbit',
+  3: 'horned',
+  4: 'snail',
+  5: 'sprout',
+  6: 'spotted',
+  7: 'cat',
+  8: 'owl',
+  9: 'crowned',
+};
 
 interface Props {
   board: BoardState;
@@ -102,15 +116,19 @@ export function Board({ board, columns, onFlip }: Props) {
             onKeyDown={(event) => handleKey(event, index)}
           >
             <span className="pb-memory__card-inner" aria-hidden="true">
-              {/* Two faces in one grid cell, back to back: the back is a faint
-                  weave, because a question mark on a card is a cartoon this site
-                  does not make. */}
+              {/* Two faces in one grid cell, back to back: the back is the
+                  woven garden texture (a question mark on a card is a cartoon
+                  this site does not make), the front is the creature's art. */}
               <span className="pb-memory__face pb-memory__back" />
               <span className="pb-memory__face pb-memory__front">
                 {face === 'down' ? null : (
-                  <span className="pb-memory__glyph">
-                    <CreatureGlyph digit={board.creatures[index]} size={48} />
-                  </span>
+                  <img
+                    src={`/art/memory/creature-${ART[board.creatures[index]]}.png`}
+                    alt=""
+                    draggable={false}
+                    loading="eager"
+                    decoding="sync"
+                  />
                 )}
               </span>
             </span>

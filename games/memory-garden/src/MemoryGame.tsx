@@ -2,6 +2,7 @@ import { type Level, recap as summarise } from '@puzzlebloom/memory-garden-engin
 import { Button, Chip, Icon, Segmented, useModalFocus } from '@puzzlebloom/ui';
 import { useCallback, useEffect, useRef } from 'react';
 import { Board } from './Board';
+import { PairJuice } from './PairJuice';
 import { RecapPanel } from './Recap';
 import { useMemoryGarden } from './useMemoryGarden';
 import './memory-garden.css';
@@ -47,6 +48,7 @@ export function MemoryGame({ onExit }: Props) {
     solved,
     isDaily,
     flip,
+    pairFlash,
     askHint,
     dismissHint,
     pause,
@@ -135,6 +137,7 @@ export function MemoryGame({ onExit }: Props) {
       <div className="pb-play__body">
         <div className="pb-memory__stage">
           <Board board={board} columns={columns} onFlip={flip} />
+          <PairJuice flash={pairFlash} />
           {paused ? (
             <div
               className="pb-curtain"
