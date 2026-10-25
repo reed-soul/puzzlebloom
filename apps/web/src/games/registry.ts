@@ -9,6 +9,7 @@
 // The manifests are imported from their own entry points on purpose: pulling
 // them through the package index would drag the whole game into the garden
 // bundle.
+import { balanceManifest } from '@puzzlebloom/game-balance/manifest';
 import { memoryGardenManifest } from '@puzzlebloom/game-memory-garden/manifest';
 import { nonogramManifest } from '@puzzlebloom/game-nonogram/manifest';
 import { type GameManifest, sudokuManifest } from '@puzzlebloom/game-sudoku/manifest';
@@ -21,6 +22,7 @@ export const GAMES: GameManifest[] = [
   nonogramManifest,
   tangramManifest,
   memoryGardenManifest,
+  balanceManifest,
 ];
 
 /**

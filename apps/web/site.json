@@ -18,6 +18,12 @@
       "changeFrequency": "monthly",
       "priority": 0.9
     },
+    "/play/balance": {
+      "title": "Number balance for little counters | PuzzleBloom",
+      "description": "A two-pan balance that never lies: read the numeral, count the frogs, and discover that equals means the same on both sides. For ages 4 and up.",
+      "changeFrequency": "monthly",
+      "priority": 0.7
+    },
     "/play/nonogram": {
       "title": "Kids' nonogram: count the squares, uncover the picture | PuzzleBloom",
       "description": "Free nonogram for children in the browser. Two sizes, hand-drawn pictures, crosses for the squares you rule out, and hints that explain the counting. No timer, no score, no ads.",

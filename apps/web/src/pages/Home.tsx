@@ -150,6 +150,25 @@ function PairsArt() {
   );
 }
 
+/**
+ * A balance caught just off level: the numeral pan heavier than the frog pan,
+ * which is the state the whole game exists to resolve. Three frogs against a
+ * "4" tile — one short, beam tipped toward the number, the next move obvious.
+ */
+function BalanceArt() {
+  return (
+    <div className="pb-card__art-balance" aria-hidden="true">
+      <span className="pb-card__art-balance__tile">4</span>
+      <span className="pb-card__art-balance__beam" />
+      <span className="pb-card__art-balance__pan">
+        <i />
+        <i />
+        <i />
+      </span>
+    </div>
+  );
+}
+
 function Art({ game }: { game: GameManifest }) {
   if (game.status === 'ready') {
     return (
@@ -157,6 +176,7 @@ function Art({ game }: { game: GameManifest }) {
         {game.art === 'squares' ? <SquaresArt /> : null}
         {game.art === 'tangram' ? <TrianglesArt /> : null}
         {game.art === 'pairs' ? <PairsArt /> : null}
+        {game.art === 'balance' ? <BalanceArt /> : null}
         {game.art === 'creatures' || !game.art ? <CreaturesArt /> : null}
       </div>
     );

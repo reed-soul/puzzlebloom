@@ -26,6 +26,9 @@ const TangramGame = lazy(() =>
 const MemoryGarden = lazy(() =>
   import('@puzzlebloom/game-memory-garden').then((module) => ({ default: module.MemoryGame })),
 );
+const BalanceGame = lazy(() =>
+  import('@puzzlebloom/game-balance').then((module) => ({ default: module.BalanceGame })),
+);
 
 function Routes() {
   const { path, navigate } = useRouter();
@@ -37,7 +40,8 @@ function Routes() {
     path === '/play/sudoku' ||
     path === '/play/nonogram' ||
     path === '/play/tangram' ||
-    path === '/play/memory-garden';
+    path === '/play/memory-garden' ||
+    path === '/play/balance';
 
   // Layout effect, not effect: the title and canonical should be right before
   // the new page paints, the same way the theme is.
@@ -74,6 +78,13 @@ function Routes() {
       return (
         <Suspense fallback={<p className="pb-page-note">Turning the cards over…</p>}>
           <MemoryGarden onExit={() => navigate('/')} />
+        </Suspense>
+      );
+    }
+    if (path === '/play/balance') {
+      return (
+        <Suspense fallback={<p className="pb-page-note">Setting up the scale…</p>}>
+          <BalanceGame onExit={() => navigate('/')} />
         </Suspense>
       );
     }

@@ -422,6 +422,64 @@
   fill: color-mix(in oklab, var(--pb-brand) 32%, var(--pb-surface));
 }
 
+/* A balance just off level: the numeral pan heavier than a frog pan one short
+   of it, which is the state the whole game exists to resolve. The beam is a
+   single rotated line, the same move the game itself makes with one element
+   and one CSS variable. */
+.pb-card__art-balance {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 34px 1fr 34px;
+  grid-template-rows: 46px 14px;
+  align-items: end;
+  width: 104px;
+}
+
+.pb-card__art-balance__tile {
+  grid-column: 1;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  border: 1.5px solid color-mix(in oklab, var(--pb-brand) 52%, transparent);
+  font-family: var(--pb-font-display);
+  font-size: 17px;
+  color: var(--pb-ink);
+  background: var(--pb-surface);
+  margin-bottom: 2px;
+}
+
+.pb-card__art-balance__beam {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  height: 4px;
+  border-radius: 2px;
+  background: color-mix(in oklab, var(--pb-ink) 26%, transparent);
+  transform: rotate(-6deg);
+  transform-origin: 50% 50%;
+}
+
+.pb-card__art-balance__pan {
+  grid-column: 3;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+  padding: 4px;
+  border: 1.5px solid color-mix(in oklab, var(--pb-ink) 16%, transparent);
+  border-radius: 5px 5px 2px 2px;
+  background: color-mix(in oklab, var(--pb-surface) 62%, transparent);
+}
+
+.pb-card__art-balance__pan i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--pb-brand) 40%, var(--pb-surface));
+  border: 1px solid color-mix(in oklab, var(--pb-brand) 52%, transparent);
+}
+
 .pb-card__art-triangles polygon:nth-child(3) {
   fill: color-mix(in oklab, var(--pb-accent) 72%, var(--pb-surface));
 }

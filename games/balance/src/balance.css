@@ -1,0 +1,246 @@
+/*
+ * Number Balance.
+ *
+ * The beam is one element rotated by --pb-bal-angle, which the engine computes
+ * from the difference alone. The transition lives on the beam so a weigh moves
+ * it like a thing settling, not like a value changing; the duration is short
+ * because the scale's honesty is the point and a slow swing would dramatise it.
+ */
+
+.pb-balance {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  padding: 16px clamp(12px, 4vw, 32px) 40px;
+}
+
+.pb-bal__target {
+  margin: 0;
+  font-size: var(--pb-fs-sm);
+  color: var(--pb-ink-soft);
+}
+
+.pb-bal__stage {
+  position: relative;
+  width: min(560px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  perspective: 600px;
+}
+
+.pb-bal__beam {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: start;
+  width: 100%;
+  min-height: 120px;
+  transform: rotate(var(--pb-bal-angle, 0deg));
+  transform-origin: 50% 18px;
+  transition: transform 420ms var(--pb-ease-out, var(--pb-ease));
+}
+
+/* The bar itself, drawn behind the pans. */
+.pb-bal__beam::before {
+  content: '';
+  position: absolute;
+  top: 16px;
+  left: 6%;
+  right: 6%;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--pb-surface-2, var(--pb-surface));
+  border: 2px solid var(--pb-line);
+}
+
+.pb-bal__fulcrum {
+  width: 0;
+  height: 0;
+  align-self: end;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-bottom: 26px solid var(--pb-line);
+}
+
+.pb-bal__base {
+  width: 120px;
+  height: 10px;
+  border-radius: 5px;
+  background: var(--pb-line);
+  margin-top: -2px;
+}
+
+.pb-bal__pan {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+  align-items: flex-end;
+  min-height: 92px;
+  padding: 8px;
+  border-radius: var(--pb-r-md, 16px) var(--pb-r-md, 16px) 6px 6px;
+  background: var(--pb-surface);
+  border: 2px solid var(--pb-line);
+  box-shadow: 0 4px 0 var(--pb-line);
+}
+
+.pb-bal__tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 34px;
+  padding: 0 6px;
+  border-radius: 8px;
+  font-family: var(--pb-font-display);
+  font-size: var(--pb-fs-lg);
+  background: var(--pb-page, var(--pb-surface));
+  border: 2px solid var(--pb-brand);
+  color: var(--pb-ink);
+}
+
+.pb-bal__tile--given {
+  border-color: var(--pb-accent);
+  background: var(--pb-surface-2, var(--pb-surface));
+}
+
+.pb-bal__frog {
+  display: inline-flex;
+  line-height: 0;
+}
+
+.pb-bal__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  align-items: stretch;
+  width: min(720px, 100%);
+}
+
+.pb-bal__tray,
+.pb-bal__frogs,
+.pb-bal__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-radius: var(--pb-r-md, 16px);
+  background: var(--pb-surface);
+  border: 2px solid var(--pb-line);
+}
+
+.pb-bal__tray-label {
+  margin: 0 0 2px;
+  font-size: var(--pb-fs-sm);
+  color: var(--pb-ink-soft);
+}
+
+.pb-bal__tile-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  font-family: var(--pb-font-display);
+  font-size: var(--pb-fs-lg);
+  background: var(--pb-page);
+  border: 2px solid var(--pb-brand);
+  color: var(--pb-ink);
+  cursor: pointer;
+  transition:
+    transform 180ms var(--pb-ease),
+    box-shadow 180ms var(--pb-ease);
+}
+
+.pb-bal__tile-btn:hover {
+  transform: translateY(-1px);
+}
+
+.pb-bal__tile-btn:active {
+  transform: translateY(1px);
+}
+
+.pb-bal__tray {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.pb-bal__frog-btns {
+  display: flex;
+  gap: 8px;
+}
+
+.pb-bal__actions {
+  justify-content: center;
+}
+
+.pb-bal__linkish {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: var(--pb-fs-sm);
+  color: var(--pb-ink-soft);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.pb-bal__win {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  background: color-mix(in oklab, var(--pb-page) 72%, transparent);
+  padding: 24px;
+}
+
+.pb-bal__win-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  max-width: 420px;
+  padding: 28px 32px;
+  border-radius: var(--pb-r-lg, 22px);
+  background: var(--pb-surface);
+  border: 2px solid var(--pb-line);
+  box-shadow: 0 5px 0 var(--pb-line);
+  text-align: center;
+}
+
+.pb-bal__win-card h2 {
+  margin: 0;
+  font-family: var(--pb-font-display);
+  font-size: var(--pb-fs-lg);
+  color: var(--pb-ink);
+}
+
+.pb-bal__equation {
+  margin: 0;
+  font-family: var(--pb-font-display);
+  font-size: var(--pb-fs-lg);
+  color: var(--pb-brand);
+}
+
+.pb-bal__win-note {
+  margin: 0;
+  font-size: var(--pb-fs-sm);
+  color: var(--pb-ink-soft);
+}
+
+.pb-bal__win-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pb-bal__beam {
+    transition: none;
+  }
+}
