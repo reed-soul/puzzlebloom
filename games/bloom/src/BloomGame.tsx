@@ -92,7 +92,15 @@ export function BloomGame({ onExit }: Props) {
       <div
         ref={stageRef}
         className="pb-bloom__stage"
-        style={{ '--pb-bloom-scale': `min(100vw / ${JAR.width}, 82vh / ${JAR.height}, 1)` } as CSSProperties}
+        style={
+          {
+            // Length ÷ length = a number, the only division CSS allows inside
+            // min() here; length ÷ number is invalid and the whole expression
+            // collapses (this is exactly the bug that shipped the stage at
+            // 6×3px). Cap at 1 so desktops keep the natural size.
+            '--pb-bloom-scale': 'min(100vw / 340px, 82vh / 440px, 1)',
+          } as CSSProperties
+        }
         onPointerMove={(e) => aim(pointerX(e))}
         onPointerDown={(e) => aim(pointerX(e))}
         onPointerUp={(e) => {

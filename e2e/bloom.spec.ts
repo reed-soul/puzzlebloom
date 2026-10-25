@@ -21,6 +21,18 @@ test.describe('bloom drop', () => {
     await expect(page.locator('.pb-bloom__stage')).toBeVisible();
     await expect(page.getByText('Score')).toBeVisible();
     await expect(page.locator('.pb-bloom__over')).toHaveCount(0);
+
+    // Geometry, not just existence: this game shipped once with a stage that
+    // rendered at 6×3px because an invalid CSS division collapsed the scale
+    // expression, and every existence assertion passed. The jar must be
+    // jar-shaped — wider than tall is wrong, and anything under 150px tall
+    // cannot hold a moonflower. (Engine's jar is 340×440; the CSS caps at 1
+    // so desktops show exactly that.)
+    const box = await page.locator('.pb-bloom__stage').boundingBox();
+    expect(box).not.toBeNull();
+    expect(box!.height).toBeGreaterThan(150);
+    expect(box!.height).toBeGreaterThan(box!.width);
+    expect(box!.width / box!.height).toBeGreaterThan(0.6); // 340/440 ≈ 0.77, with margin
     expect(problems).toEqual([]);
   });
 
