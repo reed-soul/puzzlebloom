@@ -5,6 +5,14 @@
  * everything without React re-rendering a single component. This provider only
  * decides *which* theme that is: a link someone sent, a saved favourite, or
  * the meadow it ships with.
+ *
+ * It lives in the kit rather than in the shell because the custom properties
+ * are not the only way to read a theme, they are only the cheapest. A game that
+ * paints with CSS gets the palette for free and never calls this hook. A game
+ * that paints into a canvas gets nothing from CSS — `getPropertyValue` on a
+ * canvas returns no colours — so it needs the theme as values, and it cannot
+ * reach into `apps/web` to ask without inverting the dependency the whole
+ * monorepo is built on.
  */
 
 import {

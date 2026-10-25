@@ -53,15 +53,18 @@
   cursor: grabbing;
 }
 
-/* The rim line the overflow rule measures against, drawn on the stage. */
+/* The rim line the overflow rule measures against. It sits on the painted
+   mouth (104–237 × 138 in engine coordinates), not across the whole stage —
+   a line over the flowers read as a border of the scene, not as "full". */
 .pb-bloom__stage::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: color-mix(in oklab, var(--pb-line) 70%, transparent);
+  top: 31.36%;
+  left: 30.59%;
+  width: 39.12%;
+  height: 0;
+  border-top: 1px dashed color-mix(in oklab, var(--pb-line) 55%, transparent);
+  pointer-events: none;
 }
 
 .pb-bloom__canvas {

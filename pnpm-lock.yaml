@@ -413,13 +413,23 @@ importers:
         version: 5.0.5(vite@8.3.5(esbuild@0.28.2))
 
   packages/ui:
+    dependencies:
+      '@puzzlebloom/theme-core':
+        specifier: workspace:*
+        version: link:../theme-core
     devDependencies:
       '@types/react':
         specifier: ^19.3.0
         version: 19.3.0
+      '@types/react-dom':
+        specifier: ^19.3.0
+        version: 19.3.0(@types/react@19.3.0)
       react:
         specifier: ^19.3.1
         version: 19.3.1
+      react-dom:
+        specifier: ^19.3.1
+        version: 19.3.1(react@19.3.1)
 
 packages:
 

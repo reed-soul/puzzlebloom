@@ -1,7 +1,7 @@
 import { CARD_FIGURE } from '@puzzlebloom/tangram-engine/card';
 import { Chip, CreatureGlyph, Icon, type IconName } from '@puzzlebloom/ui';
+import { useTheme } from '@puzzlebloom/ui/theme';
 import { Link } from '../app/router';
-import { useTheme } from '../app/ThemeProvider';
 import { GAMES, type GameManifest, SPROUTING } from '../games/registry';
 import { LinkButton } from '../shell/LinkButton';
 

@@ -26,6 +26,15 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = process.env.DIST ?? path.join(ROOT, 'apps/web/dist');
 const site = JSON.parse(await readFile(path.join(ROOT, 'apps/web/site.json'), 'utf8'));
 
+/**
+ * How many characters of readable text a canvas route owes.
+ *
+ * About a short paragraph — enough for how a puzzle works and how to move in
+ * it. A judgement about what a page has to explain, not a measured property of
+ * the build, so it is a constant rather than a number derived from the bundle.
+ */
+const CANVAS_TEXT_FLOOR = 200;
+
 /** Routes as the server will see them: everything but the root ends in a slash. */
 const slugOf = (route) => (route === '/' ? '' : route.replace(/\/+$/, ''));
 const canonicalOf = (route) => `${site.url}${slugOf(route)}/`;
@@ -55,6 +64,24 @@ const decode = (text) =>
     .replace(/&amp;/g, '&')
     .replace(/\s+/g, ' ')
     .trim();
+
+/**
+ * The text a visitor could read, once the things that are not text are gone.
+ *
+ * `<script>` goes first: the JSON-LD block is prose to a regex and noise to a
+ * reader. `<canvas>` goes with it, and that is the whole point of counting
+ * here — whatever a canvas draws is pixels, and pixels do not survive the
+ * round trip through a DOM snapshot.
+ */
+const readableText = (html) =>
+  decode(
+    html
+      .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+      .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+      .replace(/<svg[\s\S]*?<\/svg>/gi, ' ')
+      .replace(/<canvas[\s\S]*?<\/canvas>/gi, ' ')
+      .replace(/<[^>]+>/g, ' '),
+  );
 
 console.log(`Checking ${path.relative(ROOT, DIST)}`);
 
@@ -103,6 +130,34 @@ for (const route of routes) {
   }
   if (html.match(/<h1[\s>]/g)?.length !== 1) {
     bad(`${where} has ${html.match(/<h1[\s>]/g)?.length ?? 0} <h1> elements, want exactly 1`);
+  }
+
+  /**
+   * A canvas is the one thing on the site whose content this snapshot cannot
+   * hold. `seo.mjs` writes down the DOM; WebGL draws into pixels. So a route
+   * that says everything with a canvas passes every check above — title,
+   * canonical, description, one `<h1>` — and still arrives at a crawler as an
+   * empty document with a tag in the middle of it.
+   *
+   * The rule that follows is not about 3D: a canvas route owes the same words
+   * in text that a non-canvas route already has, and the canvas itself has to
+   * say what it is before a screen reader walks past it.
+   */
+  const canvases = html.match(/<canvas\b[^>]*>/gi) ?? [];
+  if (canvases.length > 0) {
+    const unlabelled = canvases.find(
+      (tag) => !/\b(aria-label|aria-labelledby|aria-hidden="true")/i.test(tag),
+    );
+    if (unlabelled) {
+      bad(`${where} has a <canvas> with no accessible name — label it, or hide it from the reading order`);
+    }
+
+    const text = readableText(html);
+    if (text.length < CANVAS_TEXT_FLOOR) {
+      bad(
+        `${where} draws with a canvas but carries ${text.length} characters of text — a crawler cannot see the drawing, so the rules and the controls have to be written down`,
+      );
+    }
   }
 }
 

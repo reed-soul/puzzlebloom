@@ -10,8 +10,8 @@ import {
   type ThemeColors,
 } from '@puzzlebloom/theme-core';
 import { Button, Chip, CreatureGlyph, Icon } from '@puzzlebloom/ui';
+import { useTheme } from '@puzzlebloom/ui/theme';
 import { useMemo, useState } from 'react';
-import { useTheme } from '../app/ThemeProvider';
 import { LinkButton } from '../shell/LinkButton';
 
 type ColorKey = 'bg' | 'surface' | 'sky' | 'ink' | 'brand' | 'accent' | 'danger' | 'success';

@@ -29,10 +29,34 @@ describe('the jar', () => {
     state = settle(state);
     for (const b of state.blooms) {
       const r = TIERS[b.tier].radius;
-      expect(b.x - r).toBeGreaterThanOrEqual(-0.5);
-      expect(b.x + r).toBeLessThanOrEqual(JAR.width + 0.5);
-      expect(b.y + r).toBeLessThanOrEqual(JAR.height + 0.5);
+      // The glass, not the stage: the painted jar is inset in the scene, and
+      // creatures used to settle on the flowers around it.
+      expect(b.x - r).toBeGreaterThanOrEqual(JAR.inside.left - 0.5);
+      expect(b.x + r).toBeLessThanOrEqual(JAR.inside.right + 0.5);
+      expect(b.y + r).toBeLessThanOrEqual(JAR.inside.bottom + 0.5);
     }
+  });
+
+  it('a drop aimed at the far left lands on the glass, not on the flowers', () => {
+    // The bug a 13-year-old reviewer found in three minutes: the walls were
+    // the stage, so an edge drop settled on the painted garden around the jar.
+    let state = createBloom(() => 0);
+    state = aim(state, -999);
+    state = drop(state, () => 0);
+    state = settle(state);
+    const b = state.blooms[0];
+    const r = TIERS[b.tier].radius;
+    expect(b.x - r).toBeGreaterThanOrEqual(JAR.inside.left - 0.5);
+    expect(b.x).toBeGreaterThanOrEqual(JAR.mouth.left);
+    expect(b.y + r).toBeLessThanOrEqual(JAR.inside.bottom + 0.5);
+  });
+
+  it('a drop passing the rim does not count as a full jar', () => {
+    let state = createBloom(() => 0);
+    state = aim(state, JAR.mouth.left);
+    state = drop(state, () => 0);
+    for (let i = 0; i < 60; i++) state = step(state);
+    expect(state.over).toBe(false);
   });
 
   it('ends the run when something rests above the rim, not when it bounces', () => {
@@ -111,12 +135,22 @@ describe('the queue', () => {
     expect(counts[0] + counts[1] + counts[2]).toBeGreaterThan(5000 * 0.8);
   });
 
-  it('aims within the walls whatever the pointer asks', () => {
+  it('aims within the painted mouth whatever the pointer asks', () => {
     let state = createBloom(() => 0);
     state = aim(state, -999);
-    expect(state.pending.x).toBeGreaterThanOrEqual(TIERS[state.pending.tier].radius);
+    expect(state.pending.x).toBeGreaterThanOrEqual(JAR.mouth.left + TIERS[state.pending.tier].radius);
     state = aim(state, 9999);
-    expect(state.pending.x).toBeLessThanOrEqual(JAR.width - TIERS[state.pending.tier].radius);
+    expect(state.pending.x).toBeLessThanOrEqual(JAR.mouth.right - TIERS[state.pending.tier].radius);
+  });
+
+  it('re-clamps the next preview when the queue offers a wider tier', () => {
+    let state = createBloom(() => 0);
+    state = aim(state, JAR.mouth.left);
+    state = { ...state, nextTier: 4 };
+    state = drop(state, () => 0);
+    const r = TIERS[state.pending.tier].radius;
+    expect(state.pending.x).toBeGreaterThanOrEqual(JAR.mouth.left + r);
+    expect(state.pending.x).toBeLessThanOrEqual(JAR.mouth.right - r);
   });
 });
 

@@ -14,6 +14,10 @@
  * The callback runs inside `flushSync` because React 19 renders concurrently:
  * without it the browser would snapshot the DOM before the new page exists and
  * the transition would cross-fade a page with itself.
+ *
+ * It lives here rather than in the shell because both callers are now packages:
+ * the theme provider needs it to cross-fade a mood, the router to cross-fade a
+ * page, and a game that changes scene is entitled to the same behaviour.
  */
 
 import { flushSync } from 'react-dom';

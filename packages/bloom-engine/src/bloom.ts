@@ -79,17 +79,41 @@ export const TIERS = [
 
 export const TIER_COUNT = TIERS.length;
 
-/** The jar: a width the walls contain and a depth the floor bounds. */
+/**
+ * The jar, in two rectangles.
+ *
+ * `width`/`height` are the stage — the canvas the art and the renderers share.
+ * The painted jar is smaller than that stage: `jar-scene.webp` frames it with
+ * sky above and flowers around, which is where the drop preview lives and why
+ * a full jar has somewhere to overflow into. Physics must use the glass, not
+ * the stage: an engine that treats the whole stage as the jar drops creatures
+ * onto the flowers and lets a stack grow 140px above the rim before admitting
+ * the jar is full. Both numbers below are measured off the art at 340×440
+ * (`cover`, top-anchored), and the renderers already draw in stage
+ * coordinates, so only the walls and floor move.
+ */
 export interface Jar {
   width: number;
   height: number;
+  /** The opening a drop has to pass through before it is inside. */
+  mouth: { left: number; right: number };
+  /** The glass interior: walls, rim, and the bottom a bloom can rest on. */
+  inside: { left: number; right: number; top: number; bottom: number };
 }
 
-export const JAR: Jar = { width: 340, height: 440 };
+export const JAR: Jar = {
+  width: 340,
+  height: 440,
+  mouth: { left: 104, right: 237 },
+  inside: { left: 88, right: 252, top: 138, bottom: 368 },
+};
 
+/** A bloom released above the rim; high enough to see, low enough to fall fast. */
+const DROP_Y = JAR.inside.top - 46;
 /** Rim tolerance: a bloom must poke this far above for this long to end the run. */
-const OVERFLOW_Y = -8;
 const OVERFLOW_TICKS = 45;
+/** Faster than this and the bloom is still in flight, not resting over the rim. */
+const SETTLED_VY = 2.5;
 /** How fast things fall. Tuned so a full jar settles in about two seconds. */
 const GRAVITY = 0.34;
 /** Velocity damping per tick. Below 1; keeps stacks from jittering forever. */
@@ -129,16 +153,16 @@ export function step(state: BloomState): BloomState {
   const contain = () => {
     for (const b of blooms) {
       const r = TIERS[b.tier].radius;
-      if (b.x - r < 0) {
-        b.x = r;
+      if (b.x - r < JAR.inside.left) {
+        b.x = JAR.inside.left + r;
         b.vx = Math.abs(b.vx) * 0.4;
       }
-      if (b.x + r > JAR.width) {
-        b.x = JAR.width - r;
+      if (b.x + r > JAR.inside.right) {
+        b.x = JAR.inside.right - r;
         b.vx = -Math.abs(b.vx) * 0.4;
       }
-      if (b.y + r > JAR.height) {
-        b.y = JAR.height - r;
+      if (b.y + r > JAR.inside.bottom) {
+        b.y = JAR.inside.bottom - r;
         b.vy = -Math.abs(b.vy) * 0.25;
       }
     }
@@ -232,7 +256,14 @@ export function step(state: BloomState): BloomState {
   // Overflow: the run ends when something rests above the rim. A momentary
   // bounce over the line must not end anything — children drop things.
   let overTick = state.over ? OVERFLOW_TICKS : 0;
-  const anyOver = blooms.some((b) => b.y - TIERS[b.tier].radius < OVERFLOW_Y);
+  // "Resting above the rim" means the top is over the painted rim AND the
+  // bloom is not still falling. The drop starts above the rim on purpose, so
+  // a plain geometric test would call the first 18 ticks of every drop an
+  // overflow; the velocity guard is what keeps a falling creature from
+  // counting as a full jar.
+  const anyOver = blooms.some(
+    (b) => b.y - TIERS[b.tier].radius < JAR.inside.top && Math.abs(b.vy) < SETTLED_VY,
+  );
   overTick = anyOver ? state.quietFor + 1 : 0;
 
   return {
@@ -252,7 +283,7 @@ export function createBloom(seed: () => number = Math.random): BloomState {
   const state: BloomState = {
     blooms: [],
     merges: [],
-    pending: { tier: 0, x: JAR.width / 2, y: 60 },
+    pending: { tier: 0, x: (JAR.mouth.left + JAR.mouth.right) / 2, y: DROP_Y },
     nextTier: randomTier(seed),
     score: 0,
     bestTier: 0,
@@ -277,11 +308,20 @@ export function randomTier(rand: () => number = Math.random): number {
   return 4;
 }
 
-/** Aim: clamp inside the walls minus one radius, whatever the pointer did. */
+/**
+ * Aim: clamp inside the painted mouth minus one radius, whatever the pointer
+ * did. The mouth, not the glass body: a drop enters through the opening, and
+ * a tier-4 creature aimed at the body's wider shoulder would be drawn half
+ * through the neck. Merged creatures may use the full body width later.
+ */
 export function aim(state: BloomState, x: number): BloomState {
-  const r = TIERS[state.pending.tier].radius;
-  const clamped = Math.max(r, Math.min(JAR.width - r, x));
+  const clamped = clampToMouth(state.pending.tier, x);
   return { ...state, pending: { ...state.pending, x: clamped } };
+}
+
+function clampToMouth(tier: number, x: number): number {
+  const r = TIERS[tier].radius;
+  return Math.max(JAR.mouth.left + r, Math.min(JAR.mouth.right - r, x));
 }
 
 /** Release the pending drop: it becomes physics, the queue advances. */
@@ -299,7 +339,13 @@ export function drop(state: BloomState, rand: () => number = Math.random): Bloom
     ...state,
     blooms: [...state.blooms, bloom],
     merges: [],
-    pending: { tier: state.nextTier, x: state.pending.x, y: 60 },
+    // The next tier may be wider than the one just dropped; re-clamp so its
+    // preview never hangs over the neck until the player moves the pointer.
+    pending: {
+      tier: state.nextTier,
+      x: clampToMouth(state.nextTier, state.pending.x),
+      y: DROP_Y,
+    },
     nextTier: randomTier(rand),
     seq: state.seq + 1,
   };

@@ -56,6 +56,34 @@ test.describe('bloom drop', () => {
     expect(problems).toEqual([]);
   });
 
+  test('an edge drop lands inside the painted jar, not on the flowers', async ({ page }) => {
+    const problems = trackProblems(page);
+    await page.goto('/play/bloom/');
+
+    const box = await page.locator('.pb-bloom__stage').boundingBox();
+    expect(box).not.toBeNull();
+    // Aim as far left as the stage allows. The engine clamps to the painted
+    // mouth; before this, the wall was the stage, so the creature settled on
+    // the flowers beside the glass.
+    await page.mouse.move(box!.x + 1, box!.y + 40);
+    await page.mouse.down();
+    await page.mouse.up();
+    await page.waitForTimeout(1200);
+
+    const bloom = page.locator('.pb-bloom__dom-stage .pb-bloom__tier').first();
+    await expect(bloom).toBeVisible();
+    const b = await bloom.boundingBox();
+    expect(b).not.toBeNull();
+    const cx = (b!.x + b!.width / 2 - box!.x) / box!.width;
+    // 104/340 = 0.306 is the left lip of the mouth; a bloom centred left of
+    // that is outside the glass.
+    expect(cx).toBeGreaterThan(0.3);
+    expect(cx).toBeLessThan(0.7);
+    const cy = (b!.y + b!.height / 2 - box!.y) / box!.height;
+    expect(cy).toBeGreaterThan(0.5); // it fell in, rather than sticking in the air
+    expect(problems).toEqual([]);
+  });
+
   test('keyboard can aim and drop (arrows and space)', async ({ page }) => {
     const problems = trackProblems(page);
     await page.goto('/play/bloom/');

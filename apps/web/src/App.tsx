@@ -1,7 +1,7 @@
+import { ThemeProvider } from '@puzzlebloom/ui/theme';
 import { lazy, Suspense, useLayoutEffect } from 'react';
 import { applyHead } from './app/head';
 import { RouterProvider, useRouter } from './app/router';
-import { ThemeProvider } from './app/ThemeProvider';
 import { Home } from './pages/Home';
 import { NotFound } from './pages/NotFound';
 import { Parents } from './pages/Parents';

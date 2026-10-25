@@ -8,6 +8,7 @@
  * behave; only plain left clicks are intercepted.
  */
 
+import { withViewTransition } from '@puzzlebloom/ui/transition';
 import {
   type AnchorHTMLAttributes,
   createContext,
@@ -18,7 +19,6 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { withViewTransition } from './viewTransition';
 
 interface Location {
   path: string;
