@@ -18,12 +18,16 @@ import { trackProblems } from './helpers';
 
 const FLAG_ARGS = ['--enable-blink-features=CanvasDrawElement'];
 
-test('canvas beam: mounts when the API is on, and a round plays through it', async () => {
-  // The suite's shared server serves the built site; this browser is our own.
+test('canvas beam: mounts when the API is on, and a round plays through it', async (// biome-ignore lint/correctness/noEmptyPattern: no fixtures are wanted here, only the TestInfo that carries the suite's origin.
+{}, testInfo) => {
+  // The suite's shared server serves the built site; this browser is our own,
+  // which also means it inherits no origin from the config — so the one the
+  // suite was pointed at has to be handed over explicitly. A port typed here
+  // is how this test passed locally and failed against the deployed site.
   const browser = await chromium.launch({ args: FLAG_ARGS });
-  const page = await browser.newPage();
+  const page = await browser.newPage({ baseURL: testInfo.project.use.baseURL });
   const problems = trackProblems(page);
-  await page.goto('http://127.0.0.1:4173/play/balance/');
+  await page.goto('/play/balance/');
 
   const canvas = page.locator('.pb-bal-canvas__canvas');
   await expect(canvas).toHaveCount(1);
