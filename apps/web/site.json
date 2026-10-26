@@ -8,7 +8,7 @@
   "pages": {
     "/": {
       "title": "PuzzleBloom — calm puzzle games for kids, no ads, no accounts",
-      "description": "Quiet puzzle games for curious kids: sudoku that explains why a number goes where it does, nonogram that turns counting into a picture, an eight-colour theme studio, and no ads or accounts.",
+      "description": "Quiet puzzle games for curious kids: twenty garden puzzles, an eight-colour theme studio, and no ads or accounts. Sudoku that explains why, memory, mazes, sliding tiles, and more — all playable in the browser.",
       "changeFrequency": "monthly",
       "priority": 1
     },
@@ -59,6 +59,78 @@
       "description": "Free memory game for children in the browser. Six, eight or nine pairs of the garden's creatures, face down; a pair that misses stays face up until you turn the next card, so there is nothing to be quick about.",
       "changeFrequency": "monthly",
       "priority": 0.9
+    },
+    "/play/sliding": {
+      "title": "Sliding Garden — a 15-puzzle with creature tiles | PuzzleBloom",
+      "description": "Free sliding puzzle for children. Tap a neighbour of the empty square; the garden's creatures slide until the picture sits still. Three-by-three or four-by-four, no timer.",
+      "changeFrequency": "monthly",
+      "priority": 0.7
+    },
+    "/play/maze": {
+      "title": "Maze Path — find the gate, no enemies | PuzzleBloom",
+      "description": "A little hedge maze for children in the browser. Walk from the open corner to the glowing gate. A hint names the next step if you ask. Nothing here chases you.",
+      "changeFrequency": "monthly",
+      "priority": 0.7
+    },
+    "/play/simon": {
+      "title": "Echo Bloom — watch the petals, tap them back | PuzzleBloom",
+      "description": "A Simon-style sequence of four garden blooms. Watch, then tap the same order. A miss simply replays the same bloom. You can hush the chimes.",
+      "changeFrequency": "monthly",
+      "priority": 0.7
+    },
+    "/play/connect-four": {
+      "title": "Four Flowers — gentle Connect Four | PuzzleBloom",
+      "description": "Drop sun flowers against a kind neighbour's sky flowers. Four in a line, any way, finishes the bed. No timer, no scoreboard of strangers.",
+      "changeFrequency": "monthly",
+      "priority": 0.7
+    },
+    "/play/word-search": {
+      "title": "Word Meadow — find gentle garden words | PuzzleBloom",
+      "description": "A small letter grid of nature words. Tap the first letter, then the last. Across, down or diagonal. No timer, no ads.",
+      "changeFrequency": "monthly",
+      "priority": 0.7
+    },
+    "/play/lights-out": {
+      "title": "Firefly Lights — Lights Out for kids | PuzzleBloom",
+      "description": "Tap a firefly and it and its neighbours swap light for dark. Every puzzle can be put out. A quiet garden is the whole aim.",
+      "changeFrequency": "monthly",
+      "priority": 0.7
+    },
+    "/play/peg": {
+      "title": "Peg Pond — hop solitaire on lily pads | PuzzleBloom",
+      "description": "English-board peg solitaire grown as seeds on lily pads. Hop a seed over a seed onto an empty pad. Undo is always allowed.",
+      "changeFrequency": "monthly",
+      "priority": 0.7
+    },
+    "/play/flow": {
+      "title": "Flow Paths — join matching colours | PuzzleBloom",
+      "description": "Numberlink for children: draw colour paths that must not cross, until the garden is filled. Drag with a finger; lift to stop.",
+      "changeFrequency": "monthly",
+      "priority": 0.7
+    },
+    "/play/tic-tac": {
+      "title": "Tri-marks — tic-tac-toe with garden creatures | PuzzleBloom",
+      "description": "Three creatures in a line against a kind neighbour. You are the sun; they are the sky. They play well, but not perfectly.",
+      "changeFrequency": "monthly",
+      "priority": 0.7
+    },
+    "/play/bloom-guess": {
+      "title": "Bloom Guess — a garden word, petals not gallows | PuzzleBloom",
+      "description": "Guess a nature word, letter by letter. Hits fill the word; misses shed a petal. Six petals, no hanging imagery, no shame.",
+      "changeFrequency": "monthly",
+      "priority": 0.7
+    },
+    "/play/reversi": {
+      "title": "Lily Pads — Reversi on a quiet pond | PuzzleBloom",
+      "description": "Place a sun stone so it traps sky stones in a line; they flip. A greedy neighbour plays the sky. No multiplayer, no strangers.",
+      "changeFrequency": "monthly",
+      "priority": 0.7
+    },
+    "/play/jigsaw": {
+      "title": "Piece Garden — a simple jigsaw of a garden | PuzzleBloom",
+      "description": "A little garden drawing cut into four, nine or sixteen pieces. Tap two to swap them. When every piece sits home, the picture is whole.",
+      "changeFrequency": "monthly",
+      "priority": 0.7
     },
     "/themes": {
       "title": "Theme studio — make the puzzle yours | PuzzleBloom",

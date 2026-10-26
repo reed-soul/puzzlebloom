@@ -1,0 +1,24 @@
+{
+  "name": "@puzzlebloom/word-search-engine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Word Meadow engine: places nature words on a small grid.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./raw/*": "./src/*"
+  },
+  "files": [
+    "src",
+    "tests"
+  ],
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "vitest": "^5.0.5"
+  }
+}

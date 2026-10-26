@@ -75,3 +75,106 @@ from a third party, which is why the site's CSP has no external host to allow.
 **What the licence asks.** The files may not be sold on their own, and any
 derivative must not use the reserved font names. We do not modify or rename
 them, and the full OFL text sits next to the binaries.
+
+## Overnight garden ports (MIT engines, original shells)
+
+Twelve more games landed as clean-room TypeScript engines. Each one follows
+classic public-domain rules; the overnight references below are MIT, and we
+took the algorithm, not the interface. PuzzleBloom's boards, copy, theme tokens
+and creature art are original. None of these games ship a gallows, a timer that
+shames, ads, chat, or a multiplayer server.
+
+### Sliding Garden — 15-puzzle
+
+- Source: https://github.com/react-puzzle-games/15-puzzle
+- License: MIT
+- **What we took.** The idea of scrambling by walking the empty square so every
+  deal is solvable. Not the MUI shell.
+- **What we wrote.** `packages/sliding-engine` and `games/sliding`.
+
+### Maze Path — recursive-backtracker hedges
+
+- Source: https://github.com/codebox/mazes
+- License: MIT
+- **What we took.** The depth-first carve (a grid of cells with four walls,
+  carved until every cell is reachable). Not the viewer.
+- **What we wrote.** `packages/maze-engine` and `games/maze`.
+
+### Echo Bloom — Simon sequences
+
+- Source: https://github.com/TheWilley/Simon
+- License: MIT
+- **What we took.** Sequence growth and "listen, then copy". Miss handling is
+  ours: the same bloom is replayed, with no fail-shame.
+- **What we wrote.** `packages/simon-engine` and `games/simon`.
+
+### Four Flowers — Connect Four
+
+- Source: https://github.com/jotaen/connect4-ai
+- License: MIT
+- **What we took.** Gravity, four-in-a-line scanning, vs-CPU only. The CPU is
+  deliberately soft (win, block, then centre) rather than the full minimax.
+- **What we wrote.** `packages/connect-four-engine` and `games/connect-four`.
+
+### Word Meadow — word search
+
+- Source: https://github.com/vzsoares/Word-Search-Puzzle-REACT
+- License: MIT
+- **What we took.** Place a word along a vector, fill the rest with letters.
+  The word list is a garden list (nature, animals, colours), not theirs.
+- **What we wrote.** `packages/word-search-engine` and `games/word-search`.
+
+### Firefly Lights — Lights Out
+
+- Source: https://github.com/ScriptRaccoon/Lights-Out-Vanilla-JavaScript
+- License: MIT
+- **What we took.** Plus-shaped toggles (a cell and its four neighbours).
+  Puzzles are carved from a dark board so every deal is solvable.
+- **What we wrote.** `packages/lights-out-engine` and `games/lights-out`.
+
+### Peg Pond — English peg solitaire
+
+- Source: https://github.com/ggades/peg-solitaire
+- License: MIT
+- **What we took.** Hop geometry and undo. The board is a 7×7 with the four
+  2×2 corners removed; the copy talks of seeds on lily pads.
+- **What we wrote.** `packages/peg-engine` and `games/peg`.
+
+### Flow Paths — Numberlink / Flow
+
+- Source: https://github.com/Menna107/Simple-Games (flow-free.html)
+- License: MIT
+- **What we took.** Drag from a terminal along empty cells; paths may not
+  cross. Puzzles are hand-authored fillings, so every deal is solvable.
+- **What we wrote.** `packages/flow-engine` and `games/flow`.
+
+### Tri-marks — tic-tac-toe
+
+- Source: https://github.com/awkaiser/react-tictactoe
+- License: MIT
+- **What we took.** Win lines, open-space enumeration and minimax. Softness is
+  ours: one time in three the neighbour picks a random legal mark.
+- **What we wrote.** `packages/tic-tac-engine` and `games/tic-tac`.
+
+### Bloom Guess — word guess, no gallows
+
+- Source: https://github.com/naimz82/simple-hangman
+- License: MIT
+- **What we took.** Masked word, alphabet, lives. Imagery is ours: six petals,
+  never a hanging figure, and a kid nature dictionary.
+- **What we wrote.** `packages/bloom-guess-engine` and `games/bloom-guess`.
+
+### Lily Pads — Reversi / Othello
+
+- Source: https://github.com/felipeap92/othello-game
+- License: MIT
+- **What we took.** Flip-along-rays. The multiplayer server was dropped; a
+  greedy max-flips neighbour plays the sky stones.
+- **What we wrote.** `packages/reversi-engine` and `games/reversi`.
+
+### Piece Garden — permutation jigsaw
+
+- License: original (clean-room). No third-party engine is lifted: kid-safe
+  garden art is the bottleneck on MIT jigsaw ports, so the picture is an SVG
+  scene sliced by `viewBox`.
+- **What we wrote.** `packages/jigsaw-engine` and `games/jigsaw`.

@@ -1,0 +1,29 @@
+{
+  "name": "@puzzlebloom/game-simon",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Echo Bloom for PuzzleBloom: growing petal sequences, miss replays the same bloom.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./manifest": "./src/manifest.ts",
+    "./simon.css": "./src/simon.css"
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@puzzlebloom/simon-engine": "workspace:*",
+    "@puzzlebloom/ui": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@puzzlebloom/game-sudoku": "workspace:*",
+    "@types/react": "^19.3.0",
+    "react": "^19.0.0"
+  }
+}

@@ -1,0 +1,223 @@
+/**
+ * Piece Garden screen. Shell is scoped under .pb-piece so this chunk never
+ * fights another game's `.pb-play` rules if both happen to be in the document.
+ */
+
+.pb-piece {
+  width: min(100%, var(--pb-page));
+  margin: 0 auto;
+  padding: clamp(0.75rem, 2vw, 1.5rem) clamp(0.75rem, 3vw, 2rem) 7rem;
+}
+
+.pb-piece .pb-play__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.pb-piece .pb-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: var(--pb-r-pill);
+  border: 1.5px solid var(--pb-line);
+  background: var(--pb-surface);
+  color: var(--pb-ink);
+  cursor: pointer;
+}
+
+.pb-piece .pb-back:hover {
+  background: var(--pb-surface-2);
+}
+
+.pb-piece .pb-play__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.pb-piece .pb-play__level {
+  font-family: var(--pb-font-display);
+  font-size: var(--pb-fs-lg);
+  font-weight: 600;
+}
+
+.pb-piece .pb-play__clock {
+  margin-left: auto;
+  color: var(--pb-ink-soft);
+  font-size: var(--pb-fs-sm);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.pb-piece .pb-play__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(200px, 280px);
+  gap: clamp(1rem, 2.5vw, 2rem);
+  align-items: start;
+}
+
+.pb-piece .pb-play__side {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.pb-piece .pb-calm-note {
+  margin: 0;
+  color: var(--pb-ink-soft);
+  font-size: var(--pb-fs-sm);
+  line-height: 1.55;
+}
+
+.pb-piece .pb-win {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: color-mix(in oklab, var(--pb-ink) 52%, transparent);
+}
+
+.pb-piece .pb-win__card {
+  width: min(420px, 100%);
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+  padding: 1.8rem 1.5rem 1.5rem;
+  text-align: center;
+  background: var(--pb-surface);
+  border: 2px solid var(--pb-line-strong);
+  border-radius: var(--pb-r-xl);
+  box-shadow: 0 8px 0 color-mix(in oklab, var(--pb-ink) 22%, transparent);
+}
+
+.pb-piece .pb-win__title {
+  margin: 0;
+  font-size: var(--pb-fs-xl);
+}
+
+.pb-piece .pb-win__sub {
+  margin: 0;
+  color: var(--pb-ink-soft);
+  font-size: var(--pb-fs-sm);
+}
+
+.pb-piece .pb-win__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 0.4rem;
+}
+
+.pb-piece-board {
+  display: grid;
+  width: min(100%, 440px);
+  margin-inline: auto;
+  aspect-ratio: 1;
+  gap: 6px;
+  padding: 10px;
+  border: 3px solid var(--pb-line);
+  border-radius: var(--pb-r-lg);
+  background: var(--pb-surface);
+  box-shadow: var(--pb-lift-1);
+  touch-action: manipulation;
+}
+
+.pb-piece-cell {
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 12px;
+  background: var(--pb-surface-2);
+  color: var(--pb-ink);
+  cursor: pointer;
+  font-family: var(--pb-font-display);
+  font-size: clamp(1rem, 4vw, 1.4rem);
+  font-weight: 700;
+}
+
+.pb-piece-cell:hover {
+  background: var(--pb-surface-3);
+}
+
+.pb-piece-cell.is-on {
+  background: color-mix(in oklab, var(--pb-accent) 55%, var(--pb-surface));
+}
+
+.pb-piece-cell.is-empty {
+  background: transparent;
+  cursor: default;
+}
+
+.pb-piece-cell.is-here {
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pb-brand) 40%, transparent);
+}
+
+.pb-piece-cell.is-goal {
+  background: color-mix(in oklab, var(--pb-brand) 22%, var(--pb-surface));
+}
+
+.pb-piece-cell.is-selected {
+  outline: 3px solid var(--pb-brand);
+}
+
+.pb-piece-cell.is-found {
+  background: color-mix(in oklab, var(--pb-brand) 28%, var(--pb-surface));
+}
+
+.pb-piece-cell.is-path {
+  background: color-mix(in oklab, var(--pb-brand) 35%, var(--pb-surface));
+}
+
+.pb-piece-cell.is-wall {
+  background: color-mix(in oklab, var(--pb-ink) 18%, var(--pb-bg));
+  cursor: default;
+}
+
+.pb-piece-cell:disabled {
+  cursor: default;
+}
+
+@media (max-width: 900px) {
+  .pb-piece .pb-play__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.pb-piece-board {
+  display: grid;
+  width: min(100%, 420px);
+  margin-inline: auto;
+  aspect-ratio: 1;
+  grid-auto-rows: 1fr;
+  gap: 4px;
+  padding: 8px;
+  border-radius: var(--pb-r-lg);
+  background: var(--pb-surface);
+  box-shadow: var(--pb-lift-1);
+}
+.pb-piece-slot {
+  border: 0;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  cursor: pointer;
+  background: var(--pb-sky-soft);
+}
+.pb-piece-slot.is-selected {
+  outline: 3px solid var(--pb-brand);
+}
+.pb-piece-slot svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}

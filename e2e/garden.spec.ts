@@ -6,7 +6,7 @@ test.describe('the garden', () => {
     const problems = trackProblems(page);
     await page.goto('/');
 
-    await expect(page.getByRole('heading', { level: 1 })).toContainText('Eight games. No ads. Play now.');
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Twenty games. No ads. Play now.');
 
     // The first screen is a shelf, not a brochure: three pressable things, in
     // the order a person should meet them. Bloom Drop is first because it is
@@ -19,10 +19,10 @@ test.describe('the garden', () => {
     await expect(doors.first()).toContainText('Start here');
     await expect(doors.first()).toContainText('Play now');
 
-    // The other five keep their doors, at a quieter weight. Sudoku is no longer
-    // the hero offer, but its card — and its board — is still pressable.
+    // The rest of the garden keeps its doors, at a quieter weight. Sudoku is no
+    // longer the hero offer, but its card — and its board — is still pressable.
     const others = page.locator('.pb-mini-card');
-    await expect(others).toHaveCount(5);
+    await expect(others).toHaveCount(17);
     const otherHrefs = await others.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('href')));
     // The register's order, minus the three that already have a door above.
     expect(otherHrefs).toEqual([
@@ -31,15 +31,27 @@ test.describe('the garden', () => {
       '/play/tangram/',
       '/play/frog-road/',
       '/play/shadows/',
+      '/play/sliding/',
+      '/play/maze/',
+      '/play/simon/',
+      '/play/connect-four/',
+      '/play/word-search/',
+      '/play/lights-out/',
+      '/play/peg/',
+      '/play/flow/',
+      '/play/tic-tac/',
+      '/play/bloom-guess/',
+      '/play/reversi/',
+      '/play/jigsaw/',
     ]);
 
     // Every game is a real link at one weight or the other, and nothing dead is
     // left on the shelf. Both lists are counted rather than a single typed
-    // total, so a ninth game added to `GAMES` has to show up in one of them.
-    expect(doorHrefs.length + otherHrefs.length).toBe(8);
-    await expect(page.locator('.pb-door')).toHaveCount(8);
+    // total, so a twenty-first game added to `GAMES` has to show up in one of them.
+    expect(doorHrefs.length + otherHrefs.length).toBe(20);
+    await expect(page.locator('.pb-door')).toHaveCount(20);
     await expect(page.locator('[aria-disabled]')).toHaveCount(0);
-    await expect(page.locator('.pb-others')).toContainText('8 games, all playable');
+    await expect(page.locator('.pb-others')).toContainText('20 games, all playable');
 
     expect(problems).toEqual([]);
   });
@@ -78,7 +90,7 @@ test.describe('the garden', () => {
     const problems = trackProblems(page);
 
     for (const [path, heading] of [
-      ['/', 'Eight games. No ads. Play now.'],
+      ['/', 'Twenty games. No ads. Play now.'],
       ['/themes', 'Make it yours'],
       ['/parents', 'What this is, and what it refuses to be'],
     ] as const) {
