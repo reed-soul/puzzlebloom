@@ -43,7 +43,7 @@ const TRUST: Array<{ icon: IconName; title: string; body: string }> = [
  * Named here rather than added to the register's order: the register is the
  * shelf's order and every card is equal on it, which is exactly what the first
  * screen must not be. A manifest missing from this list falls through to "the
- * other four" rather than disappearing.
+ * rest of the garden" rather than disappearing.
  */
 const FIRST = ['bloom', 'memory-garden', 'balance'] as const;
 
@@ -174,8 +174,8 @@ function RoadArt() {
  *
  * Unused by the current first screen — Bloom is one of the three doors and
  * wears `BloomLoop` instead. Kept because `FIRST` is only a preference: a
- * manifest that falls out of it lands in "the other five", and it should not
- * arrive there with an empty box where its drawing used to be.
+ * manifest that falls out of it lands in "the rest of the garden", and it should
+ * not arrive there with an empty box where its drawing used to be.
  */
 function BloomsArt() {
   return (
@@ -240,6 +240,160 @@ function ShadowsArt() {
   );
 }
 
+function SlidingArt() {
+  return (
+    <div className="pb-card__art-sliding" aria-hidden="true">
+      {Array.from({ length: 9 }, (_, index) => (
+        // biome-ignore lint/suspicious/noArrayIndexKey: fixed 3×3 thumbnail, nothing reorders
+        <span key={index} className={index === 8 ? 'is-empty' : ''} />
+      ))}
+    </div>
+  );
+}
+
+function MazeArt() {
+  return (
+    <div className="pb-card__art-maze" aria-hidden="true">
+      <span className="is-here" />
+      <span />
+      <span />
+      <span className="is-path" />
+      <span className="is-path" />
+      <span className="is-path" />
+      <span />
+      <span />
+      <span className="is-gate" />
+    </div>
+  );
+}
+
+function EchoArt() {
+  return (
+    <div className="pb-card__art-echo" aria-hidden="true">
+      <span className="is-a is-lit" />
+      <span className="is-b" />
+      <span className="is-c" />
+      <span className="is-d" />
+    </div>
+  );
+}
+
+function FlowersArt() {
+  return (
+    <div className="pb-card__art-flowers" aria-hidden="true">
+      {Array.from({ length: 12 }, (_, index) => (
+        // biome-ignore lint/suspicious/noArrayIndexKey: fixed four-by-three bed
+        <span key={index} className={index === 9 ? 'is-sun' : index === 5 ? 'is-moon' : ''} />
+      ))}
+    </div>
+  );
+}
+
+function WordsArt() {
+  return (
+    <div className="pb-card__art-words" aria-hidden="true">
+      {['L', 'E', 'A', 'F', '·', 'S', 'U', 'N', '·'].map((ch, index) => (
+        // biome-ignore lint/suspicious/noArrayIndexKey: fixed letter thumbnail
+        <span key={index} className={ch === '·' ? 'is-quiet' : 'is-lit'}>
+          {ch === '·' ? '' : ch}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function FirefliesArt() {
+  return (
+    <div className="pb-card__art-fireflies" aria-hidden="true">
+      {Array.from({ length: 9 }, (_, index) => (
+        // biome-ignore lint/suspicious/noArrayIndexKey: fixed 3×3 thumbnail
+        <span key={index} className={[0, 2, 4, 6, 8].includes(index) ? 'is-on' : ''} />
+      ))}
+    </div>
+  );
+}
+
+function PegsArt() {
+  return (
+    <div className="pb-card__art-pegs" aria-hidden="true">
+      {Array.from({ length: 9 }, (_, index) => {
+        const on = ![0, 2, 6, 8].includes(index);
+        const empty = index === 4;
+        return (
+          // biome-ignore lint/suspicious/noArrayIndexKey: fixed English-board thumbnail
+          <span key={index} className={empty ? 'is-empty' : on ? 'is-seed' : 'is-off'} />
+        );
+      })}
+    </div>
+  );
+}
+
+function FlowArt() {
+  return (
+    <div className="pb-card__art-flow" aria-hidden="true">
+      <span className="is-a" />
+      <span className="is-a" />
+      <span className="is-b" />
+      <span className="is-a" />
+      <span />
+      <span className="is-b" />
+      <span className="is-c" />
+      <span className="is-c" />
+      <span className="is-b" />
+    </div>
+  );
+}
+
+function MarksArt() {
+  return (
+    <div className="pb-card__art-marks" aria-hidden="true">
+      <span className="is-sun" />
+      <span className="is-moon" />
+      <span />
+      <span className="is-moon" />
+      <span className="is-sun" />
+      <span />
+      <span />
+      <span />
+      <span className="is-sun" />
+    </div>
+  );
+}
+
+function GuessArt() {
+  return (
+    <div className="pb-card__art-guess" aria-hidden="true">
+      <span />
+      <span />
+      <span className="is-gone" />
+      <span />
+      <span className="is-gone" />
+    </div>
+  );
+}
+
+function LiliesArt() {
+  return (
+    <div className="pb-card__art-lilies" aria-hidden="true">
+      <span className="is-sun" />
+      <span className="is-moon" />
+      <span className="is-moon" />
+      <span className="is-sun" />
+    </div>
+  );
+}
+
+function PiecesArt() {
+  return (
+    <div className="pb-card__art-pieces" aria-hidden="true">
+      <span className="is-a" />
+      <span className="is-b" />
+      <span className="is-c" />
+      <span className="is-d" />
+    </div>
+  );
+}
+
 function Art({ game }: { game: GameManifest }) {
   return (
     <div className={`pb-card__art pb-card__art--${game.tone}`} aria-hidden="true">
@@ -250,13 +404,25 @@ function Art({ game }: { game: GameManifest }) {
       {game.art === 'road' ? <RoadArt /> : null}
       {game.art === 'blooms' ? <BloomsArt /> : null}
       {game.art === 'shadows' ? <ShadowsArt /> : null}
+      {game.art === 'sliding' ? <SlidingArt /> : null}
+      {game.art === 'maze' ? <MazeArt /> : null}
+      {game.art === 'echo' ? <EchoArt /> : null}
+      {game.art === 'flowers' ? <FlowersArt /> : null}
+      {game.art === 'words' ? <WordsArt /> : null}
+      {game.art === 'fireflies' ? <FirefliesArt /> : null}
+      {game.art === 'pegs' ? <PegsArt /> : null}
+      {game.art === 'flow' ? <FlowArt /> : null}
+      {game.art === 'marks' ? <MarksArt /> : null}
+      {game.art === 'guess' ? <GuessArt /> : null}
+      {game.art === 'lilies' ? <LiliesArt /> : null}
+      {game.art === 'pieces' ? <PiecesArt /> : null}
       {game.art === 'creatures' || !game.art ? <CreaturesArt /> : null}
     </div>
   );
 }
 
 /**
- * Sudoku's own little board, for its card in "the other four".
+ * Sudoku's own little board, for its card in "the rest of the garden".
  *
  * The old front page put the big board in the hero and it was the best drawing
  * on the site — and completely dead. Here the same valid grid is small, inside a
@@ -398,7 +564,7 @@ export function Home() {
         <div className="pb-intro__copy">
           <p className="pb-intro__eyebrow">No ads · no sign-up · nothing to lose</p>
           <h1 id="intro-title" className="pb-intro__title">
-            Eight games. No ads. <span>Play now.</span>
+            Twenty games. No ads. <span>Play now.</span>
           </h1>
           <p className="pb-intro__lede">
             Bloom Drop is the fastest to get: drop two of the same creature and they become one bigger friend.
@@ -425,7 +591,7 @@ export function Home() {
 
       <section className="pb-others" aria-labelledby="others-title">
         <div className="pb-launch__head">
-          <h2 id="others-title">The other five</h2>
+          <h2 id="others-title">The rest of the garden</h2>
           <p>
             {GAMES.length} games, all playable. Nothing here is “coming soon”; the garden is full for now.
           </p>

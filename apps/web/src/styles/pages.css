@@ -850,6 +850,248 @@
   background: color-mix(in oklab, var(--pb-brand) 42%, var(--pb-accent) 16%, var(--pb-surface));
 }
 
+.pb-card__art-sliding,
+.pb-card__art-maze,
+.pb-card__art-fireflies,
+.pb-card__art-pegs,
+.pb-card__art-flow,
+.pb-card__art-marks,
+.pb-card__art-words {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  width: 84px;
+  aspect-ratio: 1;
+}
+
+.pb-card__art-sliding span,
+.pb-card__art-maze span,
+.pb-card__art-fireflies span,
+.pb-card__art-pegs span,
+.pb-card__art-flow span,
+.pb-card__art-marks span,
+.pb-card__art-words span {
+  border-radius: 5px;
+  background: color-mix(in oklab, var(--pb-ink) 10%, transparent);
+}
+
+.pb-card__art-sliding span:not(.is-empty) {
+  background: color-mix(in oklab, var(--pb-brand) 48%, var(--pb-surface));
+}
+
+.pb-card__art-sliding .is-empty {
+  background: transparent;
+}
+
+.pb-card__art-maze .is-path {
+  background: color-mix(in oklab, var(--pb-brand) 28%, var(--pb-surface));
+}
+
+.pb-card__art-maze .is-here {
+  background: var(--pb-accent);
+}
+
+.pb-card__art-maze .is-gate {
+  background: var(--pb-brand);
+}
+
+.pb-card__art-echo {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  width: 72px;
+  aspect-ratio: 1;
+}
+
+.pb-card__art-echo span {
+  border-radius: 50%;
+}
+
+.pb-card__art-echo .is-a {
+  background: color-mix(in oklab, var(--pb-brand) 70%, var(--pb-surface));
+}
+
+.pb-card__art-echo .is-b {
+  background: color-mix(in oklab, var(--pb-accent) 70%, var(--pb-surface));
+}
+
+.pb-card__art-echo .is-c {
+  background: color-mix(in oklab, var(--pb-sky) 70%, var(--pb-surface));
+}
+
+.pb-card__art-echo .is-d {
+  background: color-mix(in oklab, var(--pb-success) 60%, var(--pb-surface));
+}
+
+.pb-card__art-echo .is-lit {
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pb-accent) 45%, transparent);
+}
+
+.pb-card__art-flowers {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 3px;
+  width: 88px;
+  aspect-ratio: 4 / 3;
+}
+
+.pb-card__art-flowers span {
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--pb-ink) 8%, transparent);
+}
+
+.pb-card__art-flowers .is-sun {
+  background: color-mix(in oklab, var(--pb-accent) 72%, var(--pb-surface));
+}
+
+.pb-card__art-flowers .is-moon {
+  background: color-mix(in oklab, var(--pb-sky) 72%, var(--pb-surface));
+}
+
+.pb-card__art-words span {
+  display: grid;
+  place-items: center;
+  font-family: var(--pb-font-display);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.pb-card__art-words .is-lit {
+  background: color-mix(in oklab, var(--pb-brand) 32%, var(--pb-surface));
+  color: var(--pb-ink);
+}
+
+.pb-card__art-fireflies span {
+  border-radius: 50%;
+}
+
+.pb-card__art-fireflies .is-on {
+  background: color-mix(in oklab, var(--pb-accent) 70%, var(--pb-surface));
+  box-shadow: 0 0 6px color-mix(in oklab, var(--pb-accent) 50%, transparent);
+}
+
+.pb-card__art-pegs span {
+  border-radius: 50%;
+}
+
+.pb-card__art-pegs .is-seed {
+  background: color-mix(in oklab, var(--pb-brand) 55%, var(--pb-accent));
+}
+
+.pb-card__art-pegs .is-empty {
+  background: var(--pb-sunken);
+  box-shadow: inset 0 0 0 1.5px color-mix(in oklab, var(--pb-ink) 14%, transparent);
+}
+
+.pb-card__art-pegs .is-off {
+  visibility: hidden;
+}
+
+.pb-card__art-flow .is-a {
+  background: color-mix(in oklab, var(--pb-brand) 70%, var(--pb-surface));
+}
+
+.pb-card__art-flow .is-b {
+  background: color-mix(in oklab, var(--pb-accent) 70%, var(--pb-surface));
+}
+
+.pb-card__art-flow .is-c {
+  background: color-mix(in oklab, var(--pb-sky) 70%, var(--pb-surface));
+}
+
+.pb-card__art-marks .is-sun {
+  background: color-mix(in oklab, var(--pb-accent) 70%, var(--pb-surface));
+  border-radius: 50%;
+}
+
+.pb-card__art-marks .is-moon {
+  background: color-mix(in oklab, var(--pb-sky) 70%, var(--pb-surface));
+  border-radius: 8px;
+}
+
+.pb-card__art-guess {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 4px;
+  align-items: flex-end;
+  height: 42px;
+}
+
+.pb-card__art-guess span {
+  width: 12px;
+  height: 28px;
+  border-radius: 50% 50% 40% 40%;
+  background: color-mix(in oklab, var(--pb-accent) 70%, var(--pb-surface));
+}
+
+.pb-card__art-guess .is-gone {
+  height: 16px;
+  opacity: 0.35;
+  background: var(--pb-line);
+}
+
+.pb-card__art-lilies {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  width: 64px;
+  aspect-ratio: 1;
+  padding: 6px;
+  border-radius: 10px;
+  background: color-mix(in oklab, var(--pb-brand) 28%, var(--pb-surface));
+}
+
+.pb-card__art-lilies span {
+  border-radius: 50%;
+}
+
+.pb-card__art-lilies .is-sun {
+  background: color-mix(in oklab, var(--pb-accent) 80%, var(--pb-surface));
+}
+
+.pb-card__art-lilies .is-moon {
+  background: color-mix(in oklab, var(--pb-ink) 70%, var(--pb-sky));
+}
+
+.pb-card__art-pieces {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+  width: 72px;
+  aspect-ratio: 1;
+}
+
+.pb-card__art-pieces span {
+  border-radius: 4px;
+}
+
+.pb-card__art-pieces .is-a {
+  background: color-mix(in oklab, var(--pb-sky) 55%, var(--pb-surface));
+}
+
+.pb-card__art-pieces .is-b {
+  background: color-mix(in oklab, var(--pb-accent) 55%, var(--pb-surface));
+}
+
+.pb-card__art-pieces .is-c {
+  background: color-mix(in oklab, var(--pb-brand) 55%, var(--pb-surface));
+}
+
+.pb-card__art-pieces .is-d {
+  background: color-mix(in oklab, var(--pb-success) 45%, var(--pb-surface));
+}
+
 /* ================================================================== *
  * agy's front page
  *
@@ -915,7 +1157,7 @@
 }
 
 /* The offer on the second line, not buried at the end of the first. At this
-   size "Eight games. No ads." is already a full line on a phone. */
+   size "Twenty games. No ads." is already a full line on a phone. */
 .pb-intro__title span {
   display: block;
   color: var(--pb-brand);
@@ -1564,7 +1806,7 @@
   }
 }
 
-/* ---------------- the other five ---------------- */
+/* ---------------- the rest of the garden ---------------- */
 
 .pb-others__grid {
   display: grid;
@@ -1620,7 +1862,19 @@
 .pb-mini-card__art .pb-card__art-triangles,
 .pb-mini-card__art .pb-card__art-pairs,
 .pb-mini-card__art .pb-card__art-balance,
-.pb-mini-card__art .pb-card__art-road {
+.pb-mini-card__art .pb-card__art-road,
+.pb-mini-card__art .pb-card__art-sliding,
+.pb-mini-card__art .pb-card__art-maze,
+.pb-mini-card__art .pb-card__art-echo,
+.pb-mini-card__art .pb-card__art-flowers,
+.pb-mini-card__art .pb-card__art-words,
+.pb-mini-card__art .pb-card__art-fireflies,
+.pb-mini-card__art .pb-card__art-pegs,
+.pb-mini-card__art .pb-card__art-flow,
+.pb-mini-card__art .pb-card__art-marks,
+.pb-mini-card__art .pb-card__art-guess,
+.pb-mini-card__art .pb-card__art-lilies,
+.pb-mini-card__art .pb-card__art-pieces {
   scale: 0.62;
 }
 
@@ -1732,9 +1986,9 @@
 
 /* ---------------- between the phone and a wide desktop ---------------- */
 
-/* Five in one row needs about 900px of page before the title column under each
-   drawing gets too narrow to hold a word. Below that the row becomes three,
-   which leaves a 3 + 2 block rather than a stranded card. */
+/* Seventeen quiet cards. Five in one row needs about 900px of page before the
+   title column under each drawing gets too narrow to hold a word. Below that
+   the row becomes three, wrapping rather than shrinking the letters. */
 @media (max-width: 980px) {
   .pb-others__grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1886,9 +2140,9 @@
     display: none;
   }
 
-  /* Five cards over two columns leaves the fifth alone in a row of one. It
-     takes the whole width and goes back to the row layout the desktop card
-     uses, rather than stretching its drawing into a wide, short banner. */
+  /* An odd last card over two columns sits alone in a row of one. It takes
+     the whole width and goes back to the row layout the desktop card uses,
+     rather than stretching its drawing into a wide, short banner. */
   .pb-others__grid > .pb-mini-card:last-child:nth-child(odd) {
     grid-column: 1 / -1;
     flex-direction: row;

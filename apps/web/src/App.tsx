@@ -1,7 +1,8 @@
 import { ThemeProvider } from '@puzzlebloom/ui/theme';
-import { lazy, Suspense, useLayoutEffect } from 'react';
+import { type ComponentType, type LazyExoticComponent, lazy, Suspense, useLayoutEffect } from 'react';
 import { applyHead } from './app/head';
 import { RouterProvider, useRouter } from './app/router';
+import { GAMES } from './games/registry';
 import { Home } from './pages/Home';
 import { NotFound } from './pages/NotFound';
 import { Parents } from './pages/Parents';
@@ -13,49 +14,70 @@ import './styles/shell.css';
 import './styles/pages.css';
 import './styles/studio.css';
 
+type GamePage = LazyExoticComponent<ComponentType<{ onExit?: () => void }>>;
+
 // Each game is a heavy chunk of its own. The garden paints without any of them.
-const SudokuGame = lazy(() =>
-  import('@puzzlebloom/game-sudoku').then((module) => ({ default: module.SudokuGame })),
-);
-const NonogramGame = lazy(() =>
-  import('@puzzlebloom/game-nonogram').then((module) => ({ default: module.NonogramGame })),
-);
-const TangramGame = lazy(() =>
-  import('@puzzlebloom/game-tangram').then((module) => ({ default: module.TangramGame })),
-);
-const MemoryGarden = lazy(() =>
-  import('@puzzlebloom/game-memory-garden').then((module) => ({ default: module.MemoryGame })),
-);
-const BalanceGame = lazy(() =>
-  import('@puzzlebloom/game-balance').then((module) => ({ default: module.BalanceGame })),
-);
-const FrogRoadGame = lazy(() =>
-  import('@puzzlebloom/game-frog-road').then((module) => ({ default: module.FrogRoadGame })),
-);
-const BloomGame = lazy(() =>
-  import('@puzzlebloom/game-bloom').then((module) => ({ default: module.BloomGame })),
-);
-// The only chunk in the site that carries a renderer of its own: three.js is
-// ~150 kB gzipped and lands here, in this lazy chunk, and nowhere else.
-const ShadowsGame = lazy(() =>
-  import('@puzzlebloom/game-shadows').then((module) => ({ default: module.ShadowsGame })),
-);
+const GAME_PAGES: Record<string, GamePage> = {
+  sudoku: lazy(() => import('@puzzlebloom/game-sudoku').then((m) => ({ default: m.SudokuGame }))),
+  nonogram: lazy(() => import('@puzzlebloom/game-nonogram').then((m) => ({ default: m.NonogramGame }))),
+  tangram: lazy(() => import('@puzzlebloom/game-tangram').then((m) => ({ default: m.TangramGame }))),
+  'memory-garden': lazy(() =>
+    import('@puzzlebloom/game-memory-garden').then((m) => ({ default: m.MemoryGame })),
+  ),
+  balance: lazy(() => import('@puzzlebloom/game-balance').then((m) => ({ default: m.BalanceGame }))),
+  'frog-road': lazy(() => import('@puzzlebloom/game-frog-road').then((m) => ({ default: m.FrogRoadGame }))),
+  bloom: lazy(() => import('@puzzlebloom/game-bloom').then((m) => ({ default: m.BloomGame }))),
+  // The only chunk in the site that carries a renderer of its own: three.js is
+  // ~150 kB gzipped and lands here, in this lazy chunk, and nowhere else.
+  shadows: lazy(() => import('@puzzlebloom/game-shadows').then((m) => ({ default: m.ShadowsGame }))),
+  sliding: lazy(() => import('@puzzlebloom/game-sliding').then((m) => ({ default: m.SlidingGame }))),
+  maze: lazy(() => import('@puzzlebloom/game-maze').then((m) => ({ default: m.MazeGame }))),
+  simon: lazy(() => import('@puzzlebloom/game-simon').then((m) => ({ default: m.EchoBloomGame }))),
+  'connect-four': lazy(() =>
+    import('@puzzlebloom/game-connect-four').then((m) => ({ default: m.FourFlowersGame })),
+  ),
+  'word-search': lazy(() =>
+    import('@puzzlebloom/game-word-search').then((m) => ({ default: m.WordMeadowGame })),
+  ),
+  'lights-out': lazy(() => import('@puzzlebloom/game-lights-out').then((m) => ({ default: m.FireflyGame }))),
+  peg: lazy(() => import('@puzzlebloom/game-peg').then((m) => ({ default: m.PegPondGame }))),
+  flow: lazy(() => import('@puzzlebloom/game-flow').then((m) => ({ default: m.FlowPathsGame }))),
+  'tic-tac': lazy(() => import('@puzzlebloom/game-tic-tac').then((m) => ({ default: m.TriMarksGame }))),
+  'bloom-guess': lazy(() =>
+    import('@puzzlebloom/game-bloom-guess').then((m) => ({ default: m.BloomGuessGame })),
+  ),
+  reversi: lazy(() => import('@puzzlebloom/game-reversi').then((m) => ({ default: m.LilyPadsGame }))),
+  jigsaw: lazy(() => import('@puzzlebloom/game-jigsaw').then((m) => ({ default: m.PieceGardenGame }))),
+};
+
+const UNPACKING: Record<string, string> = {
+  sudoku: 'Unpacking the grid…',
+  nonogram: 'Counting out the clues…',
+  tangram: 'Cutting the seven pieces…',
+  'memory-garden': 'Turning the cards over…',
+  balance: 'Setting up the scale…',
+  'frog-road': 'Unfolding the road…',
+  bloom: 'Scattering the seeds…',
+  shadows: 'Setting out the lanterns…',
+  sliding: 'Laying out the tiles…',
+  maze: 'Growing the hedges…',
+  simon: 'Warming the petals…',
+  'connect-four': 'Planting the flowers…',
+  'word-search': 'Sowing the letters…',
+  'lights-out': 'Catching the fireflies…',
+  peg: 'Setting the lily pads…',
+  flow: 'Laying the paths…',
+  'tic-tac': 'Drawing the marks…',
+  'bloom-guess': 'Hiding a garden word…',
+  reversi: 'Floating the pads…',
+  jigsaw: 'Cutting the pieces…',
+};
 
 function Routes() {
   const { path, navigate } = useRouter();
   const isPlaying = path.startsWith('/play/');
-  const known =
-    path === '/' ||
-    path === '/themes' ||
-    path === '/parents' ||
-    path === '/play/sudoku' ||
-    path === '/play/nonogram' ||
-    path === '/play/tangram' ||
-    path === '/play/memory-garden' ||
-    path === '/play/balance' ||
-    path === '/play/frog-road' ||
-    path === '/play/bloom' ||
-    path === '/play/shadows';
+  const game = GAMES.find((candidate) => candidate.route === path);
+  const known = path === '/' || path === '/themes' || path === '/parents' || Boolean(game);
 
   // Layout effect, not effect: the title and canonical should be right before
   // the new page paints, the same way the theme is.
@@ -67,59 +89,12 @@ function Routes() {
     if (path === '/') return <Home />;
     if (path === '/themes') return <Themes />;
     if (path === '/parents') return <Parents />;
-    if (path === '/play/sudoku') {
+    if (game) {
+      const Page = GAME_PAGES[game.id];
+      if (!Page) return <NotFound />;
       return (
-        <Suspense fallback={<p className="pb-page-note">Unpacking the grid…</p>}>
-          <SudokuGame onExit={() => navigate('/')} />
-        </Suspense>
-      );
-    }
-    if (path === '/play/nonogram') {
-      return (
-        <Suspense fallback={<p className="pb-page-note">Counting out the clues…</p>}>
-          <NonogramGame onExit={() => navigate('/')} />
-        </Suspense>
-      );
-    }
-    if (path === '/play/tangram') {
-      return (
-        <Suspense fallback={<p className="pb-page-note">Cutting the seven pieces…</p>}>
-          <TangramGame onExit={() => navigate('/')} />
-        </Suspense>
-      );
-    }
-    if (path === '/play/memory-garden') {
-      return (
-        <Suspense fallback={<p className="pb-page-note">Turning the cards over…</p>}>
-          <MemoryGarden onExit={() => navigate('/')} />
-        </Suspense>
-      );
-    }
-    if (path === '/play/balance') {
-      return (
-        <Suspense fallback={<p className="pb-page-note">Setting up the scale…</p>}>
-          <BalanceGame onExit={() => navigate('/')} />
-        </Suspense>
-      );
-    }
-    if (path === '/play/frog-road') {
-      return (
-        <Suspense fallback={<p className="pb-page-note">Unfolding the road…</p>}>
-          <FrogRoadGame onExit={() => navigate('/')} />
-        </Suspense>
-      );
-    }
-    if (path === '/play/bloom') {
-      return (
-        <Suspense fallback={<p className="pb-page-note">Scattering the seeds…</p>}>
-          <BloomGame onExit={() => navigate('/')} />
-        </Suspense>
-      );
-    }
-    if (path === '/play/shadows') {
-      return (
-        <Suspense fallback={<p className="pb-page-note">Setting out the lanterns…</p>}>
-          <ShadowsGame onExit={() => navigate('/')} />
+        <Suspense fallback={<p className="pb-page-note">{UNPACKING[game.id] ?? 'Opening the garden…'}</p>}>
+          <Page onExit={() => navigate('/')} />
         </Suspense>
       );
     }

@@ -1,0 +1,29 @@
+{
+  "name": "@puzzlebloom/game-peg",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Peg Pond for PuzzleBloom: English-board hop solitaire with undo.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./manifest": "./src/manifest.ts",
+    "./peg.css": "./src/peg.css"
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@puzzlebloom/peg-engine": "workspace:*",
+    "@puzzlebloom/ui": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@puzzlebloom/game-sudoku": "workspace:*",
+    "@types/react": "^19.3.0",
+    "react": "^19.0.0"
+  }
+}

@@ -1,0 +1,238 @@
+/**
+ * Maze Path screen. Shell is scoped under .pb-maze so this chunk never
+ * fights another game's `.pb-play` rules if both happen to be in the document.
+ */
+
+.pb-maze {
+  width: min(100%, var(--pb-page));
+  margin: 0 auto;
+  padding: clamp(0.75rem, 2vw, 1.5rem) clamp(0.75rem, 3vw, 2rem) 7rem;
+}
+
+.pb-maze .pb-play__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.pb-maze .pb-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: var(--pb-r-pill);
+  border: 1.5px solid var(--pb-line);
+  background: var(--pb-surface);
+  color: var(--pb-ink);
+  cursor: pointer;
+}
+
+.pb-maze .pb-back:hover {
+  background: var(--pb-surface-2);
+}
+
+.pb-maze .pb-play__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.pb-maze .pb-play__level {
+  font-family: var(--pb-font-display);
+  font-size: var(--pb-fs-lg);
+  font-weight: 600;
+}
+
+.pb-maze .pb-play__clock {
+  margin-left: auto;
+  color: var(--pb-ink-soft);
+  font-size: var(--pb-fs-sm);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.pb-maze .pb-play__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(200px, 280px);
+  gap: clamp(1rem, 2.5vw, 2rem);
+  align-items: start;
+}
+
+.pb-maze .pb-play__side {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.pb-maze .pb-calm-note {
+  margin: 0;
+  color: var(--pb-ink-soft);
+  font-size: var(--pb-fs-sm);
+  line-height: 1.55;
+}
+
+.pb-maze .pb-win {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: color-mix(in oklab, var(--pb-ink) 52%, transparent);
+}
+
+.pb-maze .pb-win__card {
+  width: min(420px, 100%);
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+  padding: 1.8rem 1.5rem 1.5rem;
+  text-align: center;
+  background: var(--pb-surface);
+  border: 2px solid var(--pb-line-strong);
+  border-radius: var(--pb-r-xl);
+  box-shadow: 0 8px 0 color-mix(in oklab, var(--pb-ink) 22%, transparent);
+}
+
+.pb-maze .pb-win__title {
+  margin: 0;
+  font-size: var(--pb-fs-xl);
+}
+
+.pb-maze .pb-win__sub {
+  margin: 0;
+  color: var(--pb-ink-soft);
+  font-size: var(--pb-fs-sm);
+}
+
+.pb-maze .pb-win__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 0.4rem;
+}
+
+.pb-maze-board {
+  display: grid;
+  width: min(100%, 440px);
+  margin-inline: auto;
+  aspect-ratio: 1;
+  gap: 6px;
+  padding: 10px;
+  border: 3px solid var(--pb-line);
+  border-radius: var(--pb-r-lg);
+  background: var(--pb-surface);
+  box-shadow: var(--pb-lift-1);
+  touch-action: manipulation;
+}
+
+.pb-maze-cell {
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 12px;
+  background: var(--pb-surface-2);
+  color: var(--pb-ink);
+  cursor: pointer;
+  font-family: var(--pb-font-display);
+  font-size: clamp(1rem, 4vw, 1.4rem);
+  font-weight: 700;
+}
+
+.pb-maze-cell:hover {
+  background: var(--pb-surface-3);
+}
+
+.pb-maze-cell.is-on {
+  background: color-mix(in oklab, var(--pb-accent) 55%, var(--pb-surface));
+}
+
+.pb-maze-cell.is-empty {
+  background: transparent;
+  cursor: default;
+}
+
+.pb-maze-cell.is-here {
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pb-brand) 40%, transparent);
+}
+
+.pb-maze-cell.is-goal {
+  background: color-mix(in oklab, var(--pb-brand) 22%, var(--pb-surface));
+}
+
+.pb-maze-cell.is-selected {
+  outline: 3px solid var(--pb-brand);
+}
+
+.pb-maze-cell.is-found {
+  background: color-mix(in oklab, var(--pb-brand) 28%, var(--pb-surface));
+}
+
+.pb-maze-cell.is-path {
+  background: color-mix(in oklab, var(--pb-brand) 35%, var(--pb-surface));
+}
+
+.pb-maze-cell.is-wall {
+  background: color-mix(in oklab, var(--pb-ink) 18%, var(--pb-bg));
+  cursor: default;
+}
+
+.pb-maze-cell:disabled {
+  cursor: default;
+}
+
+@media (max-width: 900px) {
+  .pb-maze .pb-play__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.pb-maze-board {
+  display: grid;
+  width: min(100%, 440px);
+  margin-inline: auto;
+  aspect-ratio: 1;
+  grid-auto-rows: 1fr;
+  background: color-mix(in oklab, var(--pb-brand) 10%, var(--pb-surface));
+  border-radius: 12px;
+  overflow: hidden;
+  touch-action: manipulation;
+}
+.pb-maze-cell {
+  border: 0;
+  padding: 0;
+  background: var(--pb-surface);
+  cursor: pointer;
+}
+.pb-maze-cell.is-here {
+  background: color-mix(in oklab, var(--pb-accent) 55%, var(--pb-surface));
+}
+.pb-maze-cell.is-goal {
+  background: color-mix(in oklab, var(--pb-brand) 40%, var(--pb-surface));
+}
+.pb-maze-cell.is-path {
+  background: color-mix(in oklab, var(--pb-sky) 35%, var(--pb-surface));
+}
+.pb-maze-cell.is-here::after,
+.pb-maze-cell.is-goal::after {
+  content: '';
+  display: block;
+  width: 38%;
+  height: 38%;
+  margin: auto;
+  border-radius: 50%;
+  background: var(--pb-accent);
+}
+.pb-maze-cell.is-goal::after {
+  border-radius: 20%;
+  background: var(--pb-brand);
+}
+.pb-maze-cell.is-here.is-goal::after {
+  background: var(--pb-accent);
+}
