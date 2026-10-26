@@ -28,6 +28,7 @@ pnpm monorepo：`apps/web`（站点外壳：路由器、页面、主题、样式
 - 文案：英式拼写、祈使句、不用感叹号、不用哄小孩的句子。注释只解释**为什么**。
 - 可访问性是硬指标：真实 `<h1>`（可 sr-only）、键盘全可操作、`aria-modal` 必须配真正的焦点陷阱——声明了模态却不实现，比不写更糟。
 - **站点外壳（`apps/web`）无新运行时依赖**：只 React 19 + `@puzzlebloom/ui`。游戏包**可以**自带渲染器（three.js 等）——隔离靠 workspace 包 + `lazy()` 拆 chunk，不靠禁止。前提是外壳永不 import 游戏运行时，只 import `./manifest`。
+- **新增一个运行时依赖就要在 `THIRD_PARTY_NOTICES.md` 添一条**：站点把依赖打进产物一起分发，MIT 的版权行必须随行。three.js 那次差点漏掉——脑子里想的是 chunk 大小和取景，没人想起许可。
 - `packages/*-engine` 永远不含渲染器。这是多栈安全的前提：引擎纯，`pnpm test` 不需要 DOM/canvas，与栈无关。
 - **canvas 页面必须把内容和标签写进 DOM**：预渲染抓的是 DOM 不是像素。`check-artifact.mjs` 强制两条——`<canvas>` 要有可访问名（`aria-label`/`aria-labelledby`/`aria-hidden="true"`），且 canvas 之外要有 ≥200 字符可读文本。
 - **WebGL 那条路要自己搬色**：`getContext('webgl')` 读不到 CSS 变量。`shadows` 的做法是 `useTheme().colors` 传进场景，`setColors()` 把色值推进材质和灯光。HTML-in-Canvas 的游戏（`balance`/`bloom`）不需要这一步，因为它们画的是真 DOM。
