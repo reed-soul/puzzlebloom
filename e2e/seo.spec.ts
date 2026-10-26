@@ -64,6 +64,12 @@ const ROUTES = [
     heading: 'Bloom Drop for kids',
   },
   {
+    path: '/play/shadows/',
+    title: 'Stone Shadows — three shadows, one plot of stones | PuzzleBloom',
+    canonical: 'https://puzzlebloom.taoliapp.com/play/shadows/',
+    heading: 'Stone shadows: stack stones until three shadows agree',
+  },
+  {
     path: '/themes/',
     title: 'Theme studio — make the puzzle yours | PuzzleBloom',
     canonical: 'https://puzzlebloom.taoliapp.com/themes/',
@@ -76,6 +82,18 @@ const ROUTES = [
     heading: 'What this is, and what it refuses to be',
   },
 ];
+
+/**
+ * The playable routes, taken from the list above rather than typed a second time.
+ *
+ * The structured data and the sitemap are both generated from `site.json`, and
+ * both used to be asserted against a literal number — so adding a game failed
+ * two tests for the crime of adding a game, and taught nothing. Deriving the
+ * expectation from the same list turns those assertions back into what they
+ * were meant to be: that the generated files agree with the routes the site
+ * publishes, whichever and however many they are.
+ */
+const GAME_URLS = ROUTES.filter((route) => route.path.startsWith('/play/')).map((route) => route.canonical);
 
 for (const route of ROUTES) {
   test(`${route.path} carries its own head without running JavaScript`, async ({ browser }) => {
@@ -119,25 +137,17 @@ test('the home page describes the site and every game it ships, and nothing inve
   expect(ofType('WebSite')).toHaveLength(1);
   expect(ofType('WebPage')).toHaveLength(1);
   const applications = ofType('WebApplication');
-  expect(applications).toHaveLength(7);
+  expect(applications).toHaveLength(GAME_URLS.length);
 
-  // One application per ready game, each naming its own URL — and the lookup by
-  // URL is deliberate, because taking the first `WebApplication` would silently
-  // stop testing sudoku the moment the list order changed.
+  // One application per playable route, each naming its own URL — and the
+  // lookup by URL is deliberate, because taking the first `WebApplication`
+  // would silently stop testing sudoku the moment the list order changed.
   const byUrl = new Map(applications.map((node) => [node.url as string, node]));
-  expect([...byUrl.keys()].sort()).toEqual([
-    'https://puzzlebloom.taoliapp.com/play/balance/',
-    'https://puzzlebloom.taoliapp.com/play/bloom/',
-    'https://puzzlebloom.taoliapp.com/play/frog-road/',
-    'https://puzzlebloom.taoliapp.com/play/memory-garden/',
-    'https://puzzlebloom.taoliapp.com/play/nonogram/',
-    'https://puzzlebloom.taoliapp.com/play/sudoku/',
-    'https://puzzlebloom.taoliapp.com/play/tangram/',
-  ]);
+  expect([...byUrl.keys()].sort()).toEqual([...GAME_URLS].sort());
 
-  // Seven nodes with one `@id` is an invalid graph, and it is exactly what
-  // generating them from a list invites. The identity has to name the game.
-  expect(new Set(applications.map((node) => node['@id'])).size).toBe(7);
+  // One node per game with one `@id` is an invalid graph, and it is exactly
+  // what generating them from a list invites. The identity has to name the game.
+  expect(new Set(applications.map((node) => node['@id'])).size).toBe(GAME_URLS.length);
   for (const node of applications) expect(node['@id']).toBe(`${node.url}#application`);
 
   for (const node of applications) {
@@ -274,8 +284,11 @@ test('every sitemap URL is a page that exists and points back at itself', async 
   expect(response.status()).toBe(200);
 
   const locations = [...(await response.text()).matchAll(/<loc>(.*?)<\/loc>/g)].map((match) => match[1]);
-  // One per entry in `site.json`: home, seven games, themes, parents.
-  expect(locations).toHaveLength(10);
+  // The sitemap and the site agree, both ways: every route the site publishes is
+  // in it, and it lists nothing the site does not publish. Compared as sets, so
+  // the order the generator happens to write them in is not a fact this test
+  // claims to know.
+  expect([...locations].sort()).toEqual(ROUTES.map((route) => route.canonical).sort());
 
   for (const location of locations) {
     const url = new URL(location);

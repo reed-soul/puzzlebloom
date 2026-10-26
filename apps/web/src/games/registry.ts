@@ -14,6 +14,7 @@ import { bloomManifest } from '@puzzlebloom/game-bloom/manifest';
 import { frogRoadManifest } from '@puzzlebloom/game-frog-road/manifest';
 import { memoryGardenManifest } from '@puzzlebloom/game-memory-garden/manifest';
 import { nonogramManifest } from '@puzzlebloom/game-nonogram/manifest';
+import { shadowsManifest } from '@puzzlebloom/game-shadows/manifest';
 import { type GameManifest, sudokuManifest } from '@puzzlebloom/game-sudoku/manifest';
 import { tangramManifest } from '@puzzlebloom/game-tangram/manifest';
 
@@ -27,6 +28,7 @@ export const GAMES: GameManifest[] = [
   balanceManifest,
   frogRoadManifest,
   bloomManifest,
+  shadowsManifest,
 ];
 
 /**

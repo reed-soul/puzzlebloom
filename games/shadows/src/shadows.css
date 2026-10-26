@@ -1,0 +1,317 @@
+/*
+ * Stone Shadows.
+ *
+ * Every colour here is a `--pb-*` token or a `color-mix` of one, with one
+ * exception: the 3D view paints with three.js, which cannot read a custom
+ * property. Its colours are handed to it as values by `ShadowScene`, from the
+ * same theme object the rest of this file gets for free — one theme, two ways
+ * of receiving it, because a canvas has no cascade.
+ */
+
+.pb-shd {
+  display: grid;
+  gap: 14px;
+  justify-items: center;
+  padding: 16px clamp(12px, 4vw, 32px) 48px;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+/* ---------------- header ---------------- */
+
+.pb-shd .pb-play__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.pb-shd .pb-play__meta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  flex: 1;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.pb-shd .pb-play__level {
+  font-family: var(--pb-font-display);
+  font-size: var(--pb-fs-lg);
+  font-weight: 600;
+}
+
+.pb-shd__stones {
+  color: var(--pb-ink-soft);
+  font-size: var(--pb-fs-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.pb-shd__lede {
+  max-width: 62ch;
+  margin: 0;
+  text-align: center;
+  color: var(--pb-ink-soft);
+  font-size: var(--pb-fs-sm);
+  line-height: 1.55;
+}
+
+/* ---------------- stage: the plot in three dimensions ---------------- */
+
+/*
+ * Two columns on a wide screen, so the plot and the three plans are on screen
+ * together while the figure is being built: the column on the left is the
+ * figure, the column on the right is everything you do to it. On a phone it is
+ * one column, and the plans come before the plot so that what you are aiming
+ * at is still visible above the controls.
+ */
+.pb-shd__stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  width: 100%;
+  align-items: start;
+}
+
+@media (min-width: 880px) {
+  .pb-shd__stage {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    grid-auto-rows: min-content;
+  }
+
+  /* The figure takes the whole left column; everything you touch is stacked
+     beside it. Placement by line rather than by named area, because the DOM
+     order (figure, plans, plot) already *is* the phone layout. */
+  .pb-shd__view {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+
+  .pb-shd__plans {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .pb-shd__plot {
+    grid-column: 2;
+    grid-row: 2;
+  }
+}
+
+.pb-shd__view {
+  position: relative;
+  /* A square panel is the wrong shape for a diamond: it leaves a band of empty
+     sky above the plate on a wide screen and pushes the plot off a phone.
+     A box the camera then fits itself to is the better trade. */
+  height: clamp(240px, 50vh, 520px);
+  overflow: hidden;
+  border: 1.5px solid var(--pb-line);
+  border-radius: var(--pb-r-lg);
+  background:
+    radial-gradient(120% 90% at 30% 10%, var(--pb-surface) 0%, transparent 60%),
+    color-mix(in oklab, var(--pb-sky) 22%, var(--pb-bg));
+  /* The lantern's direction, implied by the wash: light from the upper left. */
+  box-shadow: inset 0 1px 0 color-mix(in oklab, var(--pb-surface) 70%, transparent);
+}
+
+.pb-shd__plans {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  /* Same height for all three, so the row of plans reads as one band. The
+     inner figures keep their square cells either way — the cells decide the
+     height of the grid, not the other way round. */
+  align-content: start;
+}
+
+.pb-shd__view-note {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  padding: 2rem;
+  margin: 0;
+  text-align: center;
+  color: var(--pb-ink-soft);
+  font-size: var(--pb-fs-sm);
+}
+
+.pb-shd__plan {
+  margin: 0;
+  padding: 10px 10px 8px;
+  border: 1.5px solid var(--pb-line);
+  border-radius: var(--pb-r-md, 12px);
+  background: var(--pb-surface);
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+}
+
+.pb-shd__plan.is-clear {
+  border-color: color-mix(in oklab, var(--pb-success) 45%, var(--pb-line));
+  background: color-mix(in oklab, var(--pb-success) 6%, var(--pb-surface));
+}
+
+.pb-shd__plan-title {
+  font-size: var(--pb-fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--pb-ink-soft);
+  text-align: center;
+}
+
+.pb-shd__plan-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+  width: 100%;
+  padding: 3px;
+  border-radius: 6px;
+  /* The gaps are what draw the grid: the container is the line colour and the
+     cells sit on top of it. Empty cells are the page colour, not transparent,
+     or the whole plan reads as one grey block with a few dark squares in it. */
+  background: color-mix(in oklab, var(--pb-ink) 16%, var(--pb-surface));
+}
+
+.pb-shd__plan-grid > span {
+  /* Square cells, so the figure stays square whatever the column does — the
+     container has no aspect ratio of its own to be stretched out of shape. */
+  aspect-ratio: 1;
+  border-radius: 2px;
+}
+
+.pb-shd__plan-grid .is-filled {
+  background: color-mix(in oklab, var(--pb-ink) 74%, var(--pb-surface));
+}
+
+.pb-shd__plan-grid .is-empty {
+  background: var(--pb-surface);
+}
+
+.pb-shd__plan-verdict {
+  margin: 0;
+  font-size: var(--pb-fs-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--pb-ink-soft);
+  text-align: center;
+}
+
+.pb-shd__plan.is-clear .pb-shd__plan-verdict {
+  color: var(--pb-success);
+  font-weight: 700;
+}
+
+/* ---------------- status ---------------- */
+
+.pb-shd__status {
+  margin: 0;
+  font-size: var(--pb-fs-sm);
+  color: var(--pb-ink-soft);
+  text-align: center;
+}
+
+.pb-shd.is-solved .pb-shd__status {
+  color: var(--pb-success);
+  font-weight: 700;
+}
+
+/* ---------------- the plot, as sixteen buttons ---------------- */
+
+.pb-shd__plot {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  width: min(100%, 320px);
+  justify-self: center;
+  /* A fieldset carries a margin and a min-width of its own; both would fight
+     the grid inside it. */
+  margin: 0;
+  min-width: 0;
+  padding: 8px;
+  border-radius: var(--pb-r-md, 12px);
+  background: color-mix(in oklab, var(--pb-ink) 9%, var(--pb-bg));
+  border: 1.5px solid var(--pb-line);
+}
+
+.pb-shd__cell {
+  aspect-ratio: 1;
+  padding: 0;
+  border: 1.5px solid var(--pb-line);
+  border-radius: 7px;
+  cursor: pointer;
+  /* --pb-shd-height arrives as a percentage, mixed straight into the cell's
+     fill: the plot darkens as a column grows, which is the only feedback a
+     player gets when the 3D view cannot start. */
+  background: color-mix(in oklab, var(--pb-brand) var(--pb-shd-height, 0%), var(--pb-cell));
+  transition:
+    background var(--pb-dur, 160ms) var(--pb-ease, ease),
+    transform var(--pb-dur, 160ms) var(--pb-ease, ease);
+}
+
+.pb-shd__cell:hover {
+  transform: translateY(-1px);
+  border-color: var(--pb-line-strong);
+}
+
+.pb-shd__cell:active {
+  transform: translateY(1px);
+}
+
+.pb-shd__cell.has-stones {
+  border-color: color-mix(in oklab, var(--pb-brand) 40%, var(--pb-line));
+}
+
+.pb-shd__cell:focus-visible {
+  outline: 2.5px solid var(--pb-brand);
+  outline-offset: 2px;
+}
+
+/* ---------------- controls ---------------- */
+
+.pb-shd__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.pb-shd__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pb-shd__hint,
+.pb-shd__done {
+  margin: 0;
+  max-width: 56ch;
+  padding: 10px 14px;
+  border-radius: var(--pb-r-md, 12px);
+  font-size: var(--pb-fs-sm);
+  line-height: 1.5;
+  text-align: center;
+}
+
+.pb-shd__hint {
+  color: var(--pb-ink);
+  background: color-mix(in oklab, var(--pb-accent) 28%, var(--pb-surface));
+  border: 1.5px solid color-mix(in oklab, var(--pb-accent) 55%, var(--pb-line));
+}
+
+.pb-shd__done {
+  color: var(--pb-ink);
+  background: color-mix(in oklab, var(--pb-success) 12%, var(--pb-surface));
+  border: 1.5px solid color-mix(in oklab, var(--pb-success) 40%, var(--pb-line));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pb-shd__cell {
+    transition: none;
+  }
+
+  .pb-shd__cell:hover,
+  .pb-shd__cell:active {
+    transform: none;
+  }
+}

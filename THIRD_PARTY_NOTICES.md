@@ -1,7 +1,7 @@
 # Third-party notices
 
-PuzzleBloom is MIT licensed. It stands on the shoulders of two projects in
-particular, and this file is where that debt is written down.
+PuzzleBloom is MIT licensed. It stands on other people's work, and this file is
+where that debt is written down.
 
 ## Sudoku engine — HeyPuter/everything
 
@@ -37,6 +37,26 @@ The upstream README is kept verbatim at
 `packages/sudoku-engine/UPSTREAM-README.md` for attribution and context.
 
 If you fork PuzzleBloom, keep this notice and the MIT copyright line intact.
+
+## 3D renderer — three.js
+
+- Source: https://github.com/mrdoob/three.js
+- License: MIT (see the upstream repository)
+- Copyright: 2010–2026 the three.js authors
+- Version: `three@0.186`
+
+**What we took.** The published npm package, unmodified — no fork, no patched
+build. It is **redistributed**: the site bundles it into its own `three` chunk,
+so the minified output contains three.js code and the licence has to travel with
+it, exactly as with the fonts below.
+
+**What we use it for.** One game. `games/shadows/src/ShadowScene.tsx` is the only
+file in the repository that imports it, and it uses the WebGL renderer, an
+orthographic camera, one shadow-casting light and the raycaster — the rest of
+three.js is along for the ride in that chunk. `@types/three` is a
+build-time-only dependency and is not distributed.
+
+## Typefaces — Baloo 2 and Nunito
 
 ## Typefaces — Baloo 2 and Nunito
 

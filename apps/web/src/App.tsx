@@ -35,6 +35,11 @@ const FrogRoadGame = lazy(() =>
 const BloomGame = lazy(() =>
   import('@puzzlebloom/game-bloom').then((module) => ({ default: module.BloomGame })),
 );
+// The only chunk in the site that carries a renderer of its own: three.js is
+// ~150 kB gzipped and lands here, in this lazy chunk, and nowhere else.
+const ShadowsGame = lazy(() =>
+  import('@puzzlebloom/game-shadows').then((module) => ({ default: module.ShadowsGame })),
+);
 
 function Routes() {
   const { path, navigate } = useRouter();
@@ -49,7 +54,8 @@ function Routes() {
     path === '/play/memory-garden' ||
     path === '/play/balance' ||
     path === '/play/frog-road' ||
-    path === '/play/bloom';
+    path === '/play/bloom' ||
+    path === '/play/shadows';
 
   // Layout effect, not effect: the title and canonical should be right before
   // the new page paints, the same way the theme is.
@@ -107,6 +113,13 @@ function Routes() {
       return (
         <Suspense fallback={<p className="pb-page-note">Scattering the seeds…</p>}>
           <BloomGame onExit={() => navigate('/')} />
+        </Suspense>
+      );
+    }
+    if (path === '/play/shadows') {
+      return (
+        <Suspense fallback={<p className="pb-page-note">Setting out the lanterns…</p>}>
+          <ShadowsGame onExit={() => navigate('/')} />
         </Suspense>
       );
     }

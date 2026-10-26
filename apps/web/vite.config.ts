@@ -16,6 +16,13 @@ export default defineConfig({
           if (id.includes('node_modules/react') || id.includes('node_modules/scheduler')) {
             return 'react';
           }
+          // three.js is most of a megabyte and belongs to a renderer, not to a
+          // route. Naming it keeps the shadows chunk small enough to read and
+          // gives a second three.js game something to share; the cost is one
+          // extra parallel request on a cold visit, which HTTP/2 makes cheap.
+          if (id.includes('node_modules/three')) {
+            return 'three';
+          }
           return undefined;
         },
       },

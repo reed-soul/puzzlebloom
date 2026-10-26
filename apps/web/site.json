@@ -36,6 +36,12 @@
       "changeFrequency": "monthly",
       "priority": 0.7
     },
+    "/play/shadows": {
+      "title": "Stone Shadows — three shadows, one plot of stones | PuzzleBloom",
+      "description": "A three-dimensional puzzle for children in the browser. Stack stones on a four-by-four plot until the three shadows a lantern throws agree with the plan. The front view cannot tell how deep a stone sits and the side cannot tell which column it is in, so only all three together fix the figure.",
+      "changeFrequency": "monthly",
+      "priority": 0.8
+    },
     "/play/nonogram": {
       "title": "Kids' nonogram: count the squares, uncover the picture | PuzzleBloom",
       "description": "Free nonogram for children in the browser. Two sizes, hand-drawn pictures, crosses for the squares you rule out, and hints that explain the counting. No timer, no score, no ads.",

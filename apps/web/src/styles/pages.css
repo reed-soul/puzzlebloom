@@ -422,6 +422,36 @@
   fill: color-mix(in oklab, var(--pb-brand) 32%, var(--pb-surface));
 }
 
+/* A plot of stones seen from the corner the game looks from. The polygons come
+   from the engine's card module and the projection is a loop over them, so this
+   card cannot drift away from a figure the game still ships. Three tints, one
+   per face of a cube — the cheapest way for a flat drawing to read as solid. */
+.pb-card__art-shadows {
+  position: relative;
+  z-index: 1;
+  width: 122px;
+  height: auto;
+  overflow: visible;
+}
+
+.pb-card__art-shadows polygon {
+  stroke: color-mix(in oklab, var(--pb-surface) 60%, transparent);
+  stroke-width: 0.04;
+  stroke-linejoin: round;
+}
+
+.pb-card__art-shadows .is-top {
+  fill: color-mix(in oklab, var(--pb-brand) 76%, var(--pb-surface));
+}
+
+.pb-card__art-shadows .is-left {
+  fill: color-mix(in oklab, var(--pb-brand) 58%, var(--pb-ink));
+}
+
+.pb-card__art-shadows .is-right {
+  fill: color-mix(in oklab, var(--pb-brand) 38%, var(--pb-ink));
+}
+
 /* A balance just off level: the numeral pan heavier than a frog pan one short
    of it, which is the state the whole game exists to resolve. The beam is a
    single rotated line, the same move the game itself makes with one element

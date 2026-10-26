@@ -1,0 +1,32 @@
+{
+  "name": "@puzzlebloom/game-shadows",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Stone Shadows for PuzzleBloom: stack stones on a plot until the three shadows the lanterns cast agree with the plan, drawn in three dimensions with three.js.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./manifest": "./src/manifest.ts",
+    "./shadows.css": "./src/shadows.css"
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@puzzlebloom/shadows-engine": "workspace:*",
+    "@puzzlebloom/theme-core": "workspace:*",
+    "@puzzlebloom/ui": "workspace:*",
+    "three": "^0.186.1"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@puzzlebloom/game-sudoku": "workspace:*",
+    "@types/react": "^19.3.0",
+    "@types/three": "^0.186.0",
+    "react": "^19.0.0"
+  }
+}

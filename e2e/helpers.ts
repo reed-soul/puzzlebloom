@@ -14,8 +14,20 @@ export function trackProblems(page: Page): string[] {
   });
   page.on('pageerror', (error) => problems.push(`uncaught: ${error.message}`));
   page.on('requestfailed', (request) => {
+    const reason = request.failure()?.errorText ?? '';
+    // A request the browser itself withdrew is not the site failing. Reloading
+    // a page cancels whatever was still in flight — the memory-garden save test
+    // reloads on purpose, and whether a card image had finished decoding by
+    // then is a race, not a fact about the game. WebKit calls this "cancelled"
+    // and Chromium "net::ERR_ABORTED"; both spellings are that same withdrawal.
+    //
+    // Nothing is lost by skipping them: an image the server refuses still
+    // arrives as a console error ("Failed to load resource: … 404"), which the
+    // listener above catches. Only a connection that fell over on its own —
+    // ERR_FAILED, ERR_CONNECTION_*, ERR_SSL_* — reaches the line below.
+    if (/ERR_ABORTED|NS_BINDING_ABORTED|cancelled/i.test(reason)) return;
     // A font that fails to load is exactly the kind of regression this catches.
-    problems.push(`request failed: ${request.url()}`);
+    problems.push(`request failed: ${request.url()}${reason ? ` (${reason})` : ''}`);
   });
   return problems;
 }

@@ -1,3 +1,4 @@
+import { CARD_STONES } from '@puzzlebloom/shadows-engine/card';
 import { CARD_FIGURE } from '@puzzlebloom/tangram-engine/card';
 import { Chip, CreatureGlyph, Icon, type IconName } from '@puzzlebloom/ui';
 import { useTheme } from '@puzzlebloom/ui/theme';
@@ -204,6 +205,58 @@ function BloomsArt() {
   );
 }
 
+/**
+ * A plot of stones from the same corner the game looks from.
+ *
+ * The stones arrive as coordinates from the engine's own `card` module, not as
+ * numbers typed here, and the projection is a loop over them — so editing the
+ * figure edits the card, and a card can no longer go on drawing a shape the
+ * game has stopped shipping.
+ *
+ * Painter's order: far stones first, then the ones in front of them, then the
+ * ones stacked on top. Without the sort the faces land in plot order and a
+ * near cube gets painted over by the far wall behind it.
+ */
+const CUBE = 9;
+
+function ShadowsArt() {
+  const faces = [...CARD_STONES]
+    .sort((a, b) => a.file + a.rank - (b.file + b.rank) || a.level - b.level)
+    .flatMap((stone) => {
+      const x = (stone.file - stone.rank) * CUBE;
+      const y = (stone.file + stone.rank) * (CUBE / 2) - stone.level * CUBE;
+      const w = CUBE;
+      const h = CUBE / 2;
+      return [
+        { tone: 'top', points: `${x},${y - h} ${x + w},${y} ${x},${y + h} ${x - w},${y}` },
+        {
+          tone: 'left',
+          points: `${x - w},${y} ${x},${y + h} ${x},${y + h + CUBE} ${x - w},${y + CUBE}`,
+        },
+        {
+          tone: 'right',
+          points: `${x},${y + h} ${x + w},${y} ${x + w},${y + CUBE} ${x},${y + h + CUBE}`,
+        },
+      ];
+    });
+
+  return (
+    <svg
+      className="pb-card__art-shadows"
+      viewBox={viewBoxOf(
+        faces.map((face) => face.points),
+        0.4,
+      )}
+      aria-hidden="true"
+    >
+      {faces.map((face, index) => (
+        // biome-ignore lint/suspicious/noArrayIndexKey: the faces are a fixed projection of a fixed figure and nothing reorders
+        <polygon key={index} className={`is-${face.tone}`} points={face.points} />
+      ))}
+    </svg>
+  );
+}
+
 function Art({ game }: { game: GameManifest }) {
   if (game.status === 'ready') {
     return (
@@ -214,6 +267,7 @@ function Art({ game }: { game: GameManifest }) {
         {game.art === 'balance' ? <BalanceArt /> : null}
         {game.art === 'road' ? <RoadArt /> : null}
         {game.art === 'blooms' ? <BloomsArt /> : null}
+        {game.art === 'shadows' ? <ShadowsArt /> : null}
         {game.art === 'creatures' || !game.art ? <CreaturesArt /> : null}
       </div>
     );
