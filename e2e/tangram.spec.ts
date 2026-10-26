@@ -706,7 +706,7 @@ test.describe('tangram', () => {
     // All three stylesheets end up in the same document, which is the only way
     // the collision this test is about can happen at all.
     await page.getByRole('button', { name: 'Back to the garden' }).click();
-    await page.locator('.pb-card--ready[href="/play/nonogram/"]').click();
+    await page.locator('.pb-door[href="/play/nonogram/"]').click();
     await expect(page.getByRole('grid', { name: 'Nonogram board, 5 by 5' })).toBeVisible({
       timeout: 20_000,
     });
@@ -714,7 +714,7 @@ test.describe('tangram', () => {
     await expect(page.locator('.pb-tangram-board')).toHaveCount(0);
 
     await page.getByRole('button', { name: 'Back to the garden' }).click();
-    await page.locator('.pb-card--ready[href="/play/sudoku/"]').click();
+    await page.locator('.pb-door[href="/play/sudoku/"]').click();
     await waitForBoard(page);
     await expect(page.locator('.pb-nono')).toHaveCount(0);
     await expect(page.locator('.pb-tangram')).toHaveCount(0);
@@ -726,7 +726,7 @@ test.describe('tangram', () => {
     expect(sudokuColumns).toBe(9);
 
     await page.getByRole('button', { name: 'Back to the garden' }).click();
-    await page.locator('.pb-card--ready[href="/play/tangram/"]').click();
+    await page.locator('.pb-door[href="/play/tangram/"]').click();
     const warm = await waitForTangramBoard(page);
     await expect(page.locator('.pb-nono')).toHaveCount(0);
 

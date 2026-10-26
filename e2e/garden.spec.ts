@@ -2,67 +2,73 @@ import { expect, test } from '@playwright/test';
 import { trackProblems } from './helpers';
 
 test.describe('the garden', () => {
-  test('opens with a headline, one loud action and no errors', async ({ page }) => {
+  test('opens on three live doors, then the rest of the garden', async ({ page }) => {
     const problems = trackProblems(page);
     await page.goto('/');
 
-    await expect(page.getByRole('heading', { level: 1 })).toContainText('Puzzles that explain themselves');
-    // Exactly one primary action per screen is a design rule, not a detail.
-    await expect(page.locator('.pb-btn--loud')).toHaveCount(1);
-    await expect(page.locator('.pb-btn--loud')).toContainText('Play Sudoku');
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Seven games. No ads. Play now.');
 
-    await expect(page.getByRole('heading', { name: 'In the garden' })).toBeVisible();
-    // Seven shipped games and nothing left in the ground. Six cards, and every
-    // one of them is a card you can press.
-    await expect(page.locator('.pb-card')).toHaveCount(7);
+    // The first screen is a shelf, not a brochure: three pressable things, in
+    // the order a person should meet them. Bloom Drop is first because it is
+    // the one that answers within a second.
+    const doors = page.locator('.pb-start');
+    await expect(doors).toHaveCount(3);
+    const doorHrefs = await doors.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('href')));
+    expect(doorHrefs).toEqual(['/play/bloom/', '/play/memory-garden/', '/play/balance/']);
+    expect(await doors.evaluateAll((nodes) => nodes.map((node) => node.tagName))).toEqual(['A', 'A', 'A']);
+    await expect(doors.first()).toContainText('Start here');
+    await expect(doors.first()).toContainText('Play now');
 
-    // A ready card is a real link with a real href. A card that looks pressable
-    // and goes nowhere is the failure this replaces the old counting assertion
-    // with — the shelf used to have one playable game and three promises.
-    const ready = page.locator('.pb-card--ready');
-    await expect(ready).toHaveCount(7);
-    const hrefs = await ready.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('href')));
-    // Trailing slashes, because that is the form the canonical tag names and an
-    // internal link without one would bounce every crawler through a redirect.
-    // The order is the register's order (`GAMES`), which is also the order the
-    // shelf is read in: sudoku first, because it is the one the hero offers.
-    expect(hrefs).toEqual([
-      '/play/sudoku/',
-      '/play/nonogram/',
-      '/play/tangram/',
-      '/play/memory-garden/',
-      '/play/balance/',
-      '/play/frog-road/',
-      '/play/bloom/',
-    ]);
-    const tags = await ready.evaluateAll((nodes) => nodes.map((node) => node.tagName));
-    expect(tags).toEqual(['A', 'A', 'A', 'A', 'A', 'A', 'A']);
+    // The other four keep their doors, at a quieter weight. Sudoku is no longer
+    // the hero offer, but its card — and its board — is still pressable.
+    const others = page.locator('.pb-mini-card');
+    await expect(others).toHaveCount(4);
+    const otherHrefs = await others.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('href')));
+    expect(otherHrefs).toEqual(['/play/sudoku/', '/play/nonogram/', '/play/tangram/', '/play/frog-road/']);
 
-    // Nothing is growing, so there is no growing card at all — and no residue of
-    // the disabled-card treatment the shelf used to need. This is the assertion
-    // that catches a `SPROUTING` list emptied of its entries but not of its
-    // markup: a dead card left behind, or an `aria-disabled` on a real link.
-    await expect(page.locator('.pb-card--soon')).toHaveCount(0);
-    await expect(page.locator('.pb-cards [aria-disabled]')).toHaveCount(0);
-    await expect(page.locator('.pb-cards > *')).toHaveCount(7);
-
-    // The sentence above the shelf counts the register instead of repeating a
-    // number: the numbers are words up to five and digits past it, so a sixth
-    // game reads "6 games finished" — honest about being a count. The wording
-    // is taken from the built page: the shelf says the garden is full rather
-    // than promising more, because there is nothing in the ground to promise.
-    await expect(page.locator('.pb-section__head').first()).toContainText(
-      '7 games finished and nothing else growing yet. The garden is full for now.',
-    );
+    // Seven games, seven real links, and nothing dead left on the shelf.
+    expect(doorHrefs.length + otherHrefs.length).toBe(7);
+    await expect(page.locator('[aria-disabled]')).toHaveCount(0);
+    await expect(page.locator('.pb-others')).toContainText('7 games, all playable');
 
     expect(problems).toEqual([]);
+  });
+
+  test('a phone shows all three doors without scrolling', async ({ page }) => {
+    const problems = trackProblems(page);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/');
+
+    const doors = page.locator('.pb-start');
+    await expect(doors).toHaveCount(3);
+
+    // Every one of the three is fully inside the first 844 pixels. This is the
+    // assertion the old page failed loudly: at 390px it showed a drawing and no
+    // button at all, and the first playable thing was two screens down.
+    for (let index = 0; index < 3; index += 1) {
+      const box = await doors.nth(index).boundingBox();
+      expect(box, `door ${index} should have a box`).not.toBeNull();
+      expect(box!.y, `door ${index} should start on screen`).toBeGreaterThanOrEqual(0);
+      expect(box!.y + box!.height, `door ${index} should end on screen`).toBeLessThanOrEqual(844);
+    }
+
+    await expect(doors.first()).toContainText('Bloom Drop');
+    expect(problems).toEqual([]);
+  });
+
+  test('the first door really opens the game', async ({ page }) => {
+    await page.goto('/');
+    await page.locator('.pb-start').first().click();
+
+    await expect(page).toHaveURL(/\/play\/bloom\/?$/);
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Bloom Drop');
   });
 
   test('every route renders and none of them log anything', async ({ page }) => {
     const problems = trackProblems(page);
 
     for (const [path, heading] of [
-      ['/', 'Puzzles that explain themselves'],
+      ['/', 'Seven games. No ads. Play now.'],
       ['/themes', 'Make it yours'],
       ['/parents', 'What this is, and what it refuses to be'],
     ] as const) {

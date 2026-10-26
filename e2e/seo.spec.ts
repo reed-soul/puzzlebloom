@@ -16,7 +16,7 @@ const ROUTES = [
     path: '/',
     title: 'PuzzleBloom — calm puzzle games for kids, no ads, no accounts',
     canonical: 'https://puzzlebloom.taoliapp.com/',
-    heading: 'Puzzles that explain themselves.',
+    heading: 'Seven games. No ads. Play now.',
   },
   {
     path: '/play/sudoku/',
