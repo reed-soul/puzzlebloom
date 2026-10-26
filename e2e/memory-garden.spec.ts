@@ -704,19 +704,19 @@ test('the games can be visited in one session without sharing styles', async ({ 
   if (!coldFirst) throw new Error('the cold board has no box');
 
   await page.getByRole('button', { name: 'Back to the garden' }).click();
-  await page.locator('.pb-card--ready[href="/play/tangram/"]').click();
+  await page.locator('.pb-door[href="/play/tangram/"]').click();
   await page.locator('.pb-tangram-board').waitFor({ timeout: 20_000 });
   await expect(page.locator('.pb-memory')).toHaveCount(0);
   await expect(page.locator(CARD)).toHaveCount(0);
 
   await page.getByRole('button', { name: 'Back to the garden' }).click();
-  await page.locator('.pb-card--ready[href="/play/nonogram/"]').click();
+  await page.locator('.pb-door[href="/play/nonogram/"]').click();
   await page.locator('.pb-nono-cell').first().waitFor({ timeout: 20_000 });
   await expect(page.locator('.pb-memory')).toHaveCount(0);
   await expect(page.locator('.pb-tangram-board')).toHaveCount(0);
 
   await page.getByRole('button', { name: 'Back to the garden' }).click();
-  await page.locator('.pb-card--ready[href="/play/memory-garden/"]').click();
+  await page.locator('.pb-door[href="/play/memory-garden/"]').click();
   await waitForBoard(page);
 
   // Nothing of the other two games is left in the document…

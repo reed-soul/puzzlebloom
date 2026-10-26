@@ -849,3 +849,1066 @@
   left: 4px;
   background: color-mix(in oklab, var(--pb-brand) 42%, var(--pb-accent) 16%, var(--pb-surface));
 }
+
+/* ================================================================== *
+ * agy's front page
+ *
+ * The old hero explained the site for six lines and then offered one door.
+ * This one is a shelf at eye level: a sentence, three live things you can
+ * press, and the rest of the garden below. Everything here is built from the
+ * theme tokens, so a dark mood still works without a second stylesheet.
+ * ================================================================== */
+
+.pb-intro {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  max-width: var(--pb-page);
+  margin: 0 auto;
+  padding: clamp(1.4rem, 3.2vw, 2.5rem) clamp(1rem, 3vw, 2rem) 0;
+}
+
+.pb-intro__copy {
+  display: grid;
+  gap: 0.55rem;
+  max-width: 64ch;
+  animation: pb-rise 460ms var(--pb-ease-out) both;
+}
+
+.pb-intro__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--pb-brand);
+  font-size: var(--pb-fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+/* A small breathing dot. It is the only thing on the page that never stops,
+   and it is four pixels wide — a "we are open" sign, not a demand. */
+.pb-intro__eyebrow::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--pb-brand);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--pb-brand) 16%, transparent);
+  animation: pb-open 2.8s var(--pb-ease) infinite;
+}
+
+@keyframes pb-open {
+  0%,
+  100% {
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--pb-brand) 18%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 7px color-mix(in oklab, var(--pb-brand) 4%, transparent);
+  }
+}
+
+.pb-intro__title {
+  font-size: clamp(2rem, 4.4vw, 3.3rem);
+  max-width: 23ch;
+}
+
+/* The offer on the second line, not buried at the end of the first. At this
+   size "Eight games. No ads." is already a full line on a phone. */
+.pb-intro__title span {
+  display: block;
+  color: var(--pb-brand);
+}
+
+.pb-intro__lede {
+  max-width: 58ch;
+  color: var(--pb-ink-soft);
+  font-size: clamp(0.98rem, 1.4vw, 1.14rem);
+}
+
+/* The sprout is the reward of the first loop, brought out of the jar and made
+   a sticker. Hidden on a phone, where the first screen is for doors. */
+.pb-intro__mascot {
+  position: relative;
+  flex: none;
+  width: 150px;
+  margin-bottom: -0.4rem;
+  transform: rotate(4deg);
+  animation: pb-rise 600ms var(--pb-ease-out) 120ms both;
+}
+
+.pb-intro__mascot img {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 12px 18px color-mix(in oklab, var(--pb-ink) 22%, transparent));
+}
+
+.pb-intro__mascot span {
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  transform: translateX(-50%) rotate(-4deg);
+  padding: 0.18rem 0.5rem;
+  border-radius: var(--pb-r-pill);
+  border: 1.5px solid var(--pb-line-strong);
+  background: var(--pb-surface);
+  color: var(--pb-ink-soft);
+  font-size: 0.7rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* ---------------- the three doors ---------------- */
+
+.pb-launch,
+.pb-others {
+  max-width: var(--pb-page);
+  margin: 0 auto;
+  padding: clamp(1.2rem, 2.6vw, 1.9rem) clamp(1rem, 3vw, 2rem) 0;
+}
+
+.pb-launch__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.pb-launch__head h2 {
+  font-size: clamp(1.15rem, 2vw, 1.45rem);
+}
+
+.pb-launch__head p {
+  color: var(--pb-ink-soft);
+  font-size: var(--pb-fs-sm);
+}
+
+.pb-start-grid {
+  display: grid;
+  grid-template-columns: 1.45fr 1fr 1fr;
+  gap: clamp(0.55rem, 1.3vw, 0.9rem);
+}
+
+.pb-start {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 382px;
+  overflow: hidden;
+  border: 2px solid var(--pb-line-strong);
+  border-radius: var(--pb-r-lg);
+  background: var(--pb-surface);
+  box-shadow: var(--pb-lift-2);
+  color: inherit;
+  text-decoration: none;
+  transition:
+    transform var(--pb-dur) var(--pb-ease),
+    border-color var(--pb-dur) var(--pb-ease),
+    box-shadow var(--pb-dur) var(--pb-ease);
+}
+
+.pb-start:hover {
+  transform: translateY(-5px) rotate(-0.5deg);
+  border-color: var(--pb-brand);
+  box-shadow:
+    var(--pb-lift-2),
+    0 0 0 4px color-mix(in oklab, var(--pb-brand) 12%, transparent);
+}
+
+.pb-start__art {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 208px;
+  overflow: hidden;
+  border-bottom: 2px solid var(--pb-line);
+  background:
+    radial-gradient(120% 90% at 50% 0%, var(--pb-sky-soft), transparent 70%),
+    linear-gradient(
+      180deg,
+      var(--pb-accent-soft),
+      color-mix(in oklab, var(--pb-accent) 38%, var(--pb-surface))
+    );
+}
+
+.pb-start--lead .pb-start__art {
+  background:
+    radial-gradient(100% 80% at 50% 0%, color-mix(in oklab, #fff 30%, transparent), transparent 68%),
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--pb-accent) 24%, var(--pb-surface)),
+      color-mix(in oklab, var(--pb-accent) 58%, var(--pb-surface))
+    );
+}
+
+.pb-start__flag {
+  position: absolute;
+  top: 0.55rem;
+  left: 0.55rem;
+  z-index: 4;
+  padding: 0.22rem 0.6rem;
+  border-radius: var(--pb-r-pill);
+  background: var(--pb-ink);
+  color: var(--pb-surface);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.pb-start__body {
+  display: grid;
+  gap: 0.18rem;
+  padding: 0.85rem 1rem 1.05rem;
+  margin-top: auto;
+}
+
+.pb-start__kicker {
+  color: var(--pb-brand);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.pb-start__title {
+  font-size: clamp(1.12rem, 1.7vw, 1.4rem);
+}
+
+.pb-start__tagline {
+  color: var(--pb-ink-soft);
+  font-size: var(--pb-fs-sm);
+  max-width: 34ch;
+}
+
+.pb-start__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  justify-self: start;
+  margin-top: 0.45rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--pb-r-pill);
+  background: var(--pb-brand);
+  color: var(--pb-brand-ink);
+  box-shadow: 0 3px 0 color-mix(in oklab, var(--pb-brand) 64%, var(--pb-ink));
+  font-size: var(--pb-fs-sm);
+  font-weight: 800;
+}
+
+.pb-start--lead .pb-start__cta {
+  background: var(--pb-accent);
+  color: var(--pb-accent-ink);
+  box-shadow: 0 3px 0 color-mix(in oklab, var(--pb-accent) 58%, var(--pb-ink));
+}
+
+.pb-start:hover .pb-start__cta {
+  gap: 0.5rem;
+}
+
+/* ---------------- the loops ---------------- */
+
+.pb-loop {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.pb-loop img {
+  position: absolute;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Bloom: a landscape crop of the painted jar, two ants, one sprout.
+ *
+ * The source is portrait and the jar only occupies the middle 52% of its
+ * height. Fitting the whole file into a 2:1 card makes the jar tiny; fitting it
+ * by height (the old 118%) left a narrow strip with hard vertical edges. So the
+ * image is blown up to 168% and lifted by 37%: the jar's rim lands at 7% of the
+ * card and its base at 94%, the empty sky and ground above and below are
+ * cropped away, and the jar is finally the subject. The sides fade into a
+ * blurred copy of the same painting, so the crop has no seam.
+ */
+.pb-loop--bloom::before {
+  content: '';
+  position: absolute;
+  inset: -10%;
+  background: url('/art/bloom/jar-scene.webp') center 42% / cover no-repeat;
+  filter: blur(18px) saturate(0.95);
+  opacity: 0.42;
+}
+
+/* A soft pool of light behind the glass, so a pale jar on a pale garden still
+   has an edge. */
+.pb-loop--bloom::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  width: 68%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in oklab, #ffffff 52%, transparent) 0 34%, transparent 70%);
+  pointer-events: none;
+}
+
+.pb-loop__jar {
+  z-index: 1;
+  left: 50%;
+  top: -37%;
+  width: auto;
+  height: 168%;
+  transform: translateX(-50%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 14%, #000 86%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 14%, #000 86%, transparent 100%);
+  filter: drop-shadow(0 10px 16px color-mix(in oklab, var(--pb-ink) 18%, transparent));
+}
+
+.pb-loop__ant {
+  width: clamp(16px, 9%, 40px);
+  top: -16%;
+  translate: -50% 0;
+  z-index: 2;
+  filter: drop-shadow(0 4px 5px color-mix(in oklab, var(--pb-ink) 20%, transparent));
+}
+
+.pb-loop__ant--a {
+  left: 46%;
+  animation: pb-ant-a 10s var(--pb-ease) infinite both;
+}
+
+.pb-loop__ant--b {
+  left: 54%;
+  animation: pb-ant-b 10s var(--pb-ease) infinite both;
+}
+
+.pb-loop__merged {
+  left: 50%;
+  bottom: 10%;
+  width: clamp(26px, 18%, 64px);
+  z-index: 2;
+  opacity: 0;
+  translate: -50% 0;
+  filter: drop-shadow(0 8px 10px color-mix(in oklab, var(--pb-ink) 24%, transparent));
+  animation: pb-merged 10s var(--pb-ease) infinite both;
+}
+
+.pb-loop__plus {
+  position: absolute;
+  left: 60%;
+  bottom: 48%;
+  z-index: 3;
+  padding: 0.08rem 0.34rem;
+  border-radius: var(--pb-r-pill);
+  background: var(--pb-ink);
+  color: var(--pb-surface);
+  font-size: 0.72rem;
+  font-weight: 800;
+  opacity: 0;
+  animation: pb-plus 10s var(--pb-ease) infinite both;
+}
+
+/* 0–3s: both ants fall and meet. 3–5s: the merge and the +6. Then the result
+   sits still for four seconds, which is long enough to read as a jar with a
+   creature in it rather than as a slot machine. */
+@keyframes pb-ant-a {
+  0%,
+  3% {
+    top: -16%;
+    left: 44%;
+    opacity: 0;
+    rotate: -10deg;
+  }
+  5% {
+    opacity: 1;
+  }
+  10% {
+    top: 73%;
+    left: 46%;
+    rotate: 6deg;
+  }
+  12%,
+  22% {
+    top: 74%;
+    left: 46%;
+    rotate: 0deg;
+    opacity: 1;
+  }
+  25%,
+  100% {
+    top: 75%;
+    left: 47%;
+    opacity: 0;
+    scale: 0.7;
+  }
+}
+
+@keyframes pb-ant-b {
+  0%,
+  16% {
+    top: -16%;
+    left: 56%;
+    opacity: 0;
+    rotate: 8deg;
+  }
+  18% {
+    opacity: 1;
+  }
+  26% {
+    top: 73%;
+    left: 54%;
+    rotate: -5deg;
+  }
+  28%,
+  32% {
+    top: 74%;
+    left: 54%;
+    rotate: 0deg;
+    opacity: 1;
+  }
+  35%,
+  100% {
+    top: 75%;
+    left: 53%;
+    opacity: 0;
+    scale: 0.7;
+  }
+}
+
+@keyframes pb-merged {
+  0%,
+  34% {
+    opacity: 0;
+    scale: 0.35;
+  }
+  38% {
+    opacity: 1;
+    scale: 1.12;
+  }
+  42%,
+  100% {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@keyframes pb-plus {
+  0%,
+  38% {
+    opacity: 0;
+    translate: 0 6px;
+  }
+  42% {
+    opacity: 1;
+    translate: 0 0;
+  }
+  72% {
+    opacity: 1;
+    translate: 0 -10px;
+  }
+  84%,
+  100% {
+    opacity: 0;
+    translate: 0 -14px;
+  }
+}
+
+/* Memory: three cards, two of them turning up the same creature. */
+.pb-loop--memory {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+  gap: clamp(4px, 2.4%, 10px);
+  padding: 10% 12%;
+}
+
+.pb-memloop__card {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  transform-style: preserve-3d;
+  transition: transform 320ms var(--pb-ease);
+}
+
+.pb-memloop__card--a {
+  animation: pb-flip-a 10s var(--pb-ease) infinite both;
+}
+
+.pb-memloop__card--c {
+  animation: pb-flip-c 10s var(--pb-ease) infinite both;
+}
+
+.pb-memloop__face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1.5px solid color-mix(in oklab, var(--pb-ink) 18%, transparent);
+  backface-visibility: hidden;
+}
+
+.pb-memloop__face--back {
+  background: url('/art/memory/card-back.webp') center / cover no-repeat;
+  box-shadow: 0 4px 0 color-mix(in oklab, var(--pb-ink) 16%, transparent);
+}
+
+.pb-memloop__face--front {
+  transform: rotateY(180deg);
+  background: var(--pb-surface);
+}
+
+.pb-memloop__face--front img {
+  position: static;
+  width: 82%;
+  height: auto;
+}
+
+.pb-memloop__card--a .pb-memloop__face--front {
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pb-brand) 55%, transparent);
+  animation: pb-kept 10s var(--pb-ease) infinite both;
+}
+
+.pb-memloop__card--c .pb-memloop__face--front {
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pb-brand) 55%, transparent);
+  animation: pb-kept 10s var(--pb-ease) infinite both;
+}
+
+@keyframes pb-flip-a {
+  0%,
+  8% {
+    transform: rotateY(0deg);
+  }
+  16%,
+  100% {
+    transform: rotateY(180deg);
+  }
+}
+
+@keyframes pb-flip-c {
+  0%,
+  24% {
+    transform: rotateY(0deg);
+  }
+  32%,
+  100% {
+    transform: rotateY(180deg);
+  }
+}
+
+@keyframes pb-kept {
+  0%,
+  32% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+  40%,
+  100% {
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--pb-brand) 62%, transparent);
+  }
+}
+
+/* Balance: a 6 against two 3s, tipped until the second tile lands. The post
+   and the foot are what make it read as a balance rather than as a floating
+   shelf; the pans stay level while the beam turns. */
+.pb-loop--balance {
+  position: absolute;
+  inset: 0;
+}
+
+.pb-balloop__post {
+  position: absolute;
+  left: 50%;
+  top: 32%;
+  bottom: 13%;
+  width: 6px;
+  translate: -50% 0;
+  border-radius: 3px 3px 0 0;
+  background: color-mix(in oklab, var(--pb-ink) 30%, var(--pb-surface));
+}
+
+.pb-balloop__foot {
+  position: absolute;
+  left: 50%;
+  bottom: 9%;
+  width: 38%;
+  height: 9px;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--pb-ink) 24%, var(--pb-surface));
+}
+
+.pb-balloop__beam {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 32%;
+  height: 6px;
+  border-radius: 4px;
+  background: color-mix(in oklab, var(--pb-ink) 44%, var(--pb-surface));
+  transform-origin: 50% 50%;
+  animation: pb-beam 10s var(--pb-ease) infinite both;
+}
+
+.pb-balloop__pan {
+  position: absolute;
+  top: 40%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 34%;
+  min-height: 34px;
+  padding: 4px;
+  border: 1.5px solid color-mix(in oklab, var(--pb-ink) 24%, transparent);
+  border-radius: 4px 4px 13px 13px;
+  background: color-mix(in oklab, var(--pb-surface) 80%, transparent);
+}
+
+.pb-balloop__pan--left {
+  left: 3%;
+  animation: pb-pan-left 10s var(--pb-ease) infinite both;
+}
+
+.pb-balloop__pan--right {
+  right: 3%;
+  animation: pb-pan-right 10s var(--pb-ease) infinite both;
+}
+
+/* A string from each pan up to the beam's end. */
+.pb-balloop__pan::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  width: 1.5px;
+  height: clamp(8px, 14%, 22px);
+  background: color-mix(in oklab, var(--pb-ink) 30%, transparent);
+}
+
+.pb-balloop__tile {
+  display: grid;
+  place-items: center;
+  width: clamp(18px, 15%, 32px);
+  aspect-ratio: 1;
+  border-radius: 7px;
+  border: 1.5px solid color-mix(in oklab, var(--pb-brand) 55%, transparent);
+  background: var(--pb-surface);
+  color: var(--pb-ink);
+  font-family: var(--pb-font-display);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.pb-balloop__tile--small {
+  width: clamp(15px, 12%, 26px);
+  font-size: 0.8rem;
+  opacity: 0;
+  animation: pb-tile 10s var(--pb-ease) infinite both;
+}
+
+.pb-balloop__tile--small + .pb-balloop__tile--small {
+  animation-delay: 0.14s;
+}
+
+@keyframes pb-beam {
+  0%,
+  10% {
+    rotate: -8deg;
+  }
+  34% {
+    rotate: -8deg;
+  }
+  54%,
+  100% {
+    rotate: 0deg;
+  }
+}
+
+@keyframes pb-pan-left {
+  0%,
+  34% {
+    top: 44%;
+  }
+  54%,
+  100% {
+    top: 40%;
+  }
+}
+
+@keyframes pb-pan-right {
+  0%,
+  34% {
+    top: 35%;
+  }
+  54%,
+  100% {
+    top: 40%;
+  }
+}
+
+@keyframes pb-tile {
+  0%,
+  18% {
+    opacity: 0;
+    translate: 0 -8px;
+  }
+  32%,
+  100% {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+/* ---------------- the other five ---------------- */
+
+.pb-others__grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: clamp(0.5rem, 1.2vw, 0.8rem);
+}
+
+.pb-mini-card {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+  padding: 0.5rem 0.7rem 0.5rem 0.5rem;
+  border: 2px solid var(--pb-line);
+  border-radius: var(--pb-r-md);
+  background: var(--pb-surface);
+  box-shadow: var(--pb-lift-1);
+  color: inherit;
+  text-decoration: none;
+  transition:
+    transform var(--pb-dur) var(--pb-ease),
+    border-color var(--pb-dur) var(--pb-ease);
+}
+
+.pb-mini-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--pb-brand);
+}
+
+.pb-mini-card__art {
+  display: grid;
+  place-items: center;
+  flex: 0 0 76px;
+  width: 76px;
+  height: 76px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--pb-surface-2);
+}
+
+/* The five small arts were drawn for a wider card; at 76px they need to shrink
+   without being re-cut, so the same drawing is scaled as one object. */
+.pb-mini-card__art .pb-card__art {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  border: 0;
+  background: none;
+}
+
+.pb-mini-card__art .pb-card__art-grid,
+.pb-mini-card__art .pb-card__art-squares,
+.pb-mini-card__art .pb-card__art-triangles,
+.pb-mini-card__art .pb-card__art-pairs,
+.pb-mini-card__art .pb-card__art-balance,
+.pb-mini-card__art .pb-card__art-road {
+  scale: 0.62;
+}
+
+/* The stones are the one drawing on the shelf that is portrait — a plot seen
+   from a corner, taller than it is wide. The square tile has to fit them by
+   height; scaling by width pushes the far corner and the near base out of the
+   box, and the plot reads as a green smear. */
+.pb-mini-card__art .pb-card__art-shadows {
+  width: auto;
+  height: 72px;
+}
+
+.pb-mini-card__body {
+  display: grid;
+  gap: 0.05rem;
+  min-width: 0;
+}
+
+.pb-mini-card__body h3 {
+  font-size: 0.98rem;
+}
+
+.pb-mini-card__tag {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  color: var(--pb-ink-soft);
+  font-size: 0.76rem;
+  line-height: 1.35;
+}
+
+.pb-mini-card__meta {
+  color: var(--pb-ink-faint);
+  font-size: 0.68rem;
+}
+
+/* The sudoku board, small. Box lines every three cells are what make nine
+   squares read as sudoku rather than as a spreadsheet. */
+.pb-sudoku-thumb {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  width: 62px;
+  height: 62px;
+  gap: 1px;
+  overflow: hidden;
+  border: 1.5px solid var(--pb-grid-box);
+  border-radius: 4px;
+  background: var(--pb-grid-line);
+}
+
+.pb-sudoku-thumb span {
+  background: var(--pb-cell);
+}
+
+.pb-sudoku-thumb span.is-given {
+  background: color-mix(in oklab, var(--pb-ink) 34%, var(--pb-surface));
+}
+
+.pb-sudoku-thumb span.is-live {
+  background: var(--pb-brand);
+}
+
+.pb-sudoku-thumb span:nth-child(9n + 3),
+.pb-sudoku-thumb span:nth-child(9n + 6) {
+  border-right: 1px solid var(--pb-grid-box);
+}
+
+.pb-sudoku-thumb span:nth-child(n + 19):nth-child(-n + 27),
+.pb-sudoku-thumb span:nth-child(n + 46):nth-child(-n + 54) {
+  border-bottom: 1px solid var(--pb-grid-box);
+}
+
+/* ---------------- promises, trimmed ---------------- */
+
+.pb-promises .pb-trust__item {
+  padding: 0.9rem 1rem 1rem;
+}
+
+/* ---------------- the grown-up door ---------------- */
+
+.pb-grownup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: min(calc(100% - 2rem), var(--pb-page));
+  margin: clamp(2.5rem, 5vw, 3.5rem) auto 0;
+  padding: 1rem 1.15rem;
+  border: 1.5px dashed var(--pb-line-strong);
+  border-radius: var(--pb-r-md);
+}
+
+.pb-grownup__copy {
+  display: grid;
+  gap: 0.15rem;
+  max-width: 62ch;
+}
+
+.pb-grownup__copy h2 {
+  font-size: var(--pb-fs-md);
+}
+
+.pb-grownup__copy p {
+  color: var(--pb-ink-soft);
+  font-size: var(--pb-fs-sm);
+}
+
+/* ---------------- between the phone and a wide desktop ---------------- */
+
+/* Five in one row needs about 900px of page before the title column under each
+   drawing gets too narrow to hold a word. Below that the row becomes three,
+   which leaves a 3 + 2 block rather than a stranded card. */
+@media (max-width: 980px) {
+  .pb-others__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ---------------- phone ---------------- */
+
+@media (max-width: 760px) {
+  .pb-intro {
+    padding-top: 0.9rem;
+    align-items: flex-start;
+  }
+
+  .pb-intro__title {
+    font-size: 1.9rem;
+    max-width: none;
+  }
+
+  .pb-intro__lede {
+    font-size: 0.94rem;
+    line-height: 1.45;
+  }
+
+  .pb-intro__mascot {
+    display: none;
+  }
+
+  .pb-launch {
+    padding-top: 1rem;
+  }
+
+  .pb-launch__head {
+    margin-bottom: 0.55rem;
+  }
+
+  .pb-launch__head p {
+    display: none;
+  }
+
+  .pb-start-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.55rem;
+  }
+
+  .pb-start {
+    flex-direction: row;
+    min-height: 0;
+  }
+
+  .pb-start__art {
+    flex: 0 0 96px;
+    width: 96px;
+    min-height: 96px;
+    border-right: 2px solid var(--pb-line);
+    border-bottom: 0;
+  }
+
+  .pb-start__flag {
+    display: none;
+  }
+
+  .pb-start__body {
+    align-content: center;
+    padding: 0.5rem 0.75rem 0.55rem;
+    gap: 0.05rem;
+  }
+
+  .pb-start__kicker {
+    display: none;
+  }
+
+  .pb-start__title {
+    font-size: 1.05rem;
+  }
+
+  .pb-start__tagline {
+    font-size: 0.78rem;
+    line-height: 1.35;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .pb-start__cta {
+    margin-top: 0.28rem;
+    padding: 0.28rem 0.65rem;
+    font-size: 0.74rem;
+  }
+
+  .pb-start__cta svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  /* On a 96px tile the jar and the memory cards need their padding back. */
+  .pb-loop--memory {
+    padding: 14% 10%;
+  }
+
+  /* A little less zoom on a 96px tile, so the rim has air above it. */
+  .pb-loop__jar {
+    top: -22%;
+    height: 150%;
+  }
+
+  /* A little less zoom on a 96px tile, so the rim has air above it. */
+  .pb-loop__jar {
+    top: -22%;
+    height: 150%;
+  }
+
+  .pb-loop__ant {
+    width: 16px;
+  }
+
+  .pb-loop__merged {
+    width: 26px;
+  }
+
+  .pb-balloop__pan {
+    width: 40%;
+    min-height: 26px;
+  }
+
+  .pb-balloop__tile {
+    font-size: 0.8rem;
+  }
+
+  .pb-others__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pb-mini-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+    padding: 0.45rem;
+  }
+
+  .pb-mini-card__art {
+    flex: none;
+    width: 100%;
+    height: 74px;
+  }
+
+  .pb-mini-card__tag {
+    display: none;
+  }
+
+  /* Five cards over two columns leaves the fifth alone in a row of one. It
+     takes the whole width and goes back to the row layout the desktop card
+     uses, rather than stretching its drawing into a wide, short banner. */
+  .pb-others__grid > .pb-mini-card:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .pb-others__grid > .pb-mini-card:last-child:nth-child(odd) .pb-mini-card__art {
+    flex: 0 0 84px;
+    width: 84px;
+    height: 84px;
+  }
+
+  /* The wide card has the room the narrow ones do not, so it keeps the sentence
+     the others drop on a phone. */
+  .pb-others__grid > .pb-mini-card:last-child:nth-child(odd) .pb-mini-card__tag {
+    display: -webkit-box;
+  }
+
+  .pb-grownup {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

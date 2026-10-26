@@ -1,9 +1,9 @@
 import { CARD_STONES } from '@puzzlebloom/shadows-engine/card';
 import { CARD_FIGURE } from '@puzzlebloom/tangram-engine/card';
-import { Chip, CreatureGlyph, Icon, type IconName } from '@puzzlebloom/ui';
+import { CreatureGlyph, Icon, type IconName } from '@puzzlebloom/ui';
 import { useTheme } from '@puzzlebloom/ui/theme';
 import { Link } from '../app/router';
-import { GAMES, type GameManifest, SPROUTING } from '../games/registry';
+import { GAMES, type GameManifest } from '../games/registry';
 import { LinkButton } from '../shell/LinkButton';
 
 /** A real, valid grid, thinned out. Decoration that happens to be truthful. */
@@ -32,27 +32,32 @@ const TRUST: Array<{ icon: IconName; title: string; body: string }> = [
   },
 ];
 
-function PreviewBoard() {
-  return (
-    <div className="pb-mini" aria-hidden="true">
-      {Array.from(PREVIEW).map((char, index) => (
-        <span
-          // biome-ignore lint/suspicious/noArrayIndexKey: the string is fixed-length and never reorders, so an index is the cell's identity
-          key={index}
-          className={`pb-mini__cell${char === '.' ? ' is-empty' : ''}${
-            index === 40
-              ? ' is-live'
-              : index === 39 || index === 41 || index === 31 || index === 49
-                ? ' is-near'
-                : ''
-          }`}
-        >
-          {char === '.' ? null : <CreatureGlyph digit={Number(char)} size={24} />}
-        </span>
-      ))}
-    </div>
-  );
-}
+/**
+ * The three doors on the first screen, in the order a person should meet them.
+ *
+ * Bloom Drop first because it answers within one tap and one second — a creature
+ * falls, two touch, something bigger exists. Memory Garden second because the
+ * rules need no sentence at all. Number Balance third because it is one idea
+ * (both sides the same) wearing a toy.
+ *
+ * Named here rather than added to the register's order: the register is the
+ * shelf's order and every card is equal on it, which is exactly what the first
+ * screen must not be. A manifest missing from this list falls through to "the
+ * other four" rather than disappearing.
+ */
+const FIRST = ['bloom', 'memory-garden', 'balance'] as const;
+
+const KICKER: Record<string, string> = {
+  bloom: 'Fastest to get',
+  'memory-garden': 'No reading needed',
+  balance: 'One rule',
+};
+
+const PITCH: Record<string, string> = {
+  bloom: 'Drop two of the same creature and they become one bigger friend.',
+  'memory-garden': 'Turn over two cards. Keep the pair that matches.',
+  balance: 'One side holds a number. Make the other side weigh the same.',
+};
 
 /** What a finished game draws on its card. Both are decoration, both are true. */
 function CreaturesArt() {
@@ -70,9 +75,6 @@ function CreaturesArt() {
 /**
  * A five-by-five picture, which is exactly what a nonogram is — and specifically
  * the leaf the game ships, so the card is not a promise the puzzle cannot keep.
- * Drawn here rather than imported from the game: the home page must not pull a
- * game's chunk in to decorate a card, and five rows of squares do not need a
- * component library.
  */
 const CARD_PICTURE = [6, 7, 8, 10, 11, 12, 13, 14, 16, 17, 18, 22];
 
@@ -89,10 +91,7 @@ function SquaresArt() {
 
 /**
  * The card's viewBox, worked out from the polygons rather than written down
- * beside them. The four numbers of a viewBox are read as "x, y, width, height",
- * and a second copy of the geometry is a second thing that can drift out of step
- * with the first — which is how the card came to be drawing the wrong figure in
- * the first place.
+ * beside them, so a second copy of the geometry cannot drift out of step.
  */
 function viewBoxOf(polygons: readonly string[], padding = 0.3): string {
   const xs: number[] = [];
@@ -111,10 +110,7 @@ function viewBoxOf(polygons: readonly string[], padding = 0.3): string {
 
 /**
  * A real tangram figure — the sail the game ships, at the coordinates the engine
- * draws it with, so the card shows something a child can actually build. The
- * polygons come from the engine's card module rather than from a copy kept here:
- * the copy used to be here, and it went on drawing a house for a while after the
- * house left the library. Importing that module costs seven string literals; it
+ * draws it with. Importing the card module costs seven string literals; it
  * imports nothing itself, so the engine stays out of the front page's bundle.
  */
 function TrianglesArt() {
@@ -128,14 +124,6 @@ function TrianglesArt() {
   );
 }
 
-/**
- * A memory board caught mid-round: two cards up, four still face down.
- *
- * The two that are up show the same creature, because the one thing this card
- * can show truthfully is a pair that has been matched. Drawn here rather than
- * imported from the game, for the same reason as the other three: the home page
- * must not pull a game's chunk in to decorate a card.
- */
 const CARD_PAIRS: Array<number | null> = [2, null, null, null, null, 2];
 
 function PairsArt() {
@@ -151,11 +139,6 @@ function PairsArt() {
   );
 }
 
-/**
- * A balance caught just off level: the numeral pan heavier than the frog pan,
- * which is the state the whole game exists to resolve. Three frogs against a
- * "4" tile — one short, beam tipped toward the number, the next move obvious.
- */
 function BalanceArt() {
   return (
     <div className="pb-card__art-balance" aria-hidden="true">
@@ -170,11 +153,6 @@ function BalanceArt() {
   );
 }
 
-/**
- * A road caught mid-ride: a run of plus squares behind the car, a minus square
- * ahead of it, frogs aboard. That is the whole game in one glance — where you
- * are decides what the dice do to your count.
- */
 function RoadArt() {
   return (
     <div className="pb-card__art-road" aria-hidden="true">
@@ -193,6 +171,11 @@ function RoadArt() {
  * A jar caught mid-drop: three tiers of the ladder visible, the smallest
  * falling toward two who are about to become one. The merge is the game, so
  * the card shows the moment before it.
+ *
+ * Unused by the current first screen — Bloom is one of the three doors and
+ * wears `BloomLoop` instead. Kept because `FIRST` is only a preference: a
+ * manifest that falls out of it lands in "the other five", and it should not
+ * arrive there with an empty box where its drawing used to be.
  */
 function BloomsArt() {
   return (
@@ -258,142 +241,212 @@ function ShadowsArt() {
 }
 
 function Art({ game }: { game: GameManifest }) {
-  if (game.status === 'ready') {
-    return (
-      <div className={`pb-card__art pb-card__art--${game.tone}`} aria-hidden="true">
-        {game.art === 'squares' ? <SquaresArt /> : null}
-        {game.art === 'tangram' ? <TrianglesArt /> : null}
-        {game.art === 'pairs' ? <PairsArt /> : null}
-        {game.art === 'balance' ? <BalanceArt /> : null}
-        {game.art === 'road' ? <RoadArt /> : null}
-        {game.art === 'blooms' ? <BloomsArt /> : null}
-        {game.art === 'shadows' ? <ShadowsArt /> : null}
-        {game.art === 'creatures' || !game.art ? <CreaturesArt /> : null}
-      </div>
-    );
-  }
   return (
     <div className={`pb-card__art pb-card__art--${game.tone}`} aria-hidden="true">
-      <div className="pb-card__art-dots">
-        {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((cell) => (
-          <span key={cell} className={cell === 4 ? 'is-lit' : cell === 1 || cell === 7 ? 'is-half' : ''} />
-        ))}
-      </div>
+      {game.art === 'squares' ? <SquaresArt /> : null}
+      {game.art === 'tangram' ? <TrianglesArt /> : null}
+      {game.art === 'pairs' ? <PairsArt /> : null}
+      {game.art === 'balance' ? <BalanceArt /> : null}
+      {game.art === 'road' ? <RoadArt /> : null}
+      {game.art === 'blooms' ? <BloomsArt /> : null}
+      {game.art === 'shadows' ? <ShadowsArt /> : null}
+      {game.art === 'creatures' || !game.art ? <CreaturesArt /> : null}
     </div>
   );
 }
 
 /**
- * Numbers as words, for the shelf's one counted sentence.
+ * Sudoku's own little board, for its card in "the other four".
  *
- * "Two games finished" reads like a sentence and "2 games finished" reads like a
- * dashboard, and this site talks rather than reports. The list stops at five
- * because a garden with more than five games in it would want a different
- * sentence, not a longer table — past that it falls back to digits, which is
- * honest about being a count.
+ * The old front page put the big board in the hero and it was the best drawing
+ * on the site — and completely dead. Here the same valid grid is small, inside a
+ * link, so the prettiest thing on the page is also a door. The digits are
+ * dropped at this size (nine columns of 6px cannot carry a numeral); the boxes
+ * and the filled cells still read as sudoku.
  */
-const NUMBER_WORDS = ['no', 'one', 'two', 'three', 'four', 'five'] as const;
+function SudokuThumb() {
+  return (
+    <div className="pb-sudoku-thumb" aria-hidden="true">
+      {Array.from(PREVIEW).map((char, index) => (
+        // biome-ignore lint/suspicious/noArrayIndexKey: fixed grid, nothing reorders
+        <span key={index} className={char === '.' ? 'is-empty' : index === 40 ? 'is-live' : 'is-given'} />
+      ))}
+    </div>
+  );
+}
 
-const countWord = (n: number): string => NUMBER_WORDS[n] ?? String(n);
+/**
+ * Bloom Drop, looping every ten seconds.
+ *
+ * Two ants fall, meet on the jar floor and become a sprout. Ten seconds is short
+ * enough to catch the whole story if you land on it mid-loop, long enough that
+ * it reads as something alive rather than a GIF begging for attention. The
+ * painted jar is the game's own art; the creatures are the game's own tiers.
+ */
+function BloomLoop() {
+  return (
+    <div className="pb-loop pb-loop--bloom">
+      <img className="pb-loop__jar" src="/art/bloom/jar-scene.webp" alt="" draggable={false} />
+      <img
+        className="pb-loop__ant pb-loop__ant--a"
+        src="/art/bloom/creature-ant.png"
+        alt=""
+        draggable={false}
+      />
+      <img
+        className="pb-loop__ant pb-loop__ant--b"
+        src="/art/bloom/creature-ant.png"
+        alt=""
+        draggable={false}
+      />
+      <img className="pb-loop__merged" src="/art/bloom/creature-sprout.png" alt="" draggable={false} />
+      <span className="pb-loop__plus">+6</span>
+    </div>
+  );
+}
 
-const capitalised = (text: string): string => text.charAt(0).toUpperCase() + text.slice(1);
+/**
+ * Memory Garden: two of three cards turn up and match. The middle card stays
+ * face down on purpose — a card that flips everything proves nothing about the
+ * game, and the one left alone is the reason the pair matters.
+ */
+function MemoryLoop() {
+  return (
+    <div className="pb-loop pb-loop--memory">
+      <span className="pb-memloop__card pb-memloop__card--a">
+        <span className="pb-memloop__face pb-memloop__face--back" />
+        <span className="pb-memloop__face pb-memloop__face--front">
+          <img src="/art/memory/creature-rabbit.png" alt="" draggable={false} />
+        </span>
+      </span>
+      <span className="pb-memloop__card pb-memloop__card--b">
+        <span className="pb-memloop__face pb-memloop__face--back" />
+        <span className="pb-memloop__face pb-memloop__face--front">
+          <img src="/art/memory/creature-owl.png" alt="" draggable={false} />
+        </span>
+      </span>
+      <span className="pb-memloop__card pb-memloop__card--c">
+        <span className="pb-memloop__face pb-memloop__face--back" />
+        <span className="pb-memloop__face pb-memloop__face--front">
+          <img src="/art/memory/creature-rabbit.png" alt="" draggable={false} />
+        </span>
+      </span>
+    </div>
+  );
+}
+
+/**
+ * Number Balance: a "6" against a "3" and three frogs. It starts tipped because
+ * that is the problem, and levels at the moment the last frog lands. The tile
+ * and the frogs are the game's own pieces; no new drawing.
+ */
+function BalanceLoop() {
+  return (
+    <div className="pb-loop pb-loop--balance" aria-hidden="true">
+      <span className="pb-balloop__post" />
+      <span className="pb-balloop__foot" />
+      <span className="pb-balloop__beam" />
+      <span className="pb-balloop__pan pb-balloop__pan--left">
+        <span className="pb-balloop__tile">6</span>
+      </span>
+      <span className="pb-balloop__pan pb-balloop__pan--right">
+        <span className="pb-balloop__tile pb-balloop__tile--small">3</span>
+        <span className="pb-balloop__tile pb-balloop__tile--small">3</span>
+      </span>
+    </div>
+  );
+}
+
+function Loop({ id }: { id: string }) {
+  if (id === 'bloom') return <BloomLoop />;
+  if (id === 'memory-garden') return <MemoryLoop />;
+  if (id === 'balance') return <BalanceLoop />;
+  return null;
+}
+
+function StartCard({ game, lead }: { game: GameManifest; lead: boolean }) {
+  return (
+    <Link to={game.route} className={`pb-start pb-door${lead ? ' pb-start--lead' : ''}`}>
+      <div className="pb-start__art" aria-hidden="true">
+        <Loop id={game.id} />
+        {lead ? <span className="pb-start__flag">Start here</span> : null}
+      </div>
+      <div className="pb-start__body">
+        <span className="pb-start__kicker">{KICKER[game.id] ?? game.tagline}</span>
+        <h3 className="pb-start__title">{game.title}</h3>
+        <span className="pb-start__tagline">{PITCH[game.id] ?? game.tagline}</span>
+        <span className="pb-start__cta">
+          {lead ? 'Play now' : 'Play'}
+          <Icon name="arrowRight" size={16} />
+        </span>
+      </div>
+    </Link>
+  );
+}
 
 export function Home() {
   const { builtIns, apply, theme } = useTheme();
-  const [first] = GAMES;
 
-  // Counted from the register rather than written down, because a sentence with
-  // a number in it is a sentence that goes stale the moment a game ships. The
-  // "growing" half disappears rather than reading "no growing", which is how a
-  // finished garden should sound.
-  const finished = `${capitalised(countWord(GAMES.length))} game${GAMES.length === 1 ? '' : 's'} finished`;
-  const growing =
-    SPROUTING.length === 0 ? 'nothing else growing yet' : `${countWord(SPROUTING.length)} growing`;
+  const first = FIRST.map((id) => GAMES.find((game) => game.id === id)).filter((game): game is GameManifest =>
+    Boolean(game),
+  );
+  const rest = GAMES.filter((game) => !FIRST.includes(game.id as (typeof FIRST)[number]));
 
   return (
     <>
-      <section className="pb-hero">
-        <div className="pb-hero__copy">
-          <Chip tone="brand">A quiet corner of the internet</Chip>
-          <h1 className="pb-hero__title">Puzzles that explain themselves.</h1>
-          <p className="pb-hero__lede">
-            A small garden of puzzles for children. Sudoku, where nine hand-drawn creatures each need exactly
-            one home. Nonogram, where the numbers beside every line add up to a drawing you have not seen yet.
-            Tangram, where seven flat shapes have to cover a silhouette exactly, and any arrangement that
-            covers it is the right answer. Memory Garden, where the cards are the garden’s own creatures and a
-            pair that misses stays face up until you turn the next one. No timer shouting, no streak to break,
-            no score to chase. Just the next move, and then an account of what you did with it.
+      <section className="pb-intro" aria-labelledby="intro-title">
+        <div className="pb-intro__copy">
+          <p className="pb-intro__eyebrow">No ads · no sign-up · nothing to lose</p>
+          <h1 id="intro-title" className="pb-intro__title">
+            Eight games. No ads. <span>Play now.</span>
+          </h1>
+          <p className="pb-intro__lede">
+            Bloom Drop is the fastest to get: drop two of the same creature and they become one bigger friend.
+            Ten seconds in, you will have made something. No timer, no streak, no account.
           </p>
-          <div className="pb-hero__actions">
-            <LinkButton to={first.route} variant="loud" size="lg" iconLeft="play">
-              Play {first.title}
-            </LinkButton>
-            <LinkButton to="/themes" variant="secondary" size="lg" iconLeft="palette">
-              Make it yours
-            </LinkButton>
-          </div>
-          <p className="pb-hero__note">Free · no account · works offline once the page has loaded</p>
         </div>
-
-        <div className="pb-hero__art">
-          <PreviewBoard />
-          <p className="pb-hero__caption">
-            Nine creatures. One rule: no repeats in a row, a column, or a box.
-          </p>
+        <div className="pb-intro__mascot" aria-hidden="true">
+          <img src="/art/bloom/creature-sprout.png" alt="" width={150} height={150} draggable={false} />
+          <span>two ants → this</span>
         </div>
       </section>
 
-      <section className="pb-section" aria-labelledby="garden-title">
-        <div className="pb-section__head">
-          <h2 id="garden-title">In the garden</h2>
+      <section className="pb-launch" aria-labelledby="launch-title">
+        <div className="pb-launch__head">
+          <h2 id="launch-title">Start here</h2>
+          <p>Three that answer within one tap. Bloom first, for a reason.</p>
+        </div>
+        <div className="pb-start-grid">
+          {first.map((game, index) => (
+            <StartCard key={game.id} game={game} lead={index === 0} />
+          ))}
+        </div>
+      </section>
+
+      <section className="pb-others" aria-labelledby="others-title">
+        <div className="pb-launch__head">
+          <h2 id="others-title">The other five</h2>
           <p>
-            {/* The trailing sentence changes when nothing is growing: "each one
-                arrives when it is actually good" is a promise about the future,
-                and a garden with nothing in the ground should say so rather than
-                keep promising. */}
-            {finished} and {growing}.
-            {SPROUTING.length > 0
-              ? ' Each one arrives when it is actually good.'
-              : ' The garden is full for now.'}
+            {GAMES.length} games, all playable. Nothing here is “coming soon”; the garden is full for now.
           </p>
         </div>
-
-        <div className="pb-cards">
-          {GAMES.map((game) => (
-            <Link key={game.id} to={game.route} className="pb-card pb-card--ready">
-              <Art game={game} />
-              <div className="pb-card__body">
-                <div className="pb-card__row">
-                  <h3>{game.title}</h3>
-                  <Chip tone="brand">Ready</Chip>
-                </div>
-                <p className="pb-card__tagline">{game.tagline}</p>
-                <p className="pb-card__meta">
-                  {game.ageRange} · {game.typicalMinutes} · {game.skills.join(' · ')}
-                </p>
+        <div className="pb-others__grid">
+          {rest.map((game) => (
+            <Link key={game.id} to={game.route} className="pb-mini-card pb-door">
+              <div className="pb-mini-card__art">
+                {game.id === 'sudoku' ? <SudokuThumb /> : <Art game={game} />}
+              </div>
+              <div className="pb-mini-card__body">
+                <h3>{game.title}</h3>
+                <span className="pb-mini-card__tag">{game.tagline}</span>
+                <span className="pb-mini-card__meta">{game.typicalMinutes}</span>
               </div>
             </Link>
           ))}
-
-          {SPROUTING.map((game) => (
-            <div key={game.id} className="pb-card pb-card--soon" aria-disabled="true">
-              <Art game={game} />
-              <div className="pb-card__body">
-                <div className="pb-card__row">
-                  <h3>{game.title}</h3>
-                  <Chip>Growing</Chip>
-                </div>
-                <p className="pb-card__tagline">{game.tagline}</p>
-                <p className="pb-card__meta">
-                  {game.ageRange} · {game.skills.join(' · ')}
-                </p>
-              </div>
-            </div>
-          ))}
         </div>
       </section>
 
-      <section className="pb-section" aria-labelledby="safe-title">
+      <section className="pb-section pb-promises" aria-labelledby="safe-title">
         <div className="pb-section__head">
           <h2 id="safe-title">What it will never do</h2>
           <p>Four promises that are cheaper to keep because there is no server behind this site at all.</p>
@@ -413,11 +466,8 @@ export function Home() {
 
       <section className="pb-section" aria-labelledby="mood-title">
         <div className="pb-section__head">
-          <h2 id="mood-title">Pick a mood</h2>
-          <p>
-            Five ways to look, and a studio for making a sixth. Colours chosen here change the whole site
-            instantly — and a theme your child makes can be sent to a friend as a link.
-          </p>
+          <h2 id="mood-title">Change how it looks</h2>
+          <p>Pick a mood and the whole site changes instantly. Make a sixth one in the theme studio.</p>
         </div>
         <div className="pb-moods">
           {builtIns.map((mood) => (
@@ -446,19 +496,18 @@ export function Home() {
         </div>
       </section>
 
-      <section className="pb-band">
-        <div className="pb-band__copy">
-          <h2>For the grown-up doing the handing over</h2>
+      <aside className="pb-grownup" aria-labelledby="grownup-title">
+        <div className="pb-grownup__copy">
+          <h2 id="grownup-title">For the grown-up nearby</h2>
           <p>
-            This site exists because a parent wanted one place on the internet where the answer to “can I play
-            something?” was simply yes. Here is exactly what it stores, what it never asks for, and why the
-            hints teach instead of solving.
+            No ads, no accounts, no chat, no tracking. Puzzles are generated on this device, and nothing is
+            sent anywhere. The long version is one page.
           </p>
         </div>
-        <LinkButton to="/parents" variant="primary" size="md" iconRight="arrowRight">
-          Read the parent notes
+        <LinkButton to="/parents" variant="secondary" size="md" iconRight="arrowRight">
+          The grown-up notes
         </LinkButton>
-      </section>
+      </aside>
     </>
   );
 }

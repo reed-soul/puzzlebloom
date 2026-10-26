@@ -129,9 +129,14 @@ test.describe('bloom drop', () => {
   {}, testInfo) => {
     test.skip(testInfo.project.name !== 'chromium', 'HTML-in-Canvas is Chromium-only behind its flag');
     const browser = await chromium.launch({ args: ['--enable-blink-features=CanvasDrawElement'] });
-    const page = await browser.newPage();
+    // This test makes its own browser, so it inherits nothing from the config:
+    // the origin has to be handed over by hand. Hard-coding one here is how it
+    // spent months passing locally and failing against every other server,
+    // including the deployed site the same suite is meant to smoke-test.
+    const baseURL = testInfo.project.use.baseURL;
+    const page = await browser.newPage({ baseURL });
     const problems = trackProblems(page);
-    await page.goto('http://127.0.0.1:4173/play/bloom/');
+    await page.goto('/play/bloom/');
 
     // The canvas layer mounts with its opt-in attribute; the DOM layer stands
     // down (hidden), and the game still plays through the canvas path.
