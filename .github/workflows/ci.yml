@@ -5,6 +5,10 @@ on:
     branches: [master]
   pull_request:
 
+# Deploy is not in GitHub Actions. The hosted Actions quota for Pages/deploy
+# is exhausted, so shipping is local: `pnpm deploy` (wrangler) or SSH.
+# Do not add a wrangler/pages deploy job on push or merge to master.
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -37,8 +41,8 @@ jobs:
         # desktop layout project.
         run: pnpm exec playwright install --with-deps chromium webkit
       # `build:seo` before the suite, not after: the prerender needs a browser,
-      # and the tests then run against exactly the artifact that gets deployed —
-      # real files per route, real 404s — rather than an SPA preview server.
+      # and the tests then run against the production artifact — real files per
+      # route, real 404s — rather than an SPA preview server.
       - name: Build and prerender
         run: pnpm run build:seo
       - name: End-to-end tests
@@ -50,53 +54,3 @@ jobs:
           name: playwright-report
           path: playwright-report
           retention-days: 7
-      # Hand the tested artifact to the deploy job. Uploading here rather than
-      # rebuilding there is the whole point of the ordering above: what ships is
-      # the directory the E2E suite just ran against, byte for byte.
-      - name: Keep the built site
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: actions/upload-artifact@v7
-        with:
-          name: dist
-          path: apps/web/dist
-          retention-days: 3
-
-  deploy:
-    needs: build
-    # Merges only. A pull request has passed the same suite, but nothing about
-    # a green branch should put it in front of users without a merge.
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    runs-on: ubuntu-latest
-    concurrency:
-      # Never two deploys at once, and never cancel one halfway through an
-      # upload: a partial deployment is worse than a queued one.
-      group: deploy-pages
-      cancel-in-progress: false
-    steps:
-      - uses: actions/checkout@v7
-      # `wrangler.toml` names the project and the output directory, so the
-      # checkout is required even though the files to upload come from below.
-      - uses: actions/download-artifact@v7
-        with:
-          name: dist
-          path: apps/web/dist
-      # No `version:` here on purpose — pnpm/action-setup reads the
-      # `packageManager` field, so CI and laptops cannot drift apart.
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v7
-        with:
-          node-version-file: .nvmrc
-          cache: pnpm
-      # Only needed for `wrangler` itself. It is a devDependency, not an `npx`
-      # download, so the version that deploys is the version in the lockfile.
-      - run: pnpm install --frozen-lockfile
-      - name: Deploy to Cloudflare Pages
-        run: pnpm exec wrangler pages deploy
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          # A variable, not a secret: the account ID is visible in every
-          # `.pages.dev` URL this project has ever served.
-          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
-      # Last, so the engines are only told about a deployment that succeeded.
-      - name: Submit URLs to IndexNow
-        run: pnpm run indexnow
