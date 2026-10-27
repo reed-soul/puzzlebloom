@@ -20,8 +20,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   padding: 0;
   border-radius: var(--pb-r-pill);
   border: 1.5px solid var(--pb-line);
@@ -137,13 +137,22 @@
   display: grid;
   place-items: center;
   border: 0;
-  border-radius: 12px;
-  background: var(--pb-surface-2);
+  border-radius: 18px;
+  background: color-mix(in oklab, var(--pb-brand) 10%, var(--pb-surface-2));
   color: var(--pb-ink);
   cursor: pointer;
   font-family: var(--pb-font-display);
   font-size: clamp(1rem, 4vw, 1.4rem);
   font-weight: 700;
+  min-height: 72px;
+}
+
+.pb-tri-cell img {
+  width: 72%;
+  height: 72%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
 }
 
 .pb-tri-cell:hover {

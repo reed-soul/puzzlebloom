@@ -1,5 +1,5 @@
 import { canSlide, createPuzzle, isSolved, type Size, slide } from '@puzzlebloom/sliding-engine';
-import { Button, CreatureGlyph, chime, Icon, Segmented } from '@puzzlebloom/ui';
+import { Button, bloomCreature, chime, GardenCreature, Icon, Segmented } from '@puzzlebloom/ui';
 import { useCallback, useState } from 'react';
 import './sliding.css';
 
@@ -66,13 +66,18 @@ export function SlidingGame({ onExit }: Props) {
               disabled={tile === 0 || solved}
               aria-label={tile === 0 ? 'Empty square' : `Tile ${tile}`}
             >
-              {tile === 0 ? null : <CreatureGlyph digit={((tile - 1) % 9) + 1} size={36} />}
+              {tile === 0 ? null : (
+                <>
+                  <GardenCreature name={bloomCreature(tile - 1)} />
+                  {state.size === 4 ? <span className="pb-slide-num">{tile}</span> : null}
+                </>
+              )}
             </button>
           ))}
         </div>
         <aside className="pb-play__side">
           <p className="pb-calm-note">
-            Tap a creature next to the empty square. Keep sliding until every friend is home, in order.
+            Tap a friend next to the empty square. Keep sliding until every creature is home.
           </p>
           <Segmented
             label="Board size"

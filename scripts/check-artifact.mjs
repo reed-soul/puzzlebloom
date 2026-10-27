@@ -204,6 +204,37 @@ if (!exists(robotsFile)) {
   const robots = await read(robotsFile);
   if (!robots.includes(`Sitemap: ${site.url}/sitemap.xml`)) bad('robots.txt names no sitemap');
   if (!robots.includes('Disallow: /404.html')) bad('robots.txt does not disallow /404.html');
+  for (const agent of [
+    'GPTBot',
+    'ClaudeBot',
+    'anthropic-ai',
+    'CCBot',
+    'Bytespider',
+    'Google-Extended',
+    'Applebot-Extended',
+    'meta-externalagent',
+    'cohere-training-data-crawler',
+    'Diffbot',
+    'omgili',
+  ]) {
+    if (!robots.includes(`User-agent: ${agent}`)) bad(`robots.txt does not name ${agent}`);
+  }
+  if (/User-agent: GPTBot\nAllow: \//.test(robots)) {
+    bad('robots.txt still allows GPTBot (training crawlers must Disallow: /)');
+  }
+  for (const agent of [
+    'OAI-SearchBot',
+    'ChatGPT-User',
+    'PerplexityBot',
+    'Perplexity-User',
+    'Claude-SearchBot',
+    'Claude-User',
+  ]) {
+    if (!robots.includes(`User-agent: ${agent}`)) bad(`robots.txt does not keep ${agent}`);
+    if (new RegExp(`User-agent: ${agent}\\nDisallow: /`).test(robots)) {
+      bad(`robots.txt blocks retrieval bot ${agent}`);
+    }
+  }
 }
 
 console.log('\nFiles that are not HTML');

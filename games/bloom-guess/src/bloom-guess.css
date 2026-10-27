@@ -20,8 +20,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   padding: 0;
   border-radius: var(--pb-r-pill);
   border: 1.5px solid var(--pb-line);
@@ -210,7 +210,7 @@
   margin-inline: auto;
 }
 .pb-guess-key {
-  min-height: 44px;
+  min-height: 48px;
   border: 1.5px solid var(--pb-line);
   border-radius: 10px;
   background: var(--pb-surface);
@@ -227,7 +227,9 @@
 .pb-guess-petals {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 8px;
+  margin-bottom: 0.6rem;
 }
 .pb-guess-petal {
   width: 22px;

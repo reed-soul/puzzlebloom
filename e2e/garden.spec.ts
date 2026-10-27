@@ -18,10 +18,14 @@ test.describe('the garden', () => {
     expect(await doors.evaluateAll((nodes) => nodes.map((node) => node.tagName))).toEqual(['A', 'A', 'A']);
     await expect(doors.first()).toContainText('Start here');
     await expect(doors.first()).toContainText('Play now');
+    await expect(doors.first()).toContainText('Ages');
+    await expect(doors.first()).toContainText(/Easy|Medium|Hard/);
 
     // The rest of the garden keeps its doors, at a quieter weight. Sudoku is no
     // longer the hero offer, but its card — and its board — is still pressable.
     const others = page.locator('.pb-mini-card');
+    await expect(others.first()).toContainText('Ages');
+    await expect(others.first()).toContainText(/Easy|Medium|Hard/);
     await expect(others).toHaveCount(17);
     const otherHrefs = await others.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('href')));
     // The register's order, minus the three that already have a door above.

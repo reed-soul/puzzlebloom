@@ -25,12 +25,17 @@ import { reversiManifest } from '@puzzlebloom/game-reversi/manifest';
 import { shadowsManifest } from '@puzzlebloom/game-shadows/manifest';
 import { simonManifest } from '@puzzlebloom/game-simon/manifest';
 import { slidingManifest } from '@puzzlebloom/game-sliding/manifest';
-import { type GameManifest, sudokuManifest } from '@puzzlebloom/game-sudoku/manifest';
+import {
+  DIFFICULTY_LABEL,
+  type GameDifficulty,
+  type GameManifest,
+  sudokuManifest,
+} from '@puzzlebloom/game-sudoku/manifest';
 import { tangramManifest } from '@puzzlebloom/game-tangram/manifest';
 import { ticTacManifest } from '@puzzlebloom/game-tic-tac/manifest';
 import { wordSearchManifest } from '@puzzlebloom/game-word-search/manifest';
 
-export type { GameManifest };
+export { DIFFICULTY_LABEL, type GameDifficulty, type GameManifest };
 
 export const GAMES: GameManifest[] = [
   sudokuManifest,

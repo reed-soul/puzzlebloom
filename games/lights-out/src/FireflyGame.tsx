@@ -1,5 +1,5 @@
 import { createLights, isSolved, press } from '@puzzlebloom/lights-out-engine';
-import { Button, chime, Icon, Segmented } from '@puzzlebloom/ui';
+import { Button, chime, GardenCreature, Icon, Segmented } from '@puzzlebloom/ui';
 import { useState } from 'react';
 import './lights-out.css';
 
@@ -61,12 +61,15 @@ export function FireflyGame({ onExit }: Props) {
               className={`pb-firefly-cell${on ? ' is-on' : ''}`}
               aria-label={on ? 'Lit firefly' : 'Dark firefly'}
               onClick={() => onPress(index)}
-            />
+            >
+              <GardenCreature name="sprout" />
+            </button>
           ))}
         </div>
         <aside className="pb-play__side">
           <p className="pb-calm-note">
-            Tap a firefly and it, and its four neighbours, swap light for dark. Put them all out.
+            Tap a glowing friend and it, and its four neighbours, swap light for dark. A quiet garden is the
+            whole aim.
           </p>
           <Segmented
             label="Garden size"

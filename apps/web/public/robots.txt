@@ -1,0 +1,42 @@
+# PuzzleBloom — public garden of kids' puzzles.
+# Training crawlers are asked not to use this site for model training.
+# Retrieval / citation bots and ordinary search engines stay welcome.
+
+User-agent: *
+Allow: /
+Disallow: /404.html
+
+# Training-only agents (Google-Extended / Applebot-Extended do not affect search).
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: anthropic-ai
+User-agent: CCBot
+User-agent: Bytespider
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: meta-externalagent
+User-agent: cohere-training-data-crawler
+User-agent: Diffbot
+User-agent: omgili
+Disallow: /
+
+# Retrieval / citation: keep these able to read and quote with a link.
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+Sitemap: https://puzzlebloom.taoliapp.com/sitemap.xml

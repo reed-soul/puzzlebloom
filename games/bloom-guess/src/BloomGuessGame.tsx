@@ -1,5 +1,5 @@
 import { createGuess, guess, isLost, isWon, mask } from '@puzzlebloom/bloom-guess-engine';
-import { Button, chime, Icon } from '@puzzlebloom/ui';
+import { Button, chime, GardenCreature, Icon } from '@puzzlebloom/ui';
 import { useCallback, useEffect, useState } from 'react';
 import './bloom-guess.css';
 
@@ -56,6 +56,7 @@ export function BloomGuessGame({ onExit }: Props) {
       <div className="pb-play__body">
         <div>
           <div className="pb-guess-petals" role="img" aria-label={`${state.petals} petals left`}>
+            <GardenCreature name={state.petals > 2 ? 'sprout' : 'ant'} size={64} />
             {Array.from({ length: 6 }, (_, i) => (
               // biome-ignore lint/suspicious/noArrayIndexKey: petals are a fixed count
               <span key={i} className={`pb-guess-petal${i >= state.petals ? ' is-gone' : ''}`} />
@@ -83,7 +84,8 @@ export function BloomGuessGame({ onExit }: Props) {
         </div>
         <aside className="pb-play__side">
           <p className="pb-calm-note">
-            A garden word is hiding. Tap a letter. A miss sheds a petal; six petals is the whole bloom.
+            A garden word is hiding. Tap a letter. A miss sheds a petal; six petals is the whole bloom, never
+            a gallows.
           </p>
           <Button variant="quiet" size="sm" block iconLeft="sparkle" onClick={() => deal(seed + 1)}>
             Another word

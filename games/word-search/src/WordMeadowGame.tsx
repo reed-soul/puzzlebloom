@@ -1,4 +1,4 @@
-import { Button, chime, Icon } from '@puzzlebloom/ui';
+import { Button, chime, GardenCreature, Icon } from '@puzzlebloom/ui';
 import { createMeadow, isSolved, select } from '@puzzlebloom/word-search-engine';
 import { useState } from 'react';
 import './word-search.css';
@@ -77,8 +77,12 @@ export function WordMeadowGame({ onExit }: Props) {
         </div>
         <aside className="pb-play__side">
           <p className="pb-calm-note">
-            Tap the first letter of a word, then the last. Across, down or diagonal.
+            Tap the first letter of a garden word, then the last. Across, down or a diagonal — a found word
+            stays lit.
           </p>
+          <span className="pb-words-mascot" aria-hidden="true">
+            <GardenCreature name="sprout" size={56} />
+          </span>
           <div className="pb-words-list">
             {state.words.map((word) => (
               <span key={word} className={state.found.includes(word) ? 'is-found' : ''}>

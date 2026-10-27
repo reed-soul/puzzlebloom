@@ -20,8 +20,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   padding: 0;
   border-radius: var(--pb-r-pill);
   border: 1.5px solid var(--pb-line);
@@ -199,12 +199,16 @@
   margin-inline: auto;
   aspect-ratio: 1;
   grid-auto-rows: 1fr;
+  gap: 0;
+  padding: 6px;
   background: color-mix(in oklab, var(--pb-brand) 10%, var(--pb-surface));
   border-radius: 12px;
   overflow: hidden;
   touch-action: manipulation;
 }
 .pb-maze-cell {
+  display: grid;
+  place-items: center;
   border: 0;
   padding: 0;
   background: var(--pb-surface);
@@ -219,20 +223,67 @@
 .pb-maze-cell.is-path {
   background: color-mix(in oklab, var(--pb-sky) 35%, var(--pb-surface));
 }
-.pb-maze-cell.is-here::after,
-.pb-maze-cell.is-goal::after {
-  content: '';
-  display: block;
-  width: 38%;
-  height: 38%;
-  margin: auto;
-  border-radius: 50%;
-  background: var(--pb-accent);
+.pb-maze-cell.is-here {
+  background: color-mix(in oklab, var(--pb-accent) 28%, var(--pb-surface));
 }
-.pb-maze-cell.is-goal::after {
-  border-radius: 20%;
-  background: var(--pb-brand);
+.pb-maze-cell.is-goal {
+  background: color-mix(in oklab, var(--pb-brand) 26%, var(--pb-surface));
 }
-.pb-maze-cell.is-here.is-goal::after {
-  background: var(--pb-accent);
+.pb-maze-cell img {
+  width: 82%;
+  height: 82%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.pb-maze-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 52px);
+  grid-template-rows: repeat(3, 52px);
+  gap: 6px;
+  justify-content: center;
+  margin: 0.2rem 0 0.4rem;
+}
+
+.pb-maze-pad__btn {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  border: 1.5px solid var(--pb-line);
+  border-radius: 16px;
+  background: var(--pb-surface);
+  color: var(--pb-ink);
+  cursor: pointer;
+  box-shadow: var(--pb-lift-1);
+  touch-action: manipulation;
+}
+
+.pb-maze-pad__btn:hover {
+  background: var(--pb-surface-2);
+}
+
+.pb-maze-pad__btn.is-n svg {
+  transform: rotate(-90deg);
+}
+
+.pb-maze-pad__btn.is-s svg {
+  transform: rotate(90deg);
+}
+
+.pb-maze-pad__btn.is-w svg {
+  transform: rotate(180deg);
+}
+
+.pb-maze-pad__here {
+  display: grid;
+  place-items: center;
+}
+
+.pb-maze-pad__here img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
 }

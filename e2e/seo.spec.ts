@@ -341,14 +341,44 @@ test('an unknown URL is a 404, not a 200 with the shell', async ({ request }) =>
   expect(body).not.toContain('application/ld+json');
 });
 
-test('robots.txt invites crawlers and names the sitemap', async ({ request }) => {
+test('robots.txt blocks training crawlers, keeps retrieval, and names the sitemap', async ({ request }) => {
   const response = await request.get('/robots.txt');
   expect(response.status()).toBe(200);
 
   const body = await response.text();
   expect(body).toContain('User-agent: *');
   expect(body).toContain('Allow: /');
+  expect(body).toContain('Disallow: /404.html');
   expect(body).toMatch(/Sitemap: https:\/\/puzzlebloom\.taoliapp\.com\/sitemap\.xml/);
+
+  for (const agent of [
+    'GPTBot',
+    'ClaudeBot',
+    'anthropic-ai',
+    'CCBot',
+    'Bytespider',
+    'Google-Extended',
+    'Applebot-Extended',
+    'meta-externalagent',
+    'cohere-training-data-crawler',
+    'Diffbot',
+    'omgili',
+  ]) {
+    expect(body, `${agent} should be named`).toContain(`User-agent: ${agent}`);
+  }
+  expect(body).not.toMatch(/User-agent: GPTBot\nAllow: \//);
+
+  for (const agent of [
+    'OAI-SearchBot',
+    'ChatGPT-User',
+    'PerplexityBot',
+    'Perplexity-User',
+    'Claude-SearchBot',
+    'Claude-User',
+  ]) {
+    expect(body, `${agent} should stay named for retrieval`).toContain(`User-agent: ${agent}`);
+    expect(body).not.toMatch(new RegExp(`User-agent: ${agent}\\nDisallow: /`));
+  }
 });
 
 test('every sitemap URL is a page that exists and points back at itself', async ({ request }) => {

@@ -168,32 +168,13 @@ async function main() {
     `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`,
   );
 
-  // AI answer engines are named explicitly rather than left to the wildcard:
-  // being omitted from the list is how a site stops being quotable. This one has
-  // nothing private in it — the whole point is that people read it.
-  const agents = [
-    'OAI-SearchBot',
-    'ChatGPT-User',
-    'Claude-SearchBot',
-    'Claude-User',
-    'PerplexityBot',
-    'Perplexity-User',
-    'Google-Extended',
-    'GPTBot',
-    'ClaudeBot',
-  ];
-  const robots = [
-    '# Every page is public and meant to be read, quoted and linked.',
-    'User-agent: *',
-    'Allow: /',
-    'Disallow: /404.html',
-    '',
-    ...agents.flatMap((agent) => [`User-agent: ${agent}`, 'Allow: /', '']),
-    `Sitemap: ${site.url}/sitemap.xml`,
-    '',
-  ].join('\n');
-
-  await writeFile(path.join(DIST, 'robots.txt'), robots);
+  // robots.txt lives in public/ so `pnpm dev` and the Vite copy already serve
+  // the training-block / retrieval-allow policy. Rewrite the Sitemap line from
+  // site.json so the two can never disagree about the origin.
+  const robotsSrc = path.join(ROOT, 'apps/web/public/robots.txt');
+  const robotsTemplate = await readFile(robotsSrc, 'utf8');
+  const robots = robotsTemplate.replace(/^Sitemap:.*$/m, `Sitemap: ${site.url}/sitemap.xml`);
+  await writeFile(path.join(DIST, 'robots.txt'), robots.endsWith('\n') ? robots : `${robots}\n`);
   console.log(`  wrote robots.txt and sitemap.xml (${Object.keys(site.pages).length} urls)`);
 }
 

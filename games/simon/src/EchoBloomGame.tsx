@@ -8,11 +8,12 @@ import {
   readyToCopy,
   replay,
 } from '@puzzlebloom/simon-engine';
-import { Button, chime, Icon } from '@puzzlebloom/ui';
+import { Button, chime, GardenCreature, Icon } from '@puzzlebloom/ui';
 import { useEffect, useRef, useState } from 'react';
 import './simon.css';
 
 const NAMES = ['Sun', 'Honey', 'Sky', 'Leaf'] as const;
+const FACES = ['ant', 'bunny', 'bird', 'frog'] as const;
 
 interface Props {
   onExit?: () => void;
@@ -104,18 +105,20 @@ export function EchoBloomGame({ onExit }: Props) {
               aria-label={NAMES[pad]}
               onClick={() => onPad(pad)}
               disabled={state.phase !== 'copy'}
-            />
+            >
+              <GardenCreature name={FACES[pad]} />
+            </button>
           ))}
         </div>
         <aside className="pb-play__side">
           <p className="pb-calm-note">
             {state.phase === 'copy'
-              ? 'Your turn. Tap the blooms in the same order.'
+              ? 'Your turn. Tap the friends in the same order.'
               : state.phase === 'again'
                 ? 'Have another go — the same bloom, no rush.'
                 : state.phase === 'bloom'
                   ? 'The whole bloom remembered.'
-                  : 'Watch the petals.'}
+                  : 'Watch the four friends light up.'}
           </p>
           <Button variant="quiet" size="sm" block onClick={() => setMuted((m) => !m)}>
             {muted ? 'Chimes off' : 'Hush the chimes'}

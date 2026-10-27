@@ -1,5 +1,5 @@
 import { COLS, createFour, drop, ROWS, softMove } from '@puzzlebloom/connect-four-engine';
-import { Button, chime, Icon } from '@puzzlebloom/ui';
+import { Button, chime, GardenCreature, Icon } from '@puzzlebloom/ui';
 import { useEffect, useState } from 'react';
 import './connect-four.css';
 
@@ -67,7 +67,10 @@ export function FourFlowersGame({ onExit }: Props) {
                     // biome-ignore lint/suspicious/noArrayIndexKey: row is the slot in a fixed column
                     key={display}
                     className={`pb-four-slot${cell === 1 ? ' is-sun' : ''}${cell === 2 ? ' is-moon' : ''}`}
-                  />
+                  >
+                    {cell === 1 ? <GardenCreature name="sprout" /> : null}
+                    {cell === 2 ? <GardenCreature name="bird" /> : null}
+                  </span>
                 );
               })}
             </button>
@@ -75,7 +78,7 @@ export function FourFlowersGame({ onExit }: Props) {
         </div>
         <aside className="pb-play__side">
           <p className="pb-calm-note">
-            Tap a column and a sun flower drops to the lowest empty pad. Four of yours in a line, any way,
+            Tap a column and your sprout drops to the lowest empty pad. Four of yours in a line, any way,
             finishes the bed.
           </p>
           <Button variant="quiet" size="sm" block iconLeft="sparkle" onClick={() => setState(createFour())}>
