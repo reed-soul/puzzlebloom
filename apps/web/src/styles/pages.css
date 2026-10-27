@@ -873,8 +873,24 @@
 .pb-card__art-flow span,
 .pb-card__art-marks span,
 .pb-card__art-words span {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
   border-radius: 5px;
   background: color-mix(in oklab, var(--pb-ink) 10%, transparent);
+}
+
+.pb-card__art-sliding img,
+.pb-card__art-maze img,
+.pb-card__art-echo img,
+.pb-card__art-flowers img,
+.pb-card__art-fireflies img,
+.pb-card__art-marks img {
+  width: 88%;
+  height: 88%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
 }
 
 .pb-card__art-sliding span:not(.is-empty) {
@@ -908,6 +924,9 @@
 }
 
 .pb-card__art-echo span {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
   border-radius: 50%;
 }
 
@@ -942,6 +961,9 @@
 }
 
 .pb-card__art-flowers span {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
   border-radius: 50%;
   background: color-mix(in oklab, var(--pb-ink) 8%, transparent);
 }
@@ -1065,31 +1087,19 @@
 .pb-card__art-pieces {
   position: relative;
   z-index: 1;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3px;
+  display: block;
   width: 72px;
   aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 8px;
 }
 
-.pb-card__art-pieces span {
-  border-radius: 4px;
-}
-
-.pb-card__art-pieces .is-a {
-  background: color-mix(in oklab, var(--pb-sky) 55%, var(--pb-surface));
-}
-
-.pb-card__art-pieces .is-b {
-  background: color-mix(in oklab, var(--pb-accent) 55%, var(--pb-surface));
-}
-
-.pb-card__art-pieces .is-c {
-  background: color-mix(in oklab, var(--pb-brand) 55%, var(--pb-surface));
-}
-
-.pb-card__art-pieces .is-d {
-  background: color-mix(in oklab, var(--pb-success) 45%, var(--pb-surface));
+.pb-card__art-pieces img {
+  width: 140%;
+  height: 140%;
+  object-fit: cover;
+  object-position: 50% 42%;
+  pointer-events: none;
 }
 
 /* ================================================================== *
@@ -1324,6 +1334,29 @@
   color: var(--pb-ink-soft);
   font-size: var(--pb-fs-sm);
   max-width: 34ch;
+}
+
+.pb-picks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.28rem;
+}
+
+.pb-picks__chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.12rem 0.45rem;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--pb-brand) 14%, var(--pb-surface));
+  color: var(--pb-ink);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+}
+
+.pb-picks__chip--level {
+  background: color-mix(in oklab, var(--pb-accent) 22%, var(--pb-surface));
 }
 
 .pb-start__cta {
@@ -1912,6 +1945,15 @@
   font-size: 0.68rem;
 }
 
+.pb-mini-card .pb-picks {
+  margin-top: 0.12rem;
+}
+
+.pb-mini-card .pb-picks__chip {
+  font-size: 0.62rem;
+  padding: 0.08rem 0.38rem;
+}
+
 /* The sudoku board, small. Box lines every three cells are what make nine
    squares read as sudoku rather than as a spreadsheet. */
 .pb-sudoku-thumb {
@@ -2071,7 +2113,16 @@
     display: -webkit-box;
     overflow: hidden;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 1;
+  }
+
+  .pb-start .pb-picks {
+    margin: 0.06rem 0 0;
+  }
+
+  .pb-start .pb-picks__chip {
+    font-size: 0.6rem;
+    padding: 0.06rem 0.36rem;
   }
 
   .pb-start__cta {

@@ -7,42 +7,27 @@ interface Props {
   onExit?: () => void;
 }
 
-/** One SVG garden, sliced by viewBox so each piece is a true fragment of the same drawing. */
+/**
+ * One painted garden, sliced by translating a single image so every piece is a
+ * true fragment of the same jar. The source is Bloom Drop's scene, not a new
+ * drawing, so the puzzle stays in the garden's art world.
+ */
 function GardenSlice({ index, n }: { index: number; n: number }) {
-  const size = 120 / n;
   const col = index % n;
   const row = Math.floor(index / n);
   return (
-    <svg viewBox={`${col * size} ${row * size} ${size} ${size}`} aria-hidden="true">
-      <rect width="120" height="120" fill="var(--pb-sky-soft)" />
-      <circle cx="92" cy="22" r="14" fill="var(--pb-accent)" />
-      <ellipse
-        cx="40"
-        cy="88"
-        rx="38"
-        ry="18"
-        fill="color-mix(in oklab, var(--pb-brand) 55%, var(--pb-surface))"
+    <span className="pb-piece-art">
+      <img
+        src="/art/bloom/jar-scene.webp"
+        alt=""
+        draggable={false}
+        style={{
+          width: `${n * 100}%`,
+          height: `${n * 100}%`,
+          transform: `translate(${(-col / n) * 100}%, ${(-row / n) * 100}%)`,
+        }}
       />
-      <ellipse
-        cx="88"
-        cy="96"
-        rx="28"
-        ry="14"
-        fill="color-mix(in oklab, var(--pb-sky) 70%, var(--pb-surface))"
-      />
-      <path d="M28 88 C28 54 44 40 44 40 C48 56 40 72 28 88Z" fill="var(--pb-brand)" />
-      <rect
-        x="40"
-        y="70"
-        width="8"
-        height="22"
-        rx="2"
-        fill="color-mix(in oklab, var(--pb-ink) 45%, var(--pb-accent))"
-      />
-      <circle cx="22" cy="64" r="6" fill="var(--pb-danger)" />
-      <circle cx="70" cy="72" r="5" fill="color-mix(in oklab, var(--pb-accent) 40%, var(--pb-sky))" />
-      <circle cx="54" cy="58" r="5" fill="color-mix(in oklab, var(--pb-accent) 70%, var(--pb-surface))" />
-    </svg>
+    </span>
   );
 }
 
@@ -103,7 +88,7 @@ export function PieceGardenGame({ onExit }: Props) {
         </div>
         <aside className="pb-play__side">
           <p className="pb-calm-note">
-            Tap one piece, then another. They swap. Keep going until the garden is whole.
+            Tap one piece, then another. They swap. Keep going until the painted jar sits still.
           </p>
           <Segmented
             label="Pieces"

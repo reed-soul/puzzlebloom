@@ -8,6 +8,15 @@
 
 export type GameStatus = 'ready' | 'sprouting';
 
+/** Parent-facing band on the home cards. Easy is a first game; Hard wants a quiet sit. */
+export type GameDifficulty = 'easy' | 'medium' | 'hard';
+
+export const DIFFICULTY_LABEL = {
+  easy: 'Easy',
+  medium: 'Medium',
+  hard: 'Hard',
+} as const satisfies Record<GameDifficulty, string>;
+
 export interface GameManifest {
   /** Stable id. Doubles as the route segment and the local-storage namespace. */
   id: string;
@@ -19,7 +28,9 @@ export interface GameManifest {
   route: string;
   /** What a grown-up would call the skill being practised. */
   skills: string[];
+  /** Parent-facing age band, e.g. "4–6". Rendered on every door and mini-card. */
   ageRange: string;
+  difficulty: GameDifficulty;
   typicalMinutes: string;
   status: GameStatus;
   /** Accent hue used by the card's artwork block. */
@@ -60,7 +71,8 @@ export const sudokuManifest: GameManifest = {
     'A classic 9×9 grid with two ways to read it: numerals, or nine hand-drawn creatures for players still learning their digits. Hints explain the logic in a sentence instead of filling the cell for you.',
   route: '/play/sudoku',
   skills: ['Logic', 'Patience', 'Working memory'],
-  ageRange: '6 and up',
+  ageRange: '6–9',
+  difficulty: 'medium',
   typicalMinutes: '8–20 min',
   status: 'ready',
   tone: 'grass',

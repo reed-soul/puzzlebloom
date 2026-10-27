@@ -20,8 +20,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   padding: 0;
   border-radius: var(--pb-r-pill);
   border: 1.5px solid var(--pb-line);
@@ -203,13 +203,25 @@
   aspect-ratio: 1;
 }
 .pb-echo-pad {
+  display: grid;
+  place-items: center;
   border: 0;
   border-radius: 50%;
+  min-width: 72px;
+  min-height: 72px;
   cursor: pointer;
   box-shadow: var(--pb-lift-1);
   transition:
     transform 120ms var(--pb-ease),
     filter 120ms var(--pb-ease);
+}
+
+.pb-echo-pad img {
+  width: 58%;
+  height: 58%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
 }
 .pb-echo-pad.is-lit {
   filter: brightness(1.25);

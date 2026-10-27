@@ -20,8 +20,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   padding: 0;
   border-radius: var(--pb-r-pill);
   border: 1.5px solid var(--pb-line);
@@ -219,12 +219,25 @@
   opacity: 1;
 }
 .pb-four-slot {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
   border-radius: 50%;
   background: var(--pb-surface);
 }
 .pb-four-slot.is-sun {
-  background: color-mix(in oklab, var(--pb-accent) 72%, var(--pb-surface));
+  background: color-mix(in oklab, var(--pb-accent) 32%, var(--pb-surface));
 }
 .pb-four-slot.is-moon {
-  background: color-mix(in oklab, var(--pb-sky) 72%, var(--pb-surface));
+  background: color-mix(in oklab, var(--pb-sky) 42%, var(--pb-surface));
+}
+.pb-four-slot img {
+  width: 86%;
+  height: 86%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+.pb-four-col {
+  min-width: 44px;
 }

@@ -1,5 +1,5 @@
 import { type Dir, generateMaze, hint, isSolved, move } from '@puzzlebloom/maze-engine';
-import { Button, chime, Icon, Segmented } from '@puzzlebloom/ui';
+import { Button, chime, GardenCreature, Icon, Segmented } from '@puzzlebloom/ui';
 import { useCallback, useEffect, useState } from 'react';
 import './maze.css';
 
@@ -116,16 +116,51 @@ export function MazeGame({ onExit }: Props) {
                   else if (tr === r && tc === c - 1) go('w');
                   else if (tr === r && tc === c + 1) go('e');
                 }}
-              />
+              >
+                {here ? <GardenCreature name="sprout" /> : null}
+                {goal && !here ? <GardenCreature name="crown" /> : null}
+              </button>
             );
           })}
         </div>
         <aside className="pb-play__side">
           <p className="pb-calm-note">
-            Walk to the glowing gate. Tap a neighbouring square, or use the arrows. The hedges stay where they
-            are.
+            Walk the sprout to the crown. Tap a neighbouring square, use the arrows, or the pad below. Nothing
+            here chases you.
           </p>
           {nudge ? <p className="pb-calm-note">Try stepping {label(nudge)}.</p> : null}
+          {/* biome-ignore lint/a11y/useSemanticElements: a fieldset would bring default border/padding this pad does not want */}
+          <div className="pb-maze-pad" role="group" aria-label="Walk">
+            <span />
+            <button
+              type="button"
+              className="pb-maze-pad__btn is-n"
+              aria-label="North"
+              onClick={() => go('n')}
+            >
+              <Icon name="arrowRight" size={24} />
+            </button>
+            <span />
+            <button type="button" className="pb-maze-pad__btn is-w" aria-label="West" onClick={() => go('w')}>
+              <Icon name="arrowRight" size={24} />
+            </button>
+            <span className="pb-maze-pad__here" aria-hidden="true">
+              <GardenCreature name="sprout" />
+            </span>
+            <button type="button" className="pb-maze-pad__btn is-e" aria-label="East" onClick={() => go('e')}>
+              <Icon name="arrowRight" size={24} />
+            </button>
+            <span />
+            <button
+              type="button"
+              className="pb-maze-pad__btn is-s"
+              aria-label="South"
+              onClick={() => go('s')}
+            >
+              <Icon name="arrowRight" size={24} />
+            </button>
+            <span />
+          </div>
           <Segmented
             label="Garden size"
             value={span}

@@ -64,15 +64,16 @@ function remember(known: Known, cards: readonly CardState[]): void {
 }
 
 /**
- * A press, and a frame for React to commit it.
+ * A press, and a wait for React to commit it.
  *
- * A click is a discrete event, so React flushes it synchronously — but a test
- * that reads the DOM straight after a hundred presses is a test that will one
- * day read a stale board and blame the game.
+ * The card we turned is no longer face down: it is up, or it is kept. Waiting
+ * on that label, rather than a frame, is what stops a later read from seeing
+ * the board as it was before the click.
  */
 async function press(page: Page, index: number): Promise<void> {
-  await page.locator(CARD).nth(index).click();
-  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => resolve(null))));
+  const card = page.locator(CARD).nth(index);
+  await card.click();
+  await expect(card).not.toHaveAttribute('aria-label', /face down$/);
 }
 
 const keptCount = (page: Page): Promise<string> =>
@@ -146,6 +147,53 @@ async function playUntil(
 /** A kept pair and a card that is seen and down: enough for a hint and a recap. */
 const midRound = (cards: readonly CardState[], known: Known) =>
   hasKeptPair(cards) && hasSeenAndDown(cards, known);
+
+/**
+ * A kept pair *and* two cards still in hand.
+ *
+ * `playUntil` with that predicate is not enough. The helper prefers a known
+ * twin, so on some day's deals — 2026-10-27 is one — it keeps every pair it
+ * has seen and never misses after the first keep. The reload test needs both
+ * halves of the save, so after the first keep we turn two cards we already
+ * know are different.
+ */
+async function playToKeptAndMiss(page: Page): Promise<void> {
+  const known: Known = new Map();
+  await playUntil(page, known, (cards) => hasKeptPair(cards));
+
+  for (let attempt = 0; attempt < 12; attempt += 1) {
+    let cards = await readCards(page);
+    remember(known, cards);
+    if (hasKeptPair(cards) && upPair(cards).length === 2) return;
+
+    const open = cards.filter((card) => card.face === 'up');
+    if (open.length >= 2) return;
+
+    const down = cards.filter((card) => card.face === 'down');
+    if (down.length === 0) break;
+
+    if (open.length === 0) {
+      const first = down.find((card) => known.has(card.index)) ?? down[0];
+      await press(page, first.index);
+      cards = await readCards(page);
+      remember(known, cards);
+    }
+
+    const face = cards.find((card) => card.face === 'up');
+    const wanted = face ? (known.get(face.index) ?? face.creature) : null;
+    const second =
+      cards.find(
+        (card) => card.face === 'down' && known.has(card.index) && known.get(card.index) !== wanted,
+      ) ?? cards.find((card) => card.face === 'down' && !known.has(card.index));
+    if (!second) break;
+    await press(page, second.index);
+  }
+
+  const final = await readCards(page);
+  if (!(hasKeptPair(final) && upPair(final).length === 2)) {
+    throw new Error('could not leave a kept pair and a miss on the same board');
+  }
+}
 
 /**
  * The grid as it is really drawn, measured from the cards rather than from the
@@ -487,7 +535,7 @@ test('a half-turned board survives a reload, faces and all', async ({ page }) =>
 
   // A kept pair *and* two cards in hand: the two things a reload has to bring
   // back, and the only state where "the faces survived" means anything.
-  await playUntil(page, new Map(), (cards) => hasKeptPair(cards) && upPair(cards).length === 2);
+  await playToKeptAndMiss(page);
   const before = await readCards(page);
   const countBefore = await keptCount(page);
   expect(upPair(before).length, 'a miss is what makes this test worth running').toBe(2);

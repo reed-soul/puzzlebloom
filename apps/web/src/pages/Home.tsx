@@ -1,9 +1,9 @@
 import { CARD_STONES } from '@puzzlebloom/shadows-engine/card';
 import { CARD_FIGURE } from '@puzzlebloom/tangram-engine/card';
-import { CreatureGlyph, Icon, type IconName } from '@puzzlebloom/ui';
+import { BLOOM_CREATURES, CreatureGlyph, GardenCreature, Icon, type IconName } from '@puzzlebloom/ui';
 import { useTheme } from '@puzzlebloom/ui/theme';
 import { Link } from '../app/router';
-import { GAMES, type GameManifest } from '../games/registry';
+import { DIFFICULTY_LABEL, GAMES, type GameManifest } from '../games/registry';
 import { LinkButton } from '../shell/LinkButton';
 
 /** A real, valid grid, thinned out. Decoration that happens to be truthful. */
@@ -58,6 +58,21 @@ const PITCH: Record<string, string> = {
   'memory-garden': 'Turn over two cards. Keep the pair that matches.',
   balance: 'One side holds a number. Make the other side weigh the same.',
 };
+
+const ECHO_FACES = ['ant', 'bunny', 'bird', 'frog'] as const;
+
+/**
+ * Age band and difficulty, always from the manifest so a card cannot drift from
+ * the register. Shown on start doors and mini-cards so a grown-up can pick.
+ */
+function PickTags({ game }: { game: GameManifest }) {
+  return (
+    <span className="pb-picks">
+      <span className="pb-picks__chip">Ages {game.ageRange}</span>
+      <span className="pb-picks__chip pb-picks__chip--level">{DIFFICULTY_LABEL[game.difficulty]}</span>
+    </span>
+  );
+}
 
 /** What a finished game draws on its card. Both are decoration, both are true. */
 function CreaturesArt() {
@@ -245,7 +260,9 @@ function SlidingArt() {
     <div className="pb-card__art-sliding" aria-hidden="true">
       {Array.from({ length: 9 }, (_, index) => (
         // biome-ignore lint/suspicious/noArrayIndexKey: fixed 3×3 thumbnail, nothing reorders
-        <span key={index} className={index === 8 ? 'is-empty' : ''} />
+        <span key={index} className={index === 8 ? 'is-empty' : ''}>
+          {index === 8 ? null : <GardenCreature name={BLOOM_CREATURES[index]} />}
+        </span>
       ))}
     </div>
   );
@@ -254,7 +271,9 @@ function SlidingArt() {
 function MazeArt() {
   return (
     <div className="pb-card__art-maze" aria-hidden="true">
-      <span className="is-here" />
+      <span className="is-here">
+        <GardenCreature name="sprout" />
+      </span>
       <span />
       <span />
       <span className="is-path" />
@@ -262,7 +281,9 @@ function MazeArt() {
       <span className="is-path" />
       <span />
       <span />
-      <span className="is-gate" />
+      <span className="is-gate">
+        <GardenCreature name="crown" />
+      </span>
     </div>
   );
 }
@@ -270,10 +291,11 @@ function MazeArt() {
 function EchoArt() {
   return (
     <div className="pb-card__art-echo" aria-hidden="true">
-      <span className="is-a is-lit" />
-      <span className="is-b" />
-      <span className="is-c" />
-      <span className="is-d" />
+      {ECHO_FACES.map((name, index) => (
+        <span key={name} className={`is-${'abcd'[index]}${index === 0 ? ' is-lit' : ''}`}>
+          <GardenCreature name={name} />
+        </span>
+      ))}
     </div>
   );
 }
@@ -283,7 +305,10 @@ function FlowersArt() {
     <div className="pb-card__art-flowers" aria-hidden="true">
       {Array.from({ length: 12 }, (_, index) => (
         // biome-ignore lint/suspicious/noArrayIndexKey: fixed four-by-three bed
-        <span key={index} className={index === 9 ? 'is-sun' : index === 5 ? 'is-moon' : ''} />
+        <span key={index} className={index === 9 ? 'is-sun' : index === 5 ? 'is-moon' : ''}>
+          {index === 9 ? <GardenCreature name="sprout" /> : null}
+          {index === 5 ? <GardenCreature name="bird" /> : null}
+        </span>
       ))}
     </div>
   );
@@ -307,7 +332,9 @@ function FirefliesArt() {
     <div className="pb-card__art-fireflies" aria-hidden="true">
       {Array.from({ length: 9 }, (_, index) => (
         // biome-ignore lint/suspicious/noArrayIndexKey: fixed 3×3 thumbnail
-        <span key={index} className={[0, 2, 4, 6, 8].includes(index) ? 'is-on' : ''} />
+        <span key={index} className={[0, 2, 4, 6, 8].includes(index) ? 'is-on' : ''}>
+          {[0, 2, 4, 6, 8].includes(index) ? <GardenCreature name="sprout" /> : null}
+        </span>
       ))}
     </div>
   );
@@ -347,15 +374,25 @@ function FlowArt() {
 function MarksArt() {
   return (
     <div className="pb-card__art-marks" aria-hidden="true">
-      <span className="is-sun" />
-      <span className="is-moon" />
+      <span className="is-sun">
+        <GardenCreature name="sprout" />
+      </span>
+      <span className="is-moon">
+        <GardenCreature name="bird" />
+      </span>
       <span />
-      <span className="is-moon" />
-      <span className="is-sun" />
+      <span className="is-moon">
+        <GardenCreature name="bird" />
+      </span>
+      <span className="is-sun">
+        <GardenCreature name="sprout" />
+      </span>
       <span />
       <span />
       <span />
-      <span className="is-sun" />
+      <span className="is-sun">
+        <GardenCreature name="sprout" />
+      </span>
     </div>
   );
 }
@@ -386,10 +423,7 @@ function LiliesArt() {
 function PiecesArt() {
   return (
     <div className="pb-card__art-pieces" aria-hidden="true">
-      <span className="is-a" />
-      <span className="is-b" />
-      <span className="is-c" />
-      <span className="is-d" />
+      <img src="/art/bloom/jar-scene.webp" alt="" draggable={false} />
     </div>
   );
 }
@@ -540,6 +574,7 @@ function StartCard({ game, lead }: { game: GameManifest; lead: boolean }) {
       <div className="pb-start__body">
         <span className="pb-start__kicker">{KICKER[game.id] ?? game.tagline}</span>
         <h3 className="pb-start__title">{game.title}</h3>
+        <PickTags game={game} />
         <span className="pb-start__tagline">{PITCH[game.id] ?? game.tagline}</span>
         <span className="pb-start__cta">
           {lead ? 'Play now' : 'Play'}
@@ -605,7 +640,7 @@ export function Home() {
               <div className="pb-mini-card__body">
                 <h3>{game.title}</h3>
                 <span className="pb-mini-card__tag">{game.tagline}</span>
-                <span className="pb-mini-card__meta">{game.typicalMinutes}</span>
+                <PickTags game={game} />
               </div>
             </Link>
           ))}

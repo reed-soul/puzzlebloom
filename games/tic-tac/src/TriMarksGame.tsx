@@ -1,5 +1,5 @@
 import { createTic, play, softMove } from '@puzzlebloom/tic-tac-engine';
-import { Button, CreatureGlyph, chime, Icon } from '@puzzlebloom/ui';
+import { Button, chime, GardenCreature, Icon } from '@puzzlebloom/ui';
 import { useEffect, useState } from 'react';
 import './tic-tac.css';
 
@@ -65,12 +65,15 @@ export function TriMarksGame({ onExit }: Props) {
               onClick={() => onCell(index)}
               disabled={mark !== 0 || state.winner !== 0 || state.turn !== 1}
             >
-              {mark === 0 ? null : <CreatureGlyph digit={mark === 1 ? 1 : 6} size={44} />}
+              {mark === 0 ? null : <GardenCreature name={mark === 1 ? 'sprout' : 'bird'} />}
             </button>
           ))}
         </div>
         <aside className="pb-play__side">
-          <p className="pb-calm-note">Three of yours in a line — across, down or diagonal. You go first.</p>
+          <p className="pb-calm-note">
+            You are the sprout. Three in a line — across, down or diagonal — and the garden is yours. You go
+            first.
+          </p>
           <Button variant="quiet" size="sm" block iconLeft="sparkle" onClick={() => setState(createTic())}>
             Another round
           </Button>
